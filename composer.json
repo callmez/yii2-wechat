@@ -1,0 +1,26 @@
+{
+    "name": "callmez/yii2-wechat",
+    "type": "yii2-extension",
+    "description": "The wechat module for the Yii framework",
+    "keywords": ["yii2", "wechat", "weixin", "module"],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/callmez/yii2-wechat/issues",
+        "wiki": "https://github.com/callmez/yii2-wechat/wiki",
+        "source": "https://github.com/callmez/yii2-wechat"
+    },
+    "authors": [
+        {
+            "name": "CallMeZ",
+            "email": "callme-z@qq.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "yii\\wechat\\": ""
+        }
+    }
+}

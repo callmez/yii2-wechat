@@ -1,24 +1,24 @@
 <?php
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
+use yii\helpers\ArrayHelper;
 $this->title = '微信请求模拟器';
-
-$form = ActiveForm::begin([
-    'options' => [
-        'class' => 'form-horizontal'
-    ]
-]);
+?>
+<?= Html::beginForm('', 'post', [
+    'id' => 'wechatForm',
+    'class' => 'form-horizontal'
+])
 ?>
     <h4><?= Html::encode($this->title) ?></h4>
     <div class="row">
-        <div class="col-xs-6">
+        <div class="col-sm-6">
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
                     <button type="submit" class="btn btn-block btn-primary">发送</button>
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">公 众 号</label>
+                <label for="wechat" class="col-sm-2 control-label">公 众 号</label>
                 <div class="col-sm-10">
                     <?= Html::dropDownList('wechat', null, ['请选择公众号'], [
                         'class' => 'form-control'
@@ -26,9 +26,24 @@ $form = ActiveForm::begin([
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">消息类型</label>
+                <label for="type" class="col-sm-2 control-label">消息类型</label>
                 <div class="col-sm-10">
-                    <?= Html::radioList('type', null, [
+                    <?= Html::radioList('type', null, array_combine(array_keys($typeArray), ArrayHelper::getColumn($typeArray, 'label')), [
+                        'item' => function($index, $label, $name, $checked, $value) use ($typeArray){
+                            $options = [
+                                'value' => $value,
+                                'label' => Html::encode($label),
+                                'labelOptions' => [
+                                    'class' => 'checkbox-inline'
+                                ]
+                            ];
+                            if (isset($typeArray[$value]['target'])) {
+                                $options['data-show-target'] = '[name=' . ltrim(implode('],[name=', (array)$typeArray[$value]['target']), '],') . ']';
+                            }
+                            return Html::radio($name, $checked, $options);
+                        }
+                    ])?>
+                    <? Html::radioList('type', null, [
                         'text' => '文本',
                         'image' => '图片',
                         'location' => '位置',
@@ -42,58 +57,97 @@ $form = ActiveForm::begin([
                             'labelOptions' => [
                                 'class' => 'checkbox-inline'
                             ]
-                        ]
+                        ],
                     ]) ?>
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">发送用户</label>
+                <label for="from" class="col-sm-2 control-label">发送用户</label>
                 <div class="col-sm-10">
                     <?= Html::textInput('from', null, [
-                        'class' => 'form-control'
+                        'class' => 'form-control',
+                        'placeholder' => '发送用户的OpenID'
                     ]) ?>
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">接收用户</label>
+                <label for="to" class="col-sm-2 control-label">接收用户</label>
                 <div class="col-sm-10">
                     <?= Html::textInput('to', null, [
-                        'class' => 'form-control'
+                        'class' => 'form-control',
+                        'placeholder' => '接受用户的OpenID(选中了公众号之后,可以不填写)'
                     ]) ?>
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">发送内容</label>
+                <label for="content" class="col-sm-2 control-label">发送内容</label>
                 <div class="col-sm-10">
                     <?= Html::textarea('content', null, [
                         'class' => 'form-control',
-                        'rows' => 6
+                        'rows' => 6,
+                        'placeholder' => '发送给指定用户的内容'
                     ]) ?>
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">发送消息</label>
+                <label for="pic_url" class="col-sm-2 control-label">图片地址</label>
                 <div class="col-sm-10">
-                    <?= Html::textarea(null, null, [
+                    <?= Html::textInput('pic_url', null, [
                         'class' => 'form-control',
-                        'rows' => 6
+                        'placeholder' => '填写图片地址(暂只支持网络图片)'
                     ]) ?>
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">发送消息</label>
+                <label for="pic_url" class="col-sm-2 control-label">X 坐 标</label>
                 <div class="col-sm-10">
-                    <?= Html::textarea(null, null, [
+                    <?= Html::textInput('location_x', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '例如: 10.000001'
+                    ]) ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="pic_url" class="col-sm-2 control-label">Y 坐 标</label>
+                <div class="col-sm-10">
+                    <?= Html::textInput('location_y', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '例如: 10.000001'
+                    ]) ?>
+                </div>
+            </div>
+            <div id="" class="form-group">
+                <label for="pic_url" class="col-sm-2 control-label">链接地址</label>
+                <div class="col-sm-10">
+                    <?= Html::textInput('url', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '发送的链接地址'
+                    ]) ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="pic_url" class="col-sm-2 control-label">EventKey</label>
+                <div class="col-sm-10">
+                    <?= Html::textInput('event_key', null, [
+                        'class' => 'form-control',
+                        'placeholder' => '菜单事件名'
+                    ]) ?>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">发送消息</label>
+                <div class="col-sm-10">
+                    <?= Html::textarea('send', null, [
                         'class' => 'form-control',
                         'disabled' => true,
-                        'rows' => 10
+                        'rows' => 8
                     ]) ?>
                 </div>
             </div>
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label">接收消息</label>
+                <label class="col-sm-2 control-label">接收消息</label>
                 <div class="col-sm-10">
-                    <?= Html::textarea(null, null, [
+                    <?= Html::textarea('receive', null, [
                         'class' => 'form-control',
                         'disabled' => true,
                         'rows' => 5
@@ -101,12 +155,10 @@ $form = ActiveForm::begin([
                 </div>
             </div>
         </div>
-        <div class="col-xs-6">
+        <div class="col-sm-6">
         </div>
     </div>
-<?php
-ActiveForm::end();
-?>
+<?= Html::endForm(); ?>
 <div class="main">
     <form action="" method="get" class="form-horizontal form" style="float:left;">
         <h4>模拟测试</h4>
@@ -318,7 +370,102 @@ $css = <<<EOF
 #svinfolist p img{width:50px;height:50px;}
 EOF;
 $js = <<<EOF
+function json2xml(data, root) {
+    var xml = '';
+    if (root == undefined) root = true;
+    if (typeof data == 'object') {
+        $.each(data, function(key, data) {
+            data = typeof data == 'object' ? json2xml(data, false) : '<![CDATA[' + data + ']]>';
+            xml += '<' + key + '>' + data + '</' + key + ">\\n";
+        });
+    } else {
+        xml = data;
+    }
 
+    return (root == true ? '<?xml version="1.0" encoding="UTF-8"?>' + "\\n" : '') + xml;
+}
+
+// 消息类型切换
+var showTarget = $([]);
+$('[name=type]').each(function(){
+    var target = $(this).data('show-target');
+    if (target) showTarget = showTarget.add(target);
+}).click(function() {
+    showTarget.closest('.form-group').hide();
+    var target = $(this).data('show-target');
+    if (target) {
+        showTarget.filter(target)
+            .closest('.form-group')
+            .show();
+    }
+}).eq(0).click();
+
+//提交表单
+$('#wechatForm').submit(function(e){
+    e.preventDefault();
+
+    var _this = $(this),
+        type = $('[name=type]:checked', _this).val(),
+        data, xml;
+
+    //创建发送的数据
+    switch(type) {
+        case 'text':
+            data = {
+                MsgType: type,
+                Content: $('[name=content]', _this).val()
+            };
+            break;
+        case 'image':
+            data = {
+                MsgType: type,
+                PicUrl: $('[name=pic_url]', _this).val()
+            };
+            break;
+        case 'location':
+            data = {
+                MsgType: type,
+                Location_X: $('[name=location_x]', _this).val(),
+                Location_Y: $('[name=location_y]', _this).val(),
+                Scale: 20,
+                Label: '位置信息'
+            };
+            break;
+        case 'link':
+            data = {
+                MsgType: type,
+                Title: '测试链接',
+                Description: '测试链接描述',
+                Url: $('[name=url]', _this).val()
+            };
+            break;
+        case 'subscribe':
+        case 'unsubscribe':
+            data = {
+                MsgType: 'event',
+                Event: type,
+                EventKey: ''
+            };
+            break;
+        case 'event':
+            data = {
+                MsgType: type,
+                Event: 'CLICK',
+                EventKey: $('[name=url]', _this).val()
+            };
+            break;
+    }
+    data = $.extend({
+        ToUserName: $('[name=to]', _this).val(),
+        FromUserName: $('[name=from]', _this).val(),
+        CreateTime: Math.round(new Date().getTime()/1000)
+    }, data, {
+        MsgId: 1234567890123456
+    });
+
+    xml = json2xml(data);
+    $('[name=send]').val(xml);
+});
 EOF;
 $this->registerCss($css);
 $this->registerJs($js);

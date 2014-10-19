@@ -1,6 +1,7 @@
 <?php
 
 namespace yii\wechat\controllers;
+use yii\wechat\models\Wechat;
 
 /**
  * 微信模拟器
@@ -42,7 +43,8 @@ class SimulatorController extends \yii\web\Controller
             ]
         ];
         return $this->render('index', [
-            'typeArray' => $typeArray
+            'typeArray' => $typeArray,
+            'wechats' => Wechat::find()->asArray()->indexBy('id')->all()
         ]);
     }
 

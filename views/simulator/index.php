@@ -1,7 +1,9 @@
 <?php
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
 use yii\helpers\ArrayHelper;
+use yii\bootstrap\ActiveForm;
+use yii\wechat\helpers\WechatHelper;
+
 $this->title = '微信请求模拟器';
 ?>
 <?= Html::beginForm('', 'post', [
@@ -20,8 +22,22 @@ $this->title = '微信请求模拟器';
             <div class="form-group">
                 <label for="wechat" class="col-sm-2 control-label">公 众 号</label>
                 <div class="col-sm-10">
-                    <?= Html::dropDownList('wechat', null, ['请选择公众号'], [
-                        'class' => 'form-control'
+                    <?php
+                        $wechatApiLinks = [];
+                        $wechatNames = ['请选择公众号'];
+                        $timestamp = $_SERVER['REQUEST_TIME'];
+
+                        foreach ($wechats as $k => $v) {
+                            $wechatNames[$k] = $v['name'];
+                            $wechatApiLinks[$k]['data']['api-link'] = WechatHelper::getApiLink([
+                                'hash' => $v['hash'],
+                                'token' => $v['token']
+                            ]);
+                        }
+                    ?>
+                    <?= Html::dropDownList('wechat', null, $wechatNames, [
+                        'class' => 'form-control',
+                        'options' => $wechatApiLinks
                     ]) ?>
                 </div>
             </div>
@@ -43,22 +59,6 @@ $this->title = '微信请求模拟器';
                             return Html::radio($name, $checked, $options);
                         }
                     ])?>
-                    <? Html::radioList('type', null, [
-                        'text' => '文本',
-                        'image' => '图片',
-                        'location' => '位置',
-                        'link' => '链接',
-                        'event' => '菜单',
-                        'subscribe' => '关注',
-                        'unsubscribe' => '取消关注',
-                        'other' => '其他',
-                    ], [
-                        'itemOptions' => [
-                            'labelOptions' => [
-                                'class' => 'checkbox-inline'
-                            ]
-                        ],
-                    ]) ?>
                 </div>
             </div>
             <div class="form-group">
@@ -382,7 +382,7 @@ function json2xml(data, root) {
         xml = data;
     }
 
-    return (root == true ? '<?xml version="1.0" encoding="UTF-8"?>' + "\\n" : '') + xml;
+    return root == true ? "<xml>\\n" + xml + "</xml>" : xml;
 }
 
 // 消息类型切换

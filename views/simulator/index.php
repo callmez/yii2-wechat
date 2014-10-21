@@ -171,31 +171,38 @@ $this->title = '微信请求模拟器';
 <script id="receiveTemplate" type="text/html">
     <div class="receive clearfix">
     <% if (typeof content == 'object') { %>
-        <ul class="news-list">
-        <% for (var i = 0; i < content.length; i++) { %>
-            <% if (i == 0) { %>
-                <li class="news clearfix top">
-                    <div class="new-title"><%= content[i].title %></div>
-                    <div class="new-img"><%= (content[i].picurl ? '<img src="' + content[i].picurl + '" />' : '') %></div>
-                    <div class="new-desc"><%= content[i].description %></div>
+        <ul class="news">
+            <% if (content.length == 1) { %>
+                <li class="clearfix">
+                    <a href="<%= content[0].url || 'javascrpt:;' %>" target="_blank">
+                        <div class="single">
+                            <span class="alt"><%= content[0].title %></span>
+                            <span class="time"><?= date('m月d日') ?></span>
+                            <%= (content[0].picurl ? '<img src="' + content[0].picurl + '" />' : '') %>
+                            <p class="desc"><%= content[0].description %></p>
+                            <span class="link">查看全文</span>
+                        </div>
+                    </a>
                 </li>
             <% } else { %>
-                <li class="news clearfix">
-                    <a href="<%= content[i].url || 'javascrpt:;' %>" target="_blank">
-                        <%= content[i].title %>
-                        <%= (content[i].picurl ? '<img src="' + content[i].picurl + '" />' : '') %>
-                    </a>
-                </li>
+                <% for (var i = 0; i < content.length; i++) { %>
+                    <li class="clearfix">
+                        <a href="<%= content[i].url || 'javascrpt:;' %>" target="_blank">
+                            <% if(i == 0) { %>
+                                <div class="top">
+                                    <span class="alt"><%= content[i].title %></span>
+                                    <%= (content[i].picurl ? '<img src="' + content[i].picurl + '" />' : '') %>
+                                </div>
+                            <% } else { %>
+                                <div class="list">
+                                    <%= (content[i].picurl ? '<img src="' + content[i].picurl + '" />' : '') %>
+                                    <span class="alt"><%= content[i].title %></span>
+                                </div>
+                            <% } %>
+                        </a>
+                    </li>
+                <% } %>
             <% } %>
-            <% if (i == 0) { %>
-                <li class="new clearfix bottom">
-                    <a href="<%= content[i].url || 'javascrpt:;' %>" target="_blank">
-                        <span class="pull-right">></span>
-                        <span class="pull-left">查看全文</span>
-                    </a>
-                </li>
-            <% } %>
-        <% } %>
         </ul>
     <% } else { %>
         <img class="avatar" src="<%= avatar %>">
@@ -209,15 +216,29 @@ $this->title = '微信请求模拟器';
 <?php
 $css = <<<EOF
 .checkbox-inline { padding-left: 1px; margin-left: 5px !important; }
-
-.avatar { width: 32px; height: 32px; border-radius: 3px; }
-.content { color: #fff; background-color: #5cb85c; border-color: #4cae4c; padding: 6px 12px; white-space: nowrap; vertical-align: middle; border-radius: 3px; }
-.send, .receive { margin-bottom: 10px; }
+.avatar { width: 34px; height: 34px; border-radius: 3px; }
+.content { max-width: 220px; font-size: 14px; line-height: 1.42857143; border: 1px solid transparent; border-radius: 3px; padding: 6px 12px; }
+.send, .receive { margin-bottom: 15px; }
 .send { text-align: right; }
-.send .avatar { float: right; }
-.send .content { float: right; margin-right: 7px; }
-.receive .avatar { float:left; }
-.receive .content { float: left; margin-left: 7px; }
+.send .avatar, .send .content { float: right; color: #fff; background-color: #5cb85c; border-color: #4cae4c; }
+.send .content { margin-right: 7px; }
+.receive { text-align: left; }
+.receive .avatar, .receive .content { float: left; }
+.receive .content { margin-left: 7px; color: #000; background-color: #fff; border-color: #dcdcdc; }
+.news { list-style: none; padding: 0; border: 1px solid #cdcdcd; box-shadow: 0 3px 6px #999; -webkit-border-radius: 12px; -moz-border-radius: 12px; border-radius: 2px; background-color: #FFF; background: -webkit-gradient(linear,left top,left bottom,from(#FFFFFF),to(#FFFFFF)); background-image: -moz-linear-gradient(top,#FFFFFF 0%,#FFFFFF 100%); margin: 0px auto;}
+.news a { color: #000; }
+.news a:hover { text-decoration: none; }
+.news img { width: 100%; }
+.news li { padding: 9px; border-bottom: 1px solid #ccc; color: #000; position: relative;}
+.news li .top { position: relative; }
+.news li .top .alt { color: #fff; display: block; position: absolute; bottom: 0; left: 0; width: 100%; padding: 4px; background: rgba(0, 0, 0, 0.5); }
+.news li .list { margin-bottom: 15px; }
+.news li .list img { width: 45px; height: 45px; float: right; }
+.news li .list .alt { margin-right: 100px; display: block; }
+.news li .single { padding: 6px; }
+.news li .single .alt { display: block; line-height: 1.2em; text-align: left; font-size: 20px; }
+.news li .single .time { display: block; color: #8c8c8c; font-size: 12px; margin: 10px 0; }
+.news li .single .desc { color: #8c8c8c; margin: 10px 0 20px }
 EOF;
 $js = <<<EOF
 // Simple JavaScript Templating
@@ -340,7 +361,7 @@ function renderMessage(data, type)
                     break;
                 case 'news':
                     var title = data.getElementsByTagName("Title");
-                    if (title.length > 1) {
+                    if (title.length) {
                         params.content = [];
                         for(var i = 0; i < title.length; i++) {
                             params.content.push({
@@ -358,7 +379,7 @@ function renderMessage(data, type)
                     return;
             }
         }
-    }var t = tmpl(type + 'Template', params);
+    }
     $('#preview').append(tmpl(type + 'Template', params));
 }
 

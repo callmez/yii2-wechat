@@ -484,6 +484,7 @@ $('#wechatForm').submit(function(e){
             receive.text('加载中...');
         }
     }).done(function(response) {
+        if (!response) return ;
         var data = $(response).filter('xml');
         if(data.length){
             renderMessage(data, 'receive');

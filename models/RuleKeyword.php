@@ -46,6 +46,13 @@ class RuleKeyword extends ActiveRecord
     public static function findAllByKeyword($keyword, $wid = null)
     {
         $query = RuleKeyword::find();
+        if ($wid !== null) {
+            $query->joinWith([
+                'rule' => function($query) use ($wid) {
+                    $query->andWhere(['wid' => $wid]);
+                }
+            ]);
+        }
         $conditons = [
             'or',
             ['and', 'type=:typeMatch', 'keyword=:keyword'],
@@ -58,11 +65,6 @@ class RuleKeyword extends ActiveRecord
             ':typeInclude' => RuleKeyword::TYPE_INCLUDE,
             ':typeRegular' => RuleKeyword::TYPE_REGULAR
         ];
-        if ($wid !== null) {
-            $conditons[] = ['and', 'rule.wid=:wid'];
-            $params[':wid'] = $wid;
-            $query->joinWith('rule');
-        }
         return $query->where($conditons)->addParams($params)->all();
     }
 }

@@ -83,7 +83,8 @@ class m141017_131752_initWechatTable extends Migration
             'rid' => $rule->id,
             'keyword' => '^test',
             'type' => RuleKeyword::TYPE_REGULAR,
-            'status' => RuleKeyword::STATUS_ACTIVE
+            'status' => RuleKeyword::STATUS_ACTIVE,
+            'processor' => 'app\controllers\wechat\ApiAction'
         ]);
         $ruleKeyword->save();
     }

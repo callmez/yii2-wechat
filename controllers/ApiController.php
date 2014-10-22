@@ -3,6 +3,7 @@ namespace yii\wechat\controllers;
 
 use Yii;
 use yii\base\Action;
+use yii\web\Response;
 use yii\web\Controller;
 use yii\base\InvalidCallException;
 use yii\web\BadRequestHttpException;
@@ -21,29 +22,23 @@ class ApiController extends Controller
      * @var object
      */
     public $wechat;
-    /**
-     * 公众号ID
-     * @var int
-     */
-    public $wid;
 
     public function actions()
     {
         $return = [];
         $this->wechat = Wechat::createByCondition(['hash' => Yii::$app->request->getQueryParam('hash')]);
         if ($this->wechat !== null && $this->wechat->checkSignature()) {
-            $this->wid = $this->wechat->model->id;
             if (($this->message = $this->parseRequest()) === []) {
                 throw new BadRequestHttpException('Request parse failed.');
             }
             $params = $this->match();
             foreach ($params as $param) {
-                if (isset($params['processor'])) {
-                    if (strpos($params['processor'], '\\') === false && Yii::$app->hasModule($params['processor'])) {
-                        $module = Yii::$app->getModule($params['processor']);
+                if (isset($param['processor'])) {
+                    if (strpos($param['processor'], '\\') === false && Yii::$app->hasModule($param['processor'])) {
+                        $module = Yii::$app->getModule($param['processor']);
                         $actionClass = ltrim($module->controllerNamespace . '\wechat\ApiAction', '\\');
                     } else {
-                        $actionClass = $params['processor'];
+                        $actionClass = $param['processor'];
                     }
                     if (is_subclass_of($actionClass, Action::className())) {
                         $return[$this->defaultAction] = $actionClass;
@@ -57,26 +52,64 @@ class ApiController extends Controller
     /**
      * 解析微信请求内容
      * @param string $message
-     * @return array
+     * @return object
      */
     public function parseRequest($message = null)
     {
         $return = [];
         $message === null && $message = Yii::$app->request->getRawBody();
         if (!empty($message) && $xml = simplexml_load_string($message, 'SimpleXMLElement', LIBXML_NOCDATA)) {
-            $return = [
-                'from' => $xml->FromUserName,
-                'to' => $xml->ToUserName,
-            ];
             foreach($xml as $k => $v) {
                 if (in_array($k, ['FromUserName', 'ToUserName'])) {
-                    continue;
+                    $k = str_replace('UserName', '', $k);
                 }
                 $k[0] = strtolower($k[0]);
-                $return[$k] = $v;
+                $return[$k] = strval($v);
             }
         }
         return $return;
+    }
+
+    public function responseText($content)
+    {
+
+    }
+
+    public function responseNews(array $articles)
+    {
+
+    }
+
+    public function responseImage($mid)
+    {
+
+    }
+
+    public function responseVoice($mid)
+    {
+
+    }
+
+    public function responseMusic(array $music)
+    {
+
+    }
+
+    public function response(array $data)
+    {
+        $response = Yii::$app->response;
+        $response->format = Response::FORMAT_XML;
+        if (is_array($response->formatters[$response->format])) {
+            $response->formatters[$response->format]['rootTag'] = 'xml';
+            $response->formatters[$response->format]['contentType'] = 'text/html';
+        } else {
+            $response->formatters[$response->format] = [
+                'class' => $response->formatters[$response->format],
+                'rootTag' => 'xml',
+                'contentType' => 'text/html',
+            ];
+        }
+        return $data;
     }
 
     /**
@@ -87,11 +120,9 @@ class ApiController extends Controller
     {
         $params = [];
         if ($this->message['msgType'] == 'event') {
-            $type = $this->message['event'];
             $method = 'matchEvent' . $this->message['event'];
         } else {
-            $type = $this->message['msgType'];
-            $method = 'match' . $this->message['event'];
+            $method = 'match' . $this->message['msgType'];
         }
         if (method_exists($this, $method)) {
             $params = call_user_func([$this, $method]);
@@ -150,14 +181,15 @@ class ApiController extends Controller
     private function matchText()
     {
         $params = [];
-        $models = RuleKeyword::findAllByKeyword($this->message['content'], $this->wid);
+        $models = RuleKeyword::findAllByKeyword($this->message['content'], $this->wechat->model->id);
         if (!empty($models)) {
             foreach ($models as $model) {
                 $params[] = [
                     'rule' => $model->rid,
                     'priority' => $model->order,
                     'keyword' => $model,
-                    'weid' => $model->rule->wid
+                    'weid' => $model->rule->wid,
+                    'processor' => $model->processor
                 ];
             }
         }

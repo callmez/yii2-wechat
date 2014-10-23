@@ -1,84 +1,108 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <meta name="description" content="Yii2-wechat : 基于Yii2和Yii2-wechat-sdk实现的微信模块">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Yii2-wechat by callmez</title>
+    <title>Yii2-wechat</title>
   </head>
 
   <body>
-    <header>
-      <div class="inner">
-        <h1>Yii2-wechat</h1>
-        <h2>基于Yii2和Yii2-wechat-sdk实现的微信模块</h2>
-        <a href="https://github.com/callmez/yii2-wechat" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/callmez/yii2-wechat">View on GitHub</a>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+          <h1 id="project_title">Yii2-wechat</h1>
+          <h2 id="project_tagline">基于Yii2和Yii2-wechat-sdk实现的微信模块</h2>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
-
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
-
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
-
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
-
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
-
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/callmez/yii2-wechat/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/callmez/yii2-wechat/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/callmez/yii2-wechat"></a> is maintained by <a href="https://github.com/callmez">callmez</a>.</p>
-
-          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/callmez/yii2-wechat/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/callmez/yii2-wechat/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
     </div>
 
-            <script type="text/javascript">
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="yii-wechat%E5%BE%AE%E4%BF%A1%E6%A8%A1%E5%9D%97" class="anchor" href="#yii-wechat%E5%BE%AE%E4%BF%A1%E6%A8%A1%E5%9D%97"><span class="octicon octicon-link"></span></a>Yii-wechat微信模块</h1>
+
+<p>感谢选择 Yii-wechat，基于 <a href="https://github.com/yiisoft/yii2">Yii2</a> 框架基础实现的模块。</p>
+
+<h2>
+<a name="%E7%8E%AF%E5%A2%83%E6%9D%A1%E4%BB%B6" class="anchor" href="#%E7%8E%AF%E5%A2%83%E6%9D%A1%E4%BB%B6"><span class="octicon octicon-link"></span></a>环境条件</h2>
+
+<p>简而言之：</p>
+
+<ul>
+<li>&gt;= php5.4</li>
+<li>&gt;= Yii2</li>
+</ul>
+
+<h2>
+<a name="%E5%AE%89%E8%A3%85" class="anchor" href="#%E5%AE%89%E8%A3%85"><span class="octicon octicon-link"></span></a>安装</h2>
+
+<p>安装步骤如下(2种方式)：</p>
+
+<ol>
+<li>通过composer.json文件安装
+
+<ul>
+<li>`cd 你的项目目录 &amp;&amp; composer require callmez/yii2-wechat</li>
+<li>或者编辑项目目录下的composer.json,添加下面<code>"callmez/yii2-wechat": "dev-master"</code> 内容
+<code>
+"require": {
+  ...
+  "callmez/yii2-wechat": "dev-master",
+  ...
+}
+</code>
+</li>
+</ul>
+</li>
+</ol>
+
+<h2>
+<a name="%E6%B3%A8%E6%84%8F" class="anchor" href="#%E6%B3%A8%E6%84%8F"><span class="octicon octicon-link"></span></a>注意</h2>
+
+<p>产品目前还是处于刚开发阶段. 后期将会着重于功能的完善和细化.</p>
+
+<h2>
+<a name="%E5%8F%8D%E9%A6%88%E6%88%96%E8%B4%A1%E7%8C%AE%E4%BB%A3%E7%A0%81" class="anchor" href="#%E5%8F%8D%E9%A6%88%E6%88%96%E8%B4%A1%E7%8C%AE%E4%BB%A3%E7%A0%81"><span class="octicon octicon-link"></span></a>反馈或贡献代码</h2>
+
+<p>您可以在<a href="https://github.com/callmez/yii2-wechat/issues">这里</a>给我们提出在使用中碰到的问题或Bug。</p>
+
+<p>你也可以发送邮件<strong><a href="mailto:callme-z@qq.com">callme-z@qq.com</a></strong>说明您的问题。</p>
+
+<p>如果你有更好代码实现,请 fork 此项目并发起您的 Pull-Request，我们会及时处理。感谢!</p>
+
+<h2>
+<a name="%E6%8D%90%E5%8A%A9%E4%BD%9C%E8%80%85-" class="anchor" href="#%E6%8D%90%E5%8A%A9%E4%BD%9C%E8%80%85-"><span class="octicon octicon-link"></span></a>捐助作者 ###</h2>
+
+<blockquote>
+<p>如果你觉得该程序对你有帮助,请慷慨捐助一点给作者.
+使用手机浏览器或支付宝客户端扫描下面二维码.感谢支持!
+<img src="https://cloud.githubusercontent.com/assets/1625891/4747223/85530962-5a58-11e4-8665-f408c9783dd0.jpg" alt="1414029434535"></p>
+</blockquote>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Yii2-wechat maintained by <a href="https://github.com/callmez">callmez</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -88,6 +112,7 @@ $ git checkout gh-pages
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
+
 
   </body>
 </html>

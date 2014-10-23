@@ -15,7 +15,7 @@ Yii-wechat
 ---
   - 内置微信模拟器, 支持常用微信请求模拟
 
-![default](https://cloud.githubusercontent.com/assets/1625891/4747618/88d236ce-5a5f-11e4-808e-3b9c9b5190a9.png)
+![default](https://cloud.githubusercontent.com/assets/1625891/4747720/f8927018-5a60-11e4-8e07-d4415f798426.png)
 
 安装
 ---

@@ -1,11 +1,11 @@
 <?php
-namespace yii\wechat\models;
+namespace callmez\wechat\models;
 
 use yii\db\ActiveRecord;
 
 /**
  * 规则表
- * @package yii\wechat\models
+ * @package callmez\wechat\models
  */
 class Rule extends ActiveRecord
 {

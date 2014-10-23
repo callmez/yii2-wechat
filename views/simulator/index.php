@@ -2,7 +2,7 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
-use yii\wechat\helpers\WechatHelper;
+use callmez\wechat\helpers\WechatHelper;
 
 $this->title = '微信请求模拟器';
 ?>

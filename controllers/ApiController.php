@@ -1,5 +1,5 @@
 <?php
-namespace yii\wechat\controllers;
+namespace callmez\wechat\controllers;
 
 use Yii;
 use yii\base\Action;
@@ -7,8 +7,8 @@ use yii\web\Response;
 use yii\web\Controller;
 use yii\base\InvalidCallException;
 use yii\web\BadRequestHttpException;
-use yii\wechat\components\Wechat;
-use yii\wechat\models\RuleKeyword;
+use callmez\wechat\components\Wechat;
+use callmez\wechat\models\RuleKeyword;
 
 class ApiController extends Controller
 {

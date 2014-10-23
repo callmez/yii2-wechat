@@ -1,10 +1,10 @@
 <?php
-namespace yii\wechat\components;
+namespace callmez\wechat\components;
 
 use Yii;
 use yii\base\InvalidConfigException;
 
-class Wechat extends \yii\wechat\sdk\Wechat
+class Wechat extends \callmez\wechat\sdk\Wechat
 {
     /**
      * Wechat Model
@@ -35,7 +35,7 @@ class Wechat extends \yii\wechat\sdk\Wechat
 
     public static function createByCondition(array $condition)
     {
-        $wechat = \yii\wechat\models\Wechat::findOne($condition);
+        $wechat = \callmez\wechat\models\Wechat::findOne($condition);
         return $wechat ? Yii::createObject([
             'class' => static::className(),
             'model' => $wechat

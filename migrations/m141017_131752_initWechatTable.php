@@ -2,9 +2,9 @@
 
 use yii\db\Schema;
 use yii\db\Migration;
-use yii\wechat\models\Wechat;
-use yii\wechat\models\Rule;
-use yii\wechat\models\RuleKeyword;
+use callmez\wechat\models\Wechat;
+use callmez\wechat\models\Rule;
+use callmez\wechat\models\RuleKeyword;
 
 class m141017_131752_initWechatTable extends Migration
 {

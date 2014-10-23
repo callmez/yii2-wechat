@@ -1,7 +1,7 @@
 <?php
 
-namespace yii\wechat\controllers;
-use yii\wechat\models\Wechat;
+namespace callmez\wechat\controllers;
+use callmez\wechat\models\Wechat;
 
 /**
  * 微信模拟器

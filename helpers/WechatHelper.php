@@ -1,5 +1,5 @@
 <?php
-namespace yii\wechat\helpers;
+namespace callmez\wechat\helpers;
 
 use Yii;
 use yii\helpers\Url;

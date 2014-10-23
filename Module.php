@@ -1,10 +1,10 @@
 <?php
 
-namespace yii\wechat;
+namespace callmez\wechat;
 
 class Module extends \yii\base\Module
 {
-    public $controllerNamespace = 'yii\wechat\controllers';
+    public $controllerNamespace = 'callmez\wechat\controllers';
 
     public function init()
     {

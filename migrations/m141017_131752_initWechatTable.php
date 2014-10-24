@@ -22,6 +22,7 @@ class m141017_131752_initWechatTable extends Migration
             'orginal' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '原始ID'",
             'app_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppID'",
             'app_secret' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppSecret'",
+            'default' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '默认回复文字'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
@@ -57,9 +58,9 @@ class m141017_131752_initWechatTable extends Migration
 
         //测试数据
         $wechat = new Wechat([
-            'name' => '南方商旅-同业助手',
-            'hash' => 'vNP5n',
-            'token' => 'v0vcjdqgbz0lxzzhu4rbepmzbg3qeq4m',
+            'name' => '画卷人生',
+            'hash' => 'dVbLx',
+            'token' => 'lL2hcT4c41H3wL21Hlftlz4A4w22j12L',
             'access_token' => [
                 'token' => 'CDo8N0BKhq61zMumyFYTr2noGsq37qJvGaacJhKNEUo09Yaur0e3hE0X9dn2Cs89Z-35jhk9pbHTgpPD0eWiTkzDJOhjtInxCVWTlFRg46A',
                 'expire' => 1413633588
@@ -67,7 +68,8 @@ class m141017_131752_initWechatTable extends Migration
             'account' => 'myslynfsl',
             'orginal' => 'gh_c644bb981dee',
             'app_id' => 'wx2ef4c6ce95a2b30f',
-            'app_secret' => '96916d01a08d154dd64c261eef3dea00'
+            'app_secret' => '96916d01a08d154dd64c261eef3dea00',
+            'default' => '欢迎关注画卷人生'
         ]);
         $wechat->save();
 

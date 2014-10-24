@@ -23,6 +23,8 @@ class ApiController extends Controller
      */
     public $wechat;
 
+    public $defaultResponseText;
+
     /**
      * 解析微信请求的消息, 并分配action
      * @return array
@@ -31,12 +33,14 @@ class ApiController extends Controller
     public function actions()
     {
         $return = [];
+        if (($this->message = $this->parseRequest()) === []) {
+            throw new BadRequestHttpException('Request parse failed.');
+        }
+        Yii::info($this->message, __METHOD__);
+
         $this->wechat = Wechat::createByCondition(['hash' => Yii::$app->request->getQueryParam('hash')]);
         if ($this->wechat !== null && $this->wechat->checkSignature()) {
-            if (($this->message = $this->parseRequest()) === []) {
-                throw new BadRequestHttpException('Request parse failed.');
-            }
-            Yii::info($this->message, __METHOD__);
+            $this->defaultResponseText = $this->wechat->model->default;
             $params = $this->match();
             foreach ($params as $param) {
                 if (isset($param['processor'])) {
@@ -61,7 +65,7 @@ class ApiController extends Controller
      */
     public function actionIndex()
     {
-        return;
+        return $this->responseText($this->defaultResponseText);
     }
 
     /**

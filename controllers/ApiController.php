@@ -23,6 +23,11 @@ class ApiController extends Controller
      */
     public $wechat;
 
+    /**
+     * 解析微信请求的消息, 并分配action
+     * @return array
+     * @throws \yii\web\BadRequestHttpException
+     */
     public function actions()
     {
         $return = [];
@@ -31,6 +36,7 @@ class ApiController extends Controller
             if (($this->message = $this->parseRequest()) === []) {
                 throw new BadRequestHttpException('Request parse failed.');
             }
+            Yii::info($this->message, __METHOD__);
             $params = $this->match();
             foreach ($params as $param) {
                 if (isset($param['processor'])) {
@@ -41,6 +47,7 @@ class ApiController extends Controller
                         $actionClass = $param['processor'];
                     }
                     if (is_subclass_of($actionClass, Action::className())) {
+                        Yii::info($param, __METHOD__);
                         $return[$this->defaultAction] = $actionClass;
                     }
                 }
@@ -221,7 +228,7 @@ class ApiController extends Controller
             'FromUserName' => $this->message['to'],
             'ToUserName' => $this->message['from']
         ], $data);
-
+        Yii::info($data, __METHOD__);
         $response = Yii::$app->response;
         $response->format = Response::FORMAT_XML;
         if (is_array($response->formatters[$response->format])) {

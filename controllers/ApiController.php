@@ -23,8 +23,6 @@ class ApiController extends Controller
      */
     public $wechat;
 
-    public $defaultResponseText;
-
     /**
      * 解析微信请求的消息, 并分配action
      * @return array
@@ -33,39 +31,44 @@ class ApiController extends Controller
     public function actions()
     {
         $return = [];
-        if (($this->message = $this->parseRequest()) === []) {
-            throw new BadRequestHttpException('Request parse failed.');
-        }
-        Yii::info($this->message, __METHOD__);
 
-        $this->wechat = Wechat::createByCondition(['hash' => Yii::$app->request->getQueryParam('hash')]);
-        if ($this->wechat !== null && $this->wechat->checkSignature()) {
-            $this->defaultResponseText = $this->wechat->model->default;
+        $request = Yii::$app->request;
+        $response = Yii::$app->response;
+
+        if ($request->method == 'GET') {
+            $response->content = $request->getQueryParam('echostr');
+            return Yii::$app->end();
+        } elseif ($request->method == 'POST') {
+            if (($this->message = $this->parseRequest()) === []) {
+                $response->content = 'Request Failed';
+                return Yii::$app->end();
+            }
+            Yii::info($this->message, __METHOD__);
+
+            $this->wechat = Wechat::createByCondition(['hash' => $request->getQueryParam('hash')]);
+            if (!$this->wechat || !$this->wechat->checkSignature()) {
+                $response->content = 'Access Denied!';
+                return Yii::$app->end();
+            }
+
             $params = $this->match();
             foreach ($params as $param) {
-                if (isset($param['processor'])) {
-                    if (strpos($param['processor'], '\\') === false && Yii::$app->hasModule($param['processor'])) {
-                        $module = Yii::$app->getModule($param['processor']);
-                        $actionClass = ltrim($module->controllerNamespace . '\wechat\ApiAction', '\\');
-                    } else {
-                        $actionClass = $param['processor'];
-                    }
-                    if (is_subclass_of($actionClass, Action::className())) {
-                        Yii::info($param, __METHOD__);
-                        $return[$this->defaultAction] = $actionClass;
-                    }
+                if (!isset($param['processor'])) {
+                    continue;
+                } elseif (strpos($param['processor'], '\\') === false && Yii::$app->hasModule($param['processor'])) {
+                    $module = Yii::$app->getModule($param['processor']);
+                    $actionClass = ltrim($module->controllerNamespace . '\wechat\ApiAction', '\\');
+                } else {
+                    $actionClass = $param['processor'];
+                }
+                if (is_subclass_of($actionClass, Action::className())) {
+                    Yii::info($param, __METHOD__);
+                    $return[$this->defaultAction] = $actionClass;
+                    break;
                 }
             }
         }
         return $return;
-    }
-
-    /**
-     * 默认回复空内容
-     */
-    public function actionIndex()
-    {
-        return $this->responseText($this->defaultResponseText);
     }
 
     /**

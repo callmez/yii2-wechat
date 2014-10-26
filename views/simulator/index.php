@@ -158,7 +158,7 @@ $this->title = '微信请求模拟器';
         </div>
         <div class="col-sm-6">
             <div id="preview" style="max-width:300px">
-                <div class="page-header"><h4>预览效果</h4></div>
+                <div class="page-header"><h4>预览效果 <small><a id="cleanPreview" href="javascript:;">清空记录</a></small></h4></div>
             </div>
         </div>
     </div>
@@ -402,10 +402,14 @@ $('[name=type]').each(function(){
     }
 }).eq(0).click();
 
+//插入选择的公众号值
 $('[name=wechat]').change(function(){
     $('[name=to]').val($('option:selected', this).data('orginal'));
 });
 
+$('#previewClean').click(function(){
+    $('#prview').empty();
+})
 //提交表单
 $('#wechatForm').submit(function(e){
     e.preventDefault();

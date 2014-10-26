@@ -15,28 +15,24 @@ use yii\widgets\ActiveForm;
         ],
         'fieldConfig' => [
             'labelOptions' => [
-                'class' => 'control-label col-sm-2'
+                'class' => 'control-label col-sm-3'
             ],
-            'template' => "{label}\n<div class=\"col-sm-5\">{input}</div>\n<div class=\"col-sm-5\">{hint}\n{error}</div>"
+            'template' => "{label}\n<div class=\"col-sm-5\">{input}</div>\n<div class=\"col-sm-4\">{hint}\n{error}</div>"
         ]
     ]); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 40]) ?>
-
-    <?= $form->field($model, 'hash')->textInput(['maxlength' => 5]) ?>
-
-    <?= $form->field($model, 'token')->textInput(['maxlength' => 32]) ?>
-
+    <?= $form->field($model, 'type')->radioList($model::$types) ?>
+    <?= $form->field($model, 'token')->textInput(['maxlength' => 50]) ?>
+    <?= $form->field($model, 'encoding_type')->radioList($model::$encodingTypes) ?>
+    <?= $form->field($model, 'encoding_aes_key')->textInput(['maxlength' => 43]) ?>
+    <?= $form->field($model, 'app_id')->textInput(['maxlength' => 50]) ?>
+    <?= $form->field($model, 'app_secret')->textInput(['maxlength' => 50]) ?>
     <?= $form->field($model, 'account')->textInput(['maxlength' => 30]) ?>
-
     <?= $form->field($model, 'orginal')->textInput(['maxlength' => 40]) ?>
 
-    <?= $form->field($model, 'app_id')->textInput(['maxlength' => 50]) ?>
-
-    <?= $form->field($model, 'app_secret')->textInput(['maxlength' => 50]) ?>
-
     <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="col-sm-offset-3 col-sm-10">
             <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
         </div>
     </div>

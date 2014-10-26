@@ -2,13 +2,13 @@
 
 namespace callmez\wechat\controllers\admin;
 
-use callmez\wechat\models\LoginForm;
 use Yii;
+use yii\web\Controller;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\WechatSearch;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use callmez\wechat\models\AccountForm;
 
 /**
  * WechatController implements the CRUD actions for Wechat model.
@@ -62,12 +62,14 @@ class WechatController extends Controller
     public function actionCreate()
     {
         $model = new Wechat();
+        $accountModel = new AccountForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->render('create', [
+            return $this->render('update', [
                 'model' => $model,
+                'accountModel' => $accountModel
             ]);
         }
     }
@@ -81,14 +83,14 @@ class WechatController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $loginModel = new LoginForm();
+        $accountModel = new AccountForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
-                'loginModel' => $loginModel
+                'accountModel' => $accountModel
             ]);
         }
     }

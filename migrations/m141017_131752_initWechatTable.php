@@ -20,9 +20,11 @@ class m141017_131752_initWechatTable extends Migration
             'access_token' => Schema::TYPE_STRING . "(600) NOT NULL DEFAULT '' COMMENT '访问微信服务验证token'",
             'account' => Schema::TYPE_STRING . "(30) NOT NULL DEFAULT '' COMMENT '微信号'",
             'orginal' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '原始ID'",
+            'type' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '公众号类型'",
             'app_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppID'",
             'app_secret' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppSecret'",
-            'default' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '默认回复文字'",
+            'encoding_type' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '消息加密方式'",
+            'encoding_aes_key' => Schema::TYPE_STRING . "(43) NOT NULL DEFAULT '' COMMENT '消息加密秘钥EncodingAesKey'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
@@ -69,7 +71,6 @@ class m141017_131752_initWechatTable extends Migration
             'orginal' => 'gh_c644bb981dee',
             'app_id' => 'wx2ef4c6ce95a2b30f',
             'app_secret' => '96916d01a08d154dd64c261eef3dea00',
-            'default' => '欢迎关注画卷人生'
         ]);
         $wechat->save();
 

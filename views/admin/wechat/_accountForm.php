@@ -9,9 +9,9 @@ use yii\widgets\ActiveForm;
         ],
         'fieldConfig' => [
             'labelOptions' => [
-                'class' => 'control-label col-sm-2'
+                'class' => 'control-label col-sm-3'
             ],
-            'template' => "{label}\n<div class=\"col-sm-4\">{input}</div>\n<div class=\"col-sm-6\">{hint}\n{error}</div>"
+            'template' => "{label}\n<div class=\"col-sm-4\">{input}</div>\n<div class=\"col-sm-5\">{hint}\n{error}</div>"
         ]
     ]); ?>
 
@@ -20,7 +20,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'password')->textInput(['maxlength' => 5]) ?>
 
     <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
+        <div class="col-sm-offset-3 col-sm-10">
             <?= Html::submitButton('提交', ['class' => 'btn btn-primary']) ?>
         </div>
     </div>

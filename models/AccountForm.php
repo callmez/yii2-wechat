@@ -4,10 +4,10 @@ namespace callmez\wechat\models;
 use yii\base\Model;
 
 /**
- * 微信官方后台登录表单
+ * 微信官方后台账户表单
  * @package callmez\wechat\models
  */
-class LoginForm extends Model
+class AccountForm extends Model
 {
     public $username;
     public $password;
@@ -19,4 +19,11 @@ class LoginForm extends Model
         ];
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'username' => '公众平台用户名',
+            'password' => '公众平台密码'
+        ];
+    }
 }

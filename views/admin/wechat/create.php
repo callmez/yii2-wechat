@@ -14,8 +14,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
-        'model' => $model,
+    <?= Tabs::widget([
+        'items' => [
+            [
+                'label' => '普通模式',
+                'content' => $this->render('_form', [
+                        'model' => $model,
+                    ]),
+                'active' => true
+            ],
+            [
+                'class' => 'nav-pane fade',
+                'label' => '自动获取',
+                'content' => $this->render('_accountForm', [
+                        'model' => $accountModel,
+                    ]),
+            ]
+        ]
     ]) ?>
 
 </div>

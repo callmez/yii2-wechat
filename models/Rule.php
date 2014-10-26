@@ -15,7 +15,7 @@ class Rule extends ActiveRecord
 
     public static function tableName()
     {
-        return '{{%rule}}';
+        return '{{%wechat_rule}}';
     }
 
     public function rules()

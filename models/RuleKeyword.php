@@ -17,7 +17,7 @@ class RuleKeyword extends ActiveRecord
     const TYPE_REGULAR = 2;
     public static function tableName()
     {
-        return '{{%rule_keyword}}';
+        return '{{%wechat_rule_keyword}}';
     }
 
     public function rules()

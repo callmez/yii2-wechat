@@ -103,6 +103,10 @@ class Wechat extends ActiveRecord
             'app_secret' => '公众号AppSecret',
             'encoding_type' => '公众号消息加密方式',
             'encoding_aes_key' => '公众号消息加密秘钥',
+            'address' => '地址',
+            'description' => '公众号描述',
+            'avatar' => '头像',
+            'qr_code' => '二维码',
             'created_at' => '创建时间',
             'updated_at' => '更新时间'
         ];

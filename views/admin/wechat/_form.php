@@ -32,8 +32,12 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'orginal')->textInput(['maxlength' => 40]) ?>
     <?= $form->field($model, 'address')->textInput(['maxlength' => 255]) ?>
     <?= $form->field($model, 'description')->textarea(['maxlength' => 255]) ?>
-    <?= $form->field($model, 'avatar')->textInput(['maxlength' => 255]) ?>
-    <?= $form->field($model, 'qr_code')->textInput(['maxlength' => 255]) ?>
+    <?= $form->field($model, 'avatar', [
+        'template' => "{label}\n<div class=\"col-sm-3\">{input}</div>\n<div class=\"col-sm-4\">{hint}\n{error}</div>"
+    ])->textInput(['maxlength' => 255]) ?>
+    <?= $form->field($model, 'qr_code', [
+        'template' => "{label}\n<div class=\"col-sm-3\">{input}</div>\n<div class=\"col-sm-4\">{hint}\n{error}</div>"
+    ])->textInput(['maxlength' => 255]) ?>
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-10">
             <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

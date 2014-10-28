@@ -30,7 +30,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'name',
-            'hash',
             'token',
             [
                 'attribute' => 'access_token',
@@ -41,7 +40,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'orginal',
             'app_id',
             'app_secret',
-            'default',
             'created_at:datetime',
             'updated_at:datetime',
         ],

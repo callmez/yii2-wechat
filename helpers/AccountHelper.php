@@ -14,6 +14,13 @@ class AccountHelper
     const SETTING_URL = '/cgi-bin/settingpage?t=setting/index&action=index&lang=zh_CN&token={token}';
     const ADVANCED_URL = '/advanced/advanced?action=dev&t=advanced/dev&token={token}&lang=zh_CN';
 
+    /**
+     * 微信后台登录
+     * @param $username
+     * @param $password
+     * @param null $imgCode
+     * @return array|bool|float|int|mixed|null|\stdClass|string
+     */
     public static function login($username, $password, $imgCode = null)
     {
         $password = md5($password);
@@ -61,6 +68,11 @@ class AccountHelper
         return true;
     }
 
+    /**
+     * 获取微信后台基本设置
+     * @param $username
+     * @return array|bool
+     */
     public static function getBaseInfo($username)
     {
         $cacheKey = 'wechat_account_' . $username;
@@ -84,7 +96,7 @@ class AccountHelper
             } else {
                 $value = trim($dom->text());
             }
-            $return[$domData[$i]] = empty($value) || $value == '未填写' ? null : $value;
+            !empty($value) && $value != '未填写' && $return[$domData[$i]] = $value;
         });
 
         if (isset($return['type']) && isset($return['type_status'])) { // 公众号类型判断, 赞不能判断企业号
@@ -101,14 +113,31 @@ class AccountHelper
             '{token}' => $auth['token']
         ]));
         if ($return['type'] == Wechat::TYPE_SUBSCRIBE) {
-            $domData = ['api', 'token', 'encoding_aes_key', 'encoding_typ'];
+            $domData = ['api', 'token', 'encoding_aes_key', 'encoding_type'];
         } else {
-            $domData = ['app_id', 'app_sceret', 'api', 'token', 'encoding_aes_key', 'encoding_typ'];
+            $domData = ['app_id', 'app_sceret', 'api', 'token', 'encoding_aes_key', 'encoding_type'];
         }
         $crawler->filter('.frm_controls')->each(function($dom, $i) use ($domData, &$return) {
             $value = trim($dom->html());
             $return[$domData[$i]] = empty($value) || $value == '未填写' ? null : $value;
         });
+
+        if (isset($return['encoding_type'])) { // 消息加密方式
+            switch ($return['encoding_type']) {
+                case '明文模式':
+                    $return['encoding_type'] = Wechat::ENCODING_NORMAL;
+                    break;
+                case '兼容模式':
+                    $return['encoding_type'] = Wechat::ENCODING_COMPATIBLE;
+                    break;
+                case '安全模式':
+                    $return['encoding_type'] = Wechat::ENCODING_SAFE;
+                    break;
+                default:
+                    $return['encoding_type'] = null;
+            }
+        }
+
         return $return;
     }
 

@@ -62,8 +62,7 @@ class WechatController extends Controller
     public function actionCreate()
     {
         $model = new Wechat();
-        $accountModel = new AccountForm();
-
+        $accountModel = $this->loadAccountModel($model);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
@@ -122,5 +121,22 @@ class WechatController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    protected function loadAccountModel(Wechat $model)
+    {
+        $accountModel = new AccountForm();
+        $post = Yii::$app->request->post();
+        if ($accountModel->load($post) && $accountModel->login()) {
+            $modelName = $model->formName();
+            foreach($accountModel->parse() as $k => $v) {
+                if ($model->hasAttribute($k)) {
+                    $post[$modelName][$k] = $v;
+                }
+            }
+            $accountModel = new AccountForm();
+            Yii::$app->request->setBodyParams($post);
+        }
+        return $accountModel;
     }
 }

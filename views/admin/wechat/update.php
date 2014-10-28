@@ -19,13 +19,15 @@ AdminAsset::register($this);
                 'content' => $this->render('_form', [
                         'model' => $model,
                     ]),
-                'active' => true
+                'active' => !$accountModel->hasErrors()
             ],
             [
                 'label' => '自动获取',
                 'content' => $this->render('_accountForm', [
                         'model' => $accountModel,
+                        'active' => $accountModel->hasErrors()
                     ]),
+                'active' => $accountModel->hasErrors()
             ]
         ]
     ]) ?>

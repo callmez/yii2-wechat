@@ -1,6 +1,7 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use callmez\wechat\helpers\AccountHelper;
 ?>
 <div class="wechat-form">
     <?php $form = ActiveForm::begin([
@@ -15,9 +16,18 @@ use yii\widgets\ActiveForm;
         ]
     ]); ?>
 
-    <?= $form->field($model, 'username')->textInput(['maxlength' => 40]) ?>
+    <?= $form->field($model, 'username')->textInput([
+        'id' => 'username'
+    ]) ?>
 
-    <?= $form->field($model, 'password')->textInput(['maxlength' => 5]) ?>
+    <?= $form->field($model, 'password')->passwordInput() ?>
+
+    <?= $form->field($model, 'imgCode', [
+        'options' => [
+            'class' => 'hide form-group'
+        ],
+        'template' => "{label}\n<div class=\"col-sm-2\">{input}</div>\n<div class=\"col-sm-5\"><img id=\"imgVerify\" /> <a id=\"getImgVerify\" href=\"javascript:;\">换一张</a>{hint}\n{error}</div>"
+    ]) ?>
 
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-10">
@@ -27,3 +37,18 @@ use yii\widgets\ActiveForm;
     <?php ActiveForm::end(); ?>
 
 </div>
+<?php
+$this->registerJs("
+var username = $('#username'),
+    imgVerify = $('#imgVerify'),
+    getImgVerify = $('#getImgVerify'),
+    verfyGen = function() {
+    var val = username.val();
+    if (val) {
+        imgVerify.attr('src', '" . AccountHelper::WEIXIN_ROOT . AccountHelper::CAPTCHA_URL . "?username=' + val +'&r='+Math.round(new Date().getTime()));
+        imgVerify.closest('.form-group').removeClass('hide');
+    }
+};
+username.blur(verfyGen);
+getImgVerify.click(verfyGen);
+");

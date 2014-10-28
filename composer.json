@@ -18,7 +18,7 @@
     "require": {
         "yiisoft/yii2": "*",
         "fabpot/goutte": "~2.0",
-        "callmez/yii2-storage": "dev-master"
+        "callmez/yii2-storage": "*"
     },
     "autoload": {
         "psr-4": {

@@ -143,6 +143,9 @@ class AccountHelper
 
     private static function getCrawler($client, $uri)
     {
+        //微信官方屏蔽了ssl2和ssl3, 启用更高级的ssl
+        $client->getClient()->setDefaultOption('config/curl/' . CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+        $client->getClient()->setDefaultOption('verify', false);
         return $client->request('GET', $uri, [], [], [
             'HTTP_REFERER' => self::WEIXIN_ROOT,
         ]);

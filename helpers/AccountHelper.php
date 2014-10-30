@@ -1,6 +1,8 @@
 <?php
 namespace callmez\wechat\helpers;
 
+use callmez\storage\helpers\StorageHelper;
+use callmez\storage\models\Storage;
 use callmez\wechat\models\Wechat;
 use Yii;
 use Goutte\Client;
@@ -138,6 +140,9 @@ class AccountHelper
             }
         }
 
+        if (!empty($return['avatar'])) {
+            Yii::$app->storageCollection->storage->
+        }
 
         return $return;
     }

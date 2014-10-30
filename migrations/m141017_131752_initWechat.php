@@ -6,7 +6,7 @@ use callmez\wechat\models\Wechat;
 use callmez\wechat\models\Rule;
 use callmez\wechat\models\RuleKeyword;
 
-class m141017_131752_initWechatTable extends Migration
+class m141017_131752_initWechat extends Migration
 {
     public function up()
     {
@@ -103,6 +103,6 @@ class m141017_131752_initWechatTable extends Migration
         $this->dropTable(Wechat::tableName());
         $this->dropTable(Rule::tableName());
         $this->dropTable(RuleKeyword::tableName());
-        return false;
+        return true;
     }
 }

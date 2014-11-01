@@ -141,7 +141,7 @@ class AccountHelper
         }
 
         if (!empty($return['avatar'])) {
-            Yii::$app->storageCollection->storage->
+//            Yii::$app->storageCollection->storage->
         }
 
         return $return;

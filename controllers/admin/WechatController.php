@@ -43,18 +43,6 @@ class WechatController extends Controller
     }
 
     /**
-     * Displays a single Wechat model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
      * Creates a new Wechat model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
@@ -64,7 +52,7 @@ class WechatController extends Controller
         $model = new Wechat();
         $accountModel = $this->loadAccountModel($model);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['update', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -85,7 +73,7 @@ class WechatController extends Controller
         $accountModel = new AccountForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['update', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,

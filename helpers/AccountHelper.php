@@ -140,8 +140,13 @@ class AccountHelper
             }
         }
 
-        if (!empty($return['avatar'])) {
-//            Yii::$app->storageCollection->storage->
+        if (!empty($return['avatar'])) { // 下载头像
+            self::getCrawler($client, $return['avatar']);
+            $return['avatar'] = $client->getResponse()->getContent()->getContents();
+        }
+        if (!empty($return['qr_code'])) { // 下载二维码
+            self::getCrawler($client, $return['qr_code']);
+            $return['qr_code'] = $client->getResponse()->getContent()->getContents();
         }
 
         return $return;

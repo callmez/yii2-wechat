@@ -2,6 +2,7 @@
 namespace callmez\wechat\helpers;
 
 use callmez\storage\helpers\StorageHelper;
+use callmez\storage\helpers\UploadHelper;
 use callmez\storage\models\Storage;
 use callmez\wechat\models\Wechat;
 use Yii;
@@ -89,7 +90,7 @@ class AccountHelper
         $crawler = self::getCrawler($client, self::WEIXIN_ROOT . strtr(self::SETTING_URL, [
             '{token}' => $auth['token']
         ]));
-        $domData = ['name', 'avatar', 'email', 'orginal', 'account', 'type', 'type_status', 'primary', 'description', 'address', 'qr_code'];
+        $domData = ['name', 'avatar', 'email', 'original', 'account', 'type', 'type_status', 'primary', 'description', 'address', 'qr_code'];
         $crawler->filter('.meta_content')->each(function($dom, $i) use ($domData, &$return) {
             if ($domData[$i] == 'avatar') {
                 $value = self::WEIXIN_ROOT . trim($dom->filter('img')->attr('src'));
@@ -140,13 +141,23 @@ class AccountHelper
             }
         }
 
+        $storage = Yii::$app->storage;//存储在默认存储中
+        $baseFileName = md5(isset($return['original']) ? $return['original'] : uniqid());
         if (!empty($return['avatar'])) { // 下载头像
             self::getCrawler($client, $return['avatar']);
-            $return['avatar'] = $client->getResponse()->getContent()->getContents();
+            $return['avatar'] = UploadHelper::generateUniquePath('jpg', 'wechat/account/avatar_{key}.jpg');
+            $storage->put(
+                $return['avatar'],
+                $client->getResponse()->getContent()->getContents()
+            );
         }
         if (!empty($return['qr_code'])) { // 下载二维码
             self::getCrawler($client, $return['qr_code']);
-            $return['qr_code'] = $client->getResponse()->getContent()->getContents();
+            $return['qr_code'] = "wechat/account/qrcode_{$baseFileName}.jpg";
+            $storage->put(
+                $return['qr_code'],
+                $client->getResponse()->getContent()->getContents()
+            );
         }
 
         return $return;

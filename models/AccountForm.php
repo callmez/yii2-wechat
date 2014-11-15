@@ -41,6 +41,10 @@ class AccountForm extends Model
         return true;
     }
 
+    /**
+     * 登录后获取公众号信息
+     * @return array|bool
+     */
     public function parse()
     {
         return $this->hasErrors() ? false : AccountHelper::getBaseInfo($this->username);

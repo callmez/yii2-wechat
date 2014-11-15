@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'hash',
             //'token',
             // 'account',
-            // 'orginal',
+            // 'original',
             // 'app_id',
             // 'app_secret',
             // 'default',

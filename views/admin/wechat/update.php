@@ -18,6 +18,7 @@ AdminAsset::register($this);
                 'label' => '普通模式',
                 'content' => $this->render('_form', [
                         'model' => $model,
+                        'uploader' => $uploader
                     ]),
                 'active' => !$accountModel->hasErrors()
             ],

@@ -3,12 +3,17 @@
 namespace callmez\wechat\controllers\admin;
 
 use Yii;
+use yii\web\Response;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
+use yii\base\InvalidCallException;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\WechatSearch;
 use callmez\wechat\models\AccountForm;
+use callmez\storage\helpers\UploadHelper;
+use callmez\storage\uploaders\AbstractUploader;
 
 /**
  * WechatController implements the CRUD actions for Wechat model.
@@ -38,7 +43,7 @@ class WechatController extends Controller
 
         return $this->render('index', [
             'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider
         ]);
     }
 
@@ -56,7 +61,8 @@ class WechatController extends Controller
         } else {
             return $this->render('update', [
                 'model' => $model,
-                'accountModel' => $accountModel
+                'accountModel' => $accountModel,
+                'uploader' => AbstractUploader::getInstance(Yii::$app->storage->get())
             ]);
         }
     }
@@ -70,16 +76,19 @@ class WechatController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $accountModel = new AccountForm();
+        $accountModel = $this->loadAccountModel($model);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['update', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-                'accountModel' => $accountModel
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            $this->uploadImage($model);
+            if ($model->save()) {
+                return $this->redirect(['update', 'id' => $model->id]);
+            }
         }
+        return $this->render('update', [
+            'model' => $model,
+            'accountModel' => $accountModel,
+            'uploader' => AbstractUploader::getInstance(Yii::$app->storage->get())
+        ]);
     }
 
     /**
@@ -111,6 +120,11 @@ class WechatController extends Controller
         }
     }
 
+    /**
+     * 通过微信管理平台账户获取微信信息
+     * @param Wechat $model
+     * @return AccountForm
+     */
     protected function loadAccountModel(Wechat $model)
     {
         $accountModel = new AccountForm();
@@ -126,5 +140,63 @@ class WechatController extends Controller
             Yii::$app->request->setBodyParams($post);
         }
         return $accountModel;
+    }
+
+    /**
+     * 上传二维码和图片
+     * @return string
+     * @throws \yii\base\InvalidCallException
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function uploadImage(Wechat $model)
+    {
+        if ($storageName = Yii::$app->request->post('storage')) { // 上传图片
+            if (!Yii::$app->storage->has($storageName)) {
+                throw new InvalidCallException("The {$storageName} storage is not exists.");
+            }
+            $storage = Yii::$app->storage->get($storageName);
+            $uploader = AbstractUploader::getInstance($storage);
+            if (!$uploader->isUploaded()) {
+                throw new NotFoundHttpException("Upload error.");
+            }
+            if ($uploader->validate() && $uploader->save($path = $this->getUploadPath($model, $uploader))) {
+                $message = [
+                    'status' => 'success',
+                    'message' => [
+                        'value' => "{$storageName}://" . ltrim($path, '/'),
+                        'thumbnail' => $storage->thumbnail($path, [
+                            'width' => 100
+                        ])
+                    ]
+                ];
+            } else {
+                $message = [
+                    'status' => 'error',
+                    'message' => $uploader->getError()
+                ];
+            }
+
+            $response = Yii::$app->response;
+            $response->format = Response::FORMAT_JSON;
+            $response->data = $message;
+            Yii::$app->end(0, $response);
+        }
+    }
+
+    /**
+     * 生成上传路径
+     * @param Wechat $model
+     * @param AbstractUploader $uploader
+     * @return string
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function getUploadPath(Wechat $model, AbstractUploader $uploader)
+    {
+        $attribute = isset(Yii::$app->request->post($model->formName())['avatar']) ? 'avatar' : 'qr_code';
+        return UploadHelper::generateUniquePath(
+            $uploader->getName(),
+            "/wechat/account/{$attribute}_{key}.jpg",
+            $model->original ? md5($model->original) : null
+        );
     }
 }

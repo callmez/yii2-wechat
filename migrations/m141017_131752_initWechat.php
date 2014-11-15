@@ -19,7 +19,7 @@ class m141017_131752_initWechat extends Migration
             'token' => Schema::TYPE_STRING . "(32) NOT NULL DEFAULT '' COMMENT '微信服务访问验证token'",
             'access_token' => Schema::TYPE_STRING . "(600) NOT NULL DEFAULT '' COMMENT '访问微信服务验证token'",
             'account' => Schema::TYPE_STRING . "(30) NOT NULL DEFAULT '' COMMENT '微信号'",
-            'orginal' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '原始ID'",
+            'original' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '原始ID'",
             'type' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '公众号类型'",
             'app_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppID'",
             'app_secret' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppSecret'",
@@ -74,7 +74,7 @@ class m141017_131752_initWechat extends Migration
 //                'expire' => 1413633588
 //            ],
 //            'account' => 'myslynfsl',
-//            'orginal' => 'gh_c644bb981dee',
+//            'original' => 'gh_c644bb981dee',
 //            'app_id' => 'wx2ef4c6ce95a2b30f',
 //            'app_secret' => '96916d01a08d154dd64c261eef3dea00',
 //        ]);

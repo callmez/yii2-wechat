@@ -29,7 +29,7 @@ $this->title = '微信请求模拟器';
 
                         foreach ($wechats as $k => $v) {
                             $wechatNames[$k] = $v['name'];
-                            $wechatApiLinks[$k]['data']['orginal'] = $v['orginal'];
+                            $wechatApiLinks[$k]['data']['original'] = $v['original'];
                             $wechatApiLinks[$k]['data']['api-link'] = WechatHelper::getApiLink([
                                 'hash' => $v['hash'],
                                 'token' => $v['token']
@@ -404,7 +404,7 @@ $('[name=type]').each(function(){
 
 //插入选择的公众号值
 $('[name=wechat]').change(function(){
-    $('[name=to]').val($('option:selected', this).data('orginal'));
+    $('[name=to]').val($('option:selected', this).data('original'));
 });
 
 $('#previewClean').click(function(){

@@ -7,14 +7,19 @@ use yii\base\InvalidParamException;
 
 class WechatHelper
 {
+    /**
+     * 获取微信接口地址
+     * @param array $data
+     * @return string
+     * @throws \yii\base\InvalidParamException
+     */
     public static function getApiLink(array $data)
     {
         if (!isset($data['token'])) {
             throw new InvalidParamException('The token property must be set.');
-        } else {
-            $token = $data['token'];
-            unset($data['token']);
         }
+        $token = $data['token'];
+        unset($data['token']);
         $nonce = Yii::$app->security->generateRandomString(5);
         $timestamp = $_SERVER['REQUEST_TIME'];
         $signArray = [$token, $timestamp, $nonce];
@@ -28,5 +33,4 @@ class WechatHelper
             'signature' => $signature
         ], $data));
     }
-
 }

@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use callmez\storage\helpers\StorageHelper;
+use callmez\storage\widgets\UploadInput;
 
 /* @var $this yii\web\View */
 /* @var $model callmez\wechat\models\Wechat */
@@ -11,7 +11,6 @@ use callmez\storage\helpers\StorageHelper;
 
 <div class="wechat-form">
     <?php $form = ActiveForm::begin([
-        'fieldClass' => 'callmez\storage\widgets\ActiveField',
         'options' => [
             'class' => 'form-horizontal'
         ],
@@ -19,7 +18,7 @@ use callmez\storage\helpers\StorageHelper;
             'labelOptions' => [
                 'class' => 'control-label col-sm-3'
             ],
-            'template' => "{label}\n<div class=\"col-sm-5\">{input}</div>\n<div class=\"col-sm-4\">{hint}\n{error}</div>"
+            'template' => "{label}\n<div class=\"col-sm-5\">\n{input}\n</div>\n<div class=\"col-sm-4\">\n{hint}\n{error}\n</div>"
         ]
     ]); ?>
 
@@ -31,16 +30,48 @@ use callmez\storage\helpers\StorageHelper;
     <?= $form->field($model, 'app_id')->textInput(['maxlength' => 50]) ?>
     <?= $form->field($model, 'app_secret')->textInput(['maxlength' => 50]) ?>
     <?= $form->field($model, 'account')->textInput(['maxlength' => 30]) ?>
-    <?= $form->field($model, 'orginal')->textInput(['maxlength' => 40]) ?>
+    <?= $form->field($model, 'original')->textInput(['maxlength' => 40]) ?>
     <?= $form->field($model, 'address')->textInput(['maxlength' => 255]) ?>
     <?= $form->field($model, 'description')->textarea(['maxlength' => 255]) ?>
-    <?= $form->field($model, 'avatar')->uploadInput() ?>
-    <?= $form->field($model, 'qr_code')->uploadInput() ?>
+    <?php $upload = [
+        'settings' => [
+            'autoUpload' => true,
+            'onFileComplete' => new \yii\web\JsExpression('onFileComplete')
+        ]
+    ] ?>
+    <?= UploadInput::widget([
+        'form' => $form,
+        'model' => $model,
+        'attribute' => 'avatar',
+        'uploader' => $uploader,
+        'upload' => $upload
+    ]) ?>
+    <?= UploadInput::widget([
+        'form' => $form,
+        'model' => $model,
+        'attribute' => 'qr_code',
+        'uploader' => $uploader,
+        'upload' => $upload
+    ]) ?>
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-10">
             <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
         </div>
     </div>
     <?php ActiveForm::end(); ?>
-
 </div>
+<?php
+$this->registerJs("
+function onFileComplete(evt, uiEvt)
+{
+    if (uiEvt.result.status !== 'success') {
+        alert(uiEvt.result.message || '上传失败');
+    }
+    $(this)
+        .find('[type=text]')
+        .val(uiEvt.result.message.value)
+        .end()
+        .find('img')
+        .attr('src', uiEvt.result.message.thumbnail + '?' + new Date().getTime());
+}
+");

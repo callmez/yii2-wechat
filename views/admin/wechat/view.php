@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw'
             ],
             'account',
-            'orginal',
+            'original',
             'app_id',
             'app_secret',
             'created_at:datetime',

@@ -20,6 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => '普通模式',
                 'content' => $this->render('_form', [
                         'model' => $model,
+                        'uploader' => $uploader
                     ]),
                 'active' => true
             ],

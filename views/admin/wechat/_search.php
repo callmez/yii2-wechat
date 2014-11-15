@@ -25,7 +25,7 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'account') ?>
 
-    <?php // echo $form->field($model, 'orginal') ?>
+    <?php // echo $form->field($model, 'original') ?>
 
     <?php // echo $form->field($model, 'app_id') ?>
 

@@ -1,7 +1,9 @@
 <?php
 namespace callmez\wechat\models;
 
+use Yii;
 use yii\db\ActiveRecord;
+use yii\validators\UniqueValidator;
 
 /**
  * 微信公众号
@@ -71,7 +73,8 @@ class Wechat extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'type', 'token',  'account', 'orginal', 'encoding_type'], 'required'],
+            [['name', 'type', 'token',  'account', 'original', 'encoding_type'], 'required'],
+            [['original'], 'unique'],
             [['type', 'encoding_type'], 'integer'],
             [['app_id', 'app_secret'], 'required', 'when' => function($model) {
                 return $model->type != Wechat::TYPE_SUBSCRIBE;
@@ -95,7 +98,7 @@ class Wechat extends ActiveRecord
     {
         return [
             'name' => '公众号名称',
-            'orginal' => '原始号',
+            'original' => '原始号',
             'account' => '微信号',
             'type' => '公众号接口类型',
             'token' => '微信Token',
@@ -114,11 +117,11 @@ class Wechat extends ActiveRecord
 
     public function beforeSave($insert)
     {
-        $return = parent::beforeSave($insert);
-        if ($return) {
-            $this->access_token = serialize($this->access_token);
+        $this->access_token = serialize($this->access_token);
+        if ($insert) {
+            $this->generateUniqueHashValue();
         }
-        return $return;
+        return parent::beforeSave($insert);
     }
 
     public function afterFind()
@@ -127,4 +130,14 @@ class Wechat extends ActiveRecord
         return parent::afterFind();
     }
 
+    /**
+     * 生成唯一的hash值
+     */
+    protected function generateUniqueHashValue()
+    {
+        $this->hash = Yii::$app->security->generateRandomString(5);
+        if (static::find()->where(['hash' => $this->hash])->exists()) {
+            $this->generateHashValue();
+        }
+    }
 }

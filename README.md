@@ -17,6 +17,11 @@ Yii-wechat
 
 ![default](https://cloud.githubusercontent.com/assets/1625891/4747720/f8927018-5a60-11e4-8e07-d4415f798426.png)
 
+  - 微信多公众号后台管理
+
+![admin](https://cloud.githubusercontent.com/assets/1625891/5060399/706aa818-6d8e-11e4-8423-ccfe01330293.png)
+![admin－wechat](https://cloud.githubusercontent.com/assets/1625891/5060502/9fadac32-6d94-11e4-9383-dd3e172b5a66.jpg)
+
 安装
 ---
 

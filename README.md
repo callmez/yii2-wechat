@@ -20,7 +20,7 @@ Yii-wechat
   - 微信多公众号后台管理
 
 ![admin](https://cloud.githubusercontent.com/assets/1625891/5060399/706aa818-6d8e-11e4-8423-ccfe01330293.png)
-![admin－wechat](https://cloud.githubusercontent.com/assets/1625891/5060502/9fadac32-6d94-11e4-9383-dd3e172b5a66.jpg)
+![admin－wechat](https://cloud.githubusercontent.com/assets/1625891/5060522/1da613f8-6d96-11e4-8653-2b544cac952a.jpg)
 
 安装
 ---

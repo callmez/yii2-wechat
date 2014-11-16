@@ -41,6 +41,30 @@ Yii-wechat
         ...
     }
     ```
+2. 适合深度定制 在命令行界面下 进入`modules`文件夹执行命令`git clone https://github.com/callmez/yii2-wechat.git` 并在`composer.json`中声明命名空间路径
+  ```json
+    ...
+    "autoload": {
+        ...
+        "psr-4": {"callmez\\wechat\\": "modules/wechat"}
+        ...
+    },
+    ...
+  ```
+
+### 安装完后, 在`config/web.php` 文件中配置`module`配置
+
+```php
+  ...
+  `modules` => [
+    ...
+    'wechat' => [
+        'class' => 'callmez\wechat\Module',
+    ]
+    ...
+  ]
+  ...
+```
 
 注意
 ----

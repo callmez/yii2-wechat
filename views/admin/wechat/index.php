@@ -7,39 +7,53 @@ use yii\grid\GridView;
 /* @var $searchModel callmez\wechat\models\WechatSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Wechats';
+$this->title = '公众号管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="wechat-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php  echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Wechat', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('添加公众号', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
+        'layout' => "{summary}\n<div class='table-responsive'>\n{items}\n</div>\n{pager}",
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
+            [
+                'attribute' => 'id',
+                'options' => [
+                    'width' => 30
+                ]
+            ],
             'name',
-            'hash',
-            //'token',
-            // 'account',
-            // 'original',
-            // 'app_id',
-            // 'app_secret',
-            // 'default',
-            'created_at:datetime',
-            'updated_at:datetime',
+            [
+                'attribute' => 'hash',
+                'options' => [
+                    'width' => 50
+                ]
+            ],
+            [
+                'attribute' => 'created_at',
+                'format' => 'datetime',
+                'options' => [
+                    'width' => 150
+                ]
+            ],
+            [
+                'attribute' => 'updated_at',
+                'format' => 'datetime',
+                'options' => [
+                    'width' => 150
+                ]
+            ],
             [
                 'class' => 'yii\grid\ActionColumn',
+                'template' => '{update} {delete}',
                 'options' => [
-                    'width' => 67
+                    'width' => 50
                 ]
             ],
         ],

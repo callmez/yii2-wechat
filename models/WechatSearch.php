@@ -19,7 +19,7 @@ class WechatSearch extends Wechat
     {
         return [
             [['id', 'created_at', 'updated_at'], 'integer'],
-            [['name', 'hash', 'token', 'access_token', 'account', 'original', 'app_id', 'app_secret', 'default'], 'safe'],
+            [['name', 'hash', 'token', 'access_token', 'account', 'original', 'app_id', 'app_secret'], 'safe'],
         ];
     }
 
@@ -64,8 +64,7 @@ class WechatSearch extends Wechat
             ->andFilterWhere(['like', 'account', $this->account])
             ->andFilterWhere(['like', 'original', $this->original])
             ->andFilterWhere(['like', 'app_id', $this->app_id])
-            ->andFilterWhere(['like', 'app_secret', $this->app_secret])
-            ->andFilterWhere(['like', 'default', $this->default]);
+            ->andFilterWhere(['like', 'app_secret', $this->app_secret]);
 
         return $dataProvider;
     }

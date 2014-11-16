@@ -81,6 +81,7 @@ class WechatController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $this->uploadImage($model);
             if ($model->save()) {
+                Yii::$app->session->setFlash('success', '修改成功!');
                 return $this->redirect(['update', 'id' => $model->id]);
             }
         }

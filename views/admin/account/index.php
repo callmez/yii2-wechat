@@ -51,9 +51,16 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{update} {delete}',
+                'template' => '{manage} {update} {delete}',
+                'buttons' => [
+                    'manage' => function ($url, $model) {
+                        return Html::a('<span class="text-danger glyphicon glyphicon glyphicon-cog"></span>', $url, [
+                            'title' => '管理公众号'
+                        ]);
+                    }
+                ],
                 'options' => [
-                    'width' => 50
+                    'width' => 70
                 ]
             ],
         ],

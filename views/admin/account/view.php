@@ -1,0 +1,1 @@
+<?= $wechat->model->name ?>

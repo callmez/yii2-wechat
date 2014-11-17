@@ -29,11 +29,16 @@ class Wechat extends \callmez\wechat\sdk\Wechat
         if ($this->token === null) {
             $this->token = $this->model->token;
         }
-        $this->setAccessToken($this->model->access_token);
+        !empty($this->model->access_token) && $this->setAccessToken($this->model->access_token);
         parent::init();
     }
 
-    public static function createByCondition(array $condition)
+    /**
+     * 查询Wechat model类并返回实例
+     * @param array $condition
+     * @return bool|object
+     */
+    public static function instanceByCondition($condition)
     {
         $wechat = \callmez\wechat\models\Wechat::findOne($condition);
         return $wechat ? Yii::createObject([

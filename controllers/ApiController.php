@@ -4,13 +4,13 @@ namespace callmez\wechat\controllers;
 use Yii;
 use yii\base\Action;
 use yii\web\Response;
-use yii\web\Controller;
 use yii\base\InvalidCallException;
 use yii\web\BadRequestHttpException;
-use callmez\wechat\components\Wechat;
+use callmez\wechat\models\Wechat;
 use callmez\wechat\models\RuleKeyword;
+use callmez\wechat\components\WechatController;
 
-class ApiController extends Controller
+class ApiController extends WechatController
 {
     /**
      * 微信服务器请求内容
@@ -45,7 +45,7 @@ class ApiController extends Controller
             }
             Yii::info($this->message, __METHOD__);
 
-            $this->wechat = Wechat::createByCondition(['hash' => $request->getQueryParam('hash')]);
+            $this->wechat = Wechat::instanceByCondition(['hash' => $request->getQueryParam('hash')]);
             if (!$this->wechat || !$this->wechat->checkSignature()) {
                 $response->content = 'Access Denied!';
                 return Yii::$app->end();

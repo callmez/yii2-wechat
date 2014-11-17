@@ -54,8 +54,8 @@ use callmez\storage\widgets\UploadInput;
         'upload' => $upload
     ]) ?>
     <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-10">
-            <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <div class="col-sm-offset-3 col-sm-5">
+            <?= Html::submitButton($model->isNewRecord ? '提交设置' : '提交修改', ['class' => 'btn btn-block btn-primary']) ?>
         </div>
     </div>
     <?php ActiveForm::end(); ?>

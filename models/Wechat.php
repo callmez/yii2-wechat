@@ -13,6 +13,14 @@ use yii\validators\UniqueValidator;
 class Wechat extends ActiveRecord
 {
     /**
+     * 激活状态
+     */
+    const STATUS_ACTIVE = 0;
+    /**
+     * 删除状态
+     */
+    const STATUS_DELETE = -1;
+    /**
      * 普通订阅号
      */
     const TYPE_SUBSCRIBE = 0;
@@ -127,7 +135,7 @@ class Wechat extends ActiveRecord
 
     public function afterFind()
     {
-        $this->access_token = unserialize($this->access_token);
+        $this->access_token = unserialize($this->access_token) ?: [];
         return parent::afterFind();
     }
 

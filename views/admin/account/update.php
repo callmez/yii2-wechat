@@ -4,7 +4,7 @@ use yii\helpers\Html;
 use yii\bootstrap\Tabs;
 use callmez\wechat\assets\AdminAsset;
 AdminAsset::register($this);
-$this->title = $model->name;
+$this->title = $model->name ?: '添加公众号';
 $this->params['breadcrumbs'][] = ['label' => '公众号管理', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

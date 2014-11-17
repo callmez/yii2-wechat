@@ -4,7 +4,6 @@ namespace callmez\wechat\controllers\admin;
 
 use Yii;
 use yii\web\Response;
-use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\base\InvalidCallException;
@@ -12,17 +11,18 @@ use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\WechatSearch;
 use callmez\wechat\models\AccountForm;
+use callmez\wechat\components\AdminController;
 use callmez\storage\helpers\UploadHelper;
 use callmez\storage\uploaders\AbstractUploader;
 
 /**
- * WechatController implements the CRUD actions for Wechat model.
+ * AccountController implements the CRUD actions for Wechat model.
  */
-class WechatController extends Controller
+class AccountController extends AdminController
 {
     public function behaviors()
     {
-        return [
+        return parent::behaviors() + [
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -54,17 +54,7 @@ class WechatController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Wechat();
-        $accountModel = $this->loadAccountModel($model);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['update', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-                'accountModel' => $accountModel,
-                'uploader' => AbstractUploader::getInstance(Yii::$app->storage->get())
-            ]);
-        }
+        return $this->update(new Wechat());
     }
 
     /**
@@ -75,21 +65,7 @@ class WechatController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        $accountModel = $this->loadAccountModel($model);
-
-        if ($model->load(Yii::$app->request->post())) {
-            $this->uploadImage($model);
-            if ($model->save()) {
-                Yii::$app->session->setFlash('success', '修改成功!');
-                return $this->redirect(['update', 'id' => $model->id]);
-            }
-        }
-        return $this->render('update', [
-            'model' => $model,
-            'accountModel' => $accountModel,
-            'uploader' => AbstractUploader::getInstance(Yii::$app->storage->get())
-        ]);
+        return $this->update($this->findModel($id));
     }
 
     /**
@@ -106,6 +82,38 @@ class WechatController extends Controller
     }
 
     /**
+     * 显示公众号详情
+     * @param int $id
+     * @return string
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function actionView($id = null)
+    {
+        if (!($id === null && $wechat = $this->getManageWechat()) && !($wechat = $this->getWechat($id))) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+        return $this->render('view', [
+            'wechat' => $wechat
+        ]);
+    }
+
+    /**
+     * 设置当前管理的公众好
+     * @param $id
+     * @return Response
+     * @throws \yii\web\NotFoundHttpException
+     */
+    public function actionManage($id)
+    {
+        if (!($wechat = $this->getWechat($id))) {
+            throw new NotFoundHttpException('The requested page does not exist.');
+        }
+        $this->setManageWechat($wechat);
+        Yii::$app->set('success', '设置管理公众号, 您现在可以管理该公众号了');
+        return $this->redirect(['view']);
+    }
+
+    /**
      * Finds the Wechat model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
@@ -119,6 +127,24 @@ class WechatController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function update(Wechat $model)
+    {
+        $accountModel = $this->loadAccountModel($model);
+
+        if ($model->load(Yii::$app->request->post())) {
+            $this->uploadImage($model);
+            if ($model->save()) {
+                Yii::$app->session->setFlash('success', '修改成功!');
+                return $this->redirect(['update', 'id' => $model->id]);
+            }
+        }
+        return $this->render('update', [
+            'model' => $model,
+            'accountModel' => $accountModel,
+            'uploader' => AbstractUploader::getInstance(Yii::$app->storage->get())
+        ]);
     }
 
     /**

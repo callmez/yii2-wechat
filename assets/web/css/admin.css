@@ -1,0 +1,12 @@
+.dl-horizontal-xs dt {
+    width: 100px !important;
+}
+.dl-horizontal-xs dd {
+    margin-left: 120px !important;
+}
+.ml20 {
+    margin-right: 20px;
+}
+.mr20 {
+    margin-right: 20px;
+}

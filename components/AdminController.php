@@ -3,6 +3,7 @@ namespace callmez\wechat\components;
 
 use Yii;
 use yii\filters\AccessControl;
+use yii\web\View;
 
 class AdminController extends WechatController
 {
@@ -51,11 +52,10 @@ class AdminController extends WechatController
     {
         if ($this->_manageWechat === null) {
             $id = Yii::$app->session->get(self::SESSION_MANAGE_WECHAT);
-            if ($id !== null && $wechat = $this->getWechat($id)) {
-                return $this->setManageWechat($wechat);
-            } else {
+            if ($id === null || !($wechat = $this->getWechat($id))) {
                 return false;
             }
+            $this->setManageWechat($wechat);
         }
         return $this->_manageWechat;
     }
@@ -74,5 +74,24 @@ class AdminController extends WechatController
         }
         Yii::$app->session->setFlash('error', '未设置管理公众号, 请先选则你要管理的公众号');
         Yii::$app->end(0, Yii::$app->getResponse()->redirect(['wechat/admin/account']));
+    }
+
+    /**
+     * 是否显示微信后台菜单
+     * @var bool
+     */
+    public $menuLayout = '/admin/common/menuLayout';
+    public function render($view, $params = [])
+    {
+        $output = $this->getView()->render($view, $params, $this);
+        if ($this->menuLayout) { // 再加一层menulayout
+            $output = $this->getView()->render($this->menuLayout, ['content' => $output], $this);
+        }
+        $layoutFile = $this->findLayoutFile($this->getView());
+        if ($layoutFile !== false) {
+            return $this->getView()->renderFile($layoutFile, ['content' => $output], $this);
+        } else {
+            return $output;
+        }
     }
 }

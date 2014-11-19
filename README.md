@@ -67,6 +67,9 @@ Yii-wechat
   ...
 ```
 
+3. 最后生成数据库表(请确定数据库连接正常)
+  执行命令 `php yii migrate --migrationPath=@callmez/wechat/migrations` 根据提示安装数据库即可
+
 注意
 ----
 产品目前还是处于刚开发阶段. 后期将会着重于功能的完善和细化.

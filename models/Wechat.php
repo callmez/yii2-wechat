@@ -82,14 +82,9 @@ class Wechat extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'type', 'token',  'account', 'original', 'encoding_type'], 'required'],
+            [['name', 'app_id', 'app_secret', 'type', 'token',  'account', 'original', 'encoding_type'], 'required'],
             [['original'], 'unique'],
             [['type', 'encoding_type'], 'integer'],
-            [['app_id', 'app_secret'], 'required', 'when' => function($model) { // 未认证订阅号 app_id和app_secret 不用必填
-                return $model->type != Wechat::TYPE_SUBSCRIBE;
-            }, 'whenClient' => 'function (attribute, value) {
-                return $("[name=\'' . Html::getInputName($this, 'type') . '\']:checked").val() != "' . Wechat::TYPE_SUBSCRIBE . '";
-            }'],
             [['encoding_aes_key', 'address', 'description', 'avatar', 'qr_code'], 'safe']
         ];
     }

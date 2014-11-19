@@ -1,6 +1,7 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\bootstrap\Alert;
 use callmez\wechat\helpers\AccountHelper;
 ?>
 <div class="wechat-form">
@@ -15,8 +16,14 @@ use callmez\wechat\helpers\AccountHelper;
             'template' => "{label}\n<div class=\"col-sm-4\">{input}</div>\n<div class=\"col-sm-5\">{hint}\n{error}</div>"
         ]
     ]); ?>
-
-    <?= $form->field($model, 'username')->textInput([
+    <?= Alert::widget([
+        'body' => '该功能只能获取部分信息, 部分安全信息请登录微信后台查看并补充.',
+        'options' => [
+            'class' => 'alert-warning'
+        ]
+    ]) ?>
+    <?= $form->field($model, 'username')
+        ->textInput([
         'id' => 'username'
     ]) ?>
 

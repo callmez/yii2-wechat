@@ -1,12 +1,10 @@
 <?php
 namespace callmez\wechat\helpers;
 
-use callmez\storage\helpers\StorageHelper;
-use callmez\storage\helpers\UploadHelper;
-use callmez\storage\models\Storage;
-use callmez\wechat\models\Wechat;
 use Yii;
 use Goutte\Client;
+use callmez\wechat\models\Wechat;
+use callmez\storage\helpers\UploadHelper;
 
 class AccountHelper
 {
@@ -52,9 +50,8 @@ class AccountHelper
         ];
         //登录获取cookie
         $loginUrl = self::WEIXIN_ROOT . self::LOGIN_URL;
-        $crawler = $client->request('POST', $loginUrl, $data, [], [
-            'HTTP_REFERER' => self::WEIXIN_ROOT
-        ]);
+        $crawler = static::getCrawler($client, $loginUrl, $data);
+
         if ($client->getResponse()->getStatus() != 200) {
             return false;
         }
@@ -74,9 +71,10 @@ class AccountHelper
     /**
      * 获取微信后台基本设置
      * @param $username
+     * @param string $storageId 存储引擎Id,图片文件存储的位置
      * @return array|bool
      */
-    public static function getBaseInfo($username)
+    public static function getBaseInfo($username, $storageId = null)
     {
         $cacheKey = 'wechat_account_' . $username;
         $auth = Yii::$app->cache->get($cacheKey);
@@ -115,14 +113,12 @@ class AccountHelper
         $crawler = self::getCrawler($client, self::WEIXIN_ROOT . strtr(self::ADVANCED_URL, [
             '{token}' => $auth['token']
         ]));
-        if ($return['type'] == Wechat::TYPE_SUBSCRIBE) {
-            $domData = ['api', 'token', 'encoding_aes_key', 'encoding_type'];
-        } else {
-            $domData = ['app_id', 'app_sceret', 'api', 'token', 'encoding_aes_key', 'encoding_type'];
-        }
+        $domData = ['app_id', 'app_sceret', 'api', 'token', 'encoding_aes_key', 'encoding_type'];
         $crawler->filter('.frm_controls')->each(function($dom, $i) use ($domData, &$return) {
-            $value = trim($dom->html());
-            $return[$domData[$i]] = empty($value) || $value == '未填写' ? null : $value;
+            if (isset($domData[$i]) && $domData[$i] !== 'app_sceret') { // app_sceret 需要授权.不获取了
+                $value = trim($dom->html());
+                $return[$domData[$i]] = empty($value) || $value == '未填写' ? null : $value;
+            }
         });
 
         if (isset($return['encoding_type'])) { // 消息加密方式
@@ -141,11 +137,17 @@ class AccountHelper
             }
         }
 
-        $storage = Yii::$app->storage;//存储在默认存储中
+        $storage = Yii::$app->storage;
+        if ($storageId === null || !$storage->has($storageId)) {
+            $storageId = $storage->defaultFileSystem; //未设置存储在默认存储中
+        }
         $baseFileName = md5(isset($return['original']) ? $return['original'] : uniqid());
         if (!empty($return['avatar'])) { // 下载头像
             self::getCrawler($client, $return['avatar']);
-            $return['avatar'] = UploadHelper::generateUniquePath('jpg', 'wechat/account/avatar_{key}.jpg');
+            $return['avatar'] = $storage->getWrapperPath(
+                UploadHelper::generateUniquePath($return['avatar'], 'wechat/account/avatar_{key}.jpg', $baseFileName),
+                $storageId
+            );
             $storage->put(
                 $return['avatar'],
                 $client->getResponse()->getContent()->getContents()
@@ -153,7 +155,10 @@ class AccountHelper
         }
         if (!empty($return['qr_code'])) { // 下载二维码
             self::getCrawler($client, $return['qr_code']);
-            $return['qr_code'] = "wechat/account/qrcode_{$baseFileName}.jpg";
+            $return['qr_code'] = $storage->getWrapperPath(
+                UploadHelper::generateUniquePath($return['qr_code'], 'wechat/account/qrcode_{key}.jpg', $baseFileName),
+                $storageId
+            );
             $storage->put(
                 $return['qr_code'],
                 $client->getResponse()->getContent()->getContents()
@@ -163,13 +168,11 @@ class AccountHelper
         return $return;
     }
 
-    private static function getCrawler($client, $uri)
+    private static function getCrawler($client, $uri, $method = 'GET', array $parameters = [], array $files = [], array $server = ['HTTP_REFERER' => self::WEIXIN_ROOT])
     {
         //微信官方屏蔽了ssl2和ssl3, 启用更高级的ssl
         $client->getClient()->setDefaultOption('config/curl/' . CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
         $client->getClient()->setDefaultOption('verify', false);
-        return $client->request('GET', $uri, [], [], [
-            'HTTP_REFERER' => self::WEIXIN_ROOT,
-        ]);
+        return $client->request($method, $uri, $parameters, $files, $server);
     }
 }

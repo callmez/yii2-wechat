@@ -17,6 +17,11 @@ Yii-wechat
 
 ![default](https://cloud.githubusercontent.com/assets/1625891/4747720/f8927018-5a60-11e4-8e07-d4415f798426.png)
 
+  - 微信多公众号后台管理
+
+![admin](https://cloud.githubusercontent.com/assets/1625891/5060399/706aa818-6d8e-11e4-8423-ccfe01330293.png)
+![admin－wechat](https://cloud.githubusercontent.com/assets/1625891/5060522/1da613f8-6d96-11e4-8653-2b544cac952a.jpg)
+
 安装
 ---
 
@@ -36,6 +41,30 @@ Yii-wechat
         ...
     }
     ```
+2. 适合深度定制 在命令行界面下 进入`modules`文件夹执行命令`git clone https://github.com/callmez/yii2-wechat.git` 并在`composer.json`中声明命名空间路径
+  ```json
+    ...
+    "autoload": {
+        ...
+        "psr-4": {"callmez\\wechat\\": "modules/wechat"}
+        ...
+    },
+    ...
+  ```
+
+### 安装完后, 在`config/web.php` 文件中配置`module`配置
+
+```php
+  ...
+  `modules` => [
+    ...
+    'wechat' => [
+        'class' => 'callmez\wechat\Module',
+    ]
+    ...
+  ]
+  ...
+```
 
 注意
 ----

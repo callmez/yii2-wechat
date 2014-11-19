@@ -136,7 +136,7 @@ class AccountController extends AdminController
         if ($model->load(Yii::$app->request->post())) {
             $this->uploadImage($model);
             if ($model->save()) {
-                Yii::$app->session->setFlash('success', '修改成功!');
+                Yii::$app->session->setFlash('success', '公众号信息修改成功!');
                 return $this->redirect(['update', 'id' => $model->id]);
             }
         }

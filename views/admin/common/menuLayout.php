@@ -20,7 +20,7 @@ $this->params['breadcrumbs'] = array_merge([
                     'url' => ['admin/account/index']
                 ],
                 [
-                    'label' => '菜单管理',
+                    'label' => '自定义菜单管理',
                     'url' => ['admin/menu/index']
                 ]
             ]

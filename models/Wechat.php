@@ -82,7 +82,12 @@ class Wechat extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'app_id', 'app_secret', 'type', 'token',  'account', 'original', 'encoding_type'], 'required'],
+            [['name', 'app_id', 'app_secret', 'type', 'token', 'account', 'original', 'encoding_type'], 'required'],
+            [['encoding_aes_key'], 'required', 'when' => function ($model) { // 安全模式下encoding_aes_key必填
+                return $model->encoding_type == self::ENCODING_SAFE;
+            }, 'whenClient' => 'function (attribute, value) {
+                return $("[name=\'' . Html::getInputName($this, 'encoding_type') . '\']:checked").val() == "' . Wechat::ENCODING_SAFE . '";
+            }'],
             [['original'], 'unique'],
             [['type', 'encoding_type'], 'integer'],
             [['encoding_aes_key', 'address', 'description', 'avatar', 'qr_code'], 'safe']
@@ -130,7 +135,7 @@ class Wechat extends ActiveRecord
 
     public function afterFind()
     {
-        $this->access_token = unserialize($this->access_token) ?: [];
+        $this->access_token = unserialize($this->access_token) ? : [];
         return parent::afterFind();
     }
 

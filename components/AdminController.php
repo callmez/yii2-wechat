@@ -7,12 +7,12 @@ use yii\web\View;
 
 class AdminController extends WechatController
 {
-    const SESSION_MANAGE_WECHAT = 'admin_manage_wechat';
+    const SESSION_MAIN_WECHAT = 'admin_main_wechat';
     /**
      * 当前管理的公众号
      * @var object
      */
-    private $_manageWechat;
+    private $_mainWechat;
 
     /**
      * 验证是否设置公众号
@@ -27,7 +27,7 @@ class AdminController extends WechatController
                 'rules' => [
                     [ // 检查是否设置管理公众号.未设置则条状公众号列表界面
                         'allow' => true,
-                        'matchCallback' => [$this, 'manageWechatRequired']
+                        'matchCallback' => [$this, 'mainWechatRequired']
                     ],
                 ],
             ]
@@ -38,35 +38,35 @@ class AdminController extends WechatController
      * 设置当前需要管理的公众号
      * @param $id
      */
-    public function setManageWechat(Wechat $wechat)
+    public function setMainWechat(Wechat $wechat)
     {
-        Yii::$app->session->set(self::SESSION_MANAGE_WECHAT, $wechat->model->id);
-        $this->_manageWechat = $wechat;
+        Yii::$app->session->set(self::SESSION_MAIN_WECHAT, $wechat->model->id);
+        $this->_mainWechat = $wechat;
     }
 
     /**
      * 获取当前管理的公众号
      * @return bool|object
      */
-    public function getManageWechat()
+    public function getMainWechat()
     {
-        if ($this->_manageWechat === null) {
-            $id = Yii::$app->session->get(self::SESSION_MANAGE_WECHAT);
+        if ($this->_mainWechat === null) {
+            $id = Yii::$app->session->get(self::SESSION_MAIN_WECHAT);
             if ($id === null || !($wechat = $this->getWechat($id))) {
                 return false;
             }
-            $this->setManageWechat($wechat);
+            $this->setMainWechat($wechat);
         }
-        return $this->_manageWechat;
+        return $this->_mainWechat;
     }
 
     /**
      * 判断是否需要设置管理公众号
      * @return bool
      */
-    public function manageWechatRequired()
+    public function mainWechatRequired()
     {
-        if ($this->getManageWechat() || $this->id == 'admin/account') {
+        if ($this->getMainWechat() || $this->id == 'admin/account') {
             return true;
         }
         if (!Yii::$app->request->getIsAjax()) { // 先设置跳转地址
@@ -84,7 +84,7 @@ class AdminController extends WechatController
     public function render($view, $params = [])
     {
         $output = $this->getView()->render($view, $params, $this);
-        if ($this->menuLayout) { // 再加一层menulayout
+        if ($this->menuLayout !== false) { // 再加一层menulayout
             $output = $this->getView()->render($this->menuLayout, ['content' => $output], $this);
         }
         $layoutFile = $this->findLayoutFile($this->getView());
@@ -93,5 +93,19 @@ class AdminController extends WechatController
         } else {
             return $output;
         }
+    }
+
+    /**
+     * 后台显示信息关闭menuLayout
+     * @param $message
+     * @param string $status
+     * @param null $redirect
+     * @param null $resultType
+     * @return array|string
+     */
+    public function message($message, $status = 'error', $redirect = null, $resultType = null)
+    {
+        $this->menuLayout = false;
+        return parent::message($message, $status, $redirect, $resultType = null);
     }
 }

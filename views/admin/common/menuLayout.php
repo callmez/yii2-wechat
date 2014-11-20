@@ -5,7 +5,26 @@ $this->params['breadcrumbs'] = array_merge([
         'label' => '微信',
         'url' => ['admin/account']
     ]
-], $this->params['breadcrumbs']);
+], isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : []);
+
+$items = [
+    [
+        'label' => '<span class="glyphicon glyphicon-cog"></span> ' . '公众号管理',
+        'url' => ['admin/account/index']
+    ],
+    [
+        'label' => '<span class="glyphicon glyphicon-list"></span> ' . '自定义菜单管理',
+        'url' => ['admin/menu/index']
+    ]
+];
+if ($wechat = $this->context->getMainWechat()) {
+    $items = array_merge([
+        [
+            'label' => '<span class="glyphicon glyphicon-user"></span> ' . $wechat->model->name,
+            'url' => ['admin/account/view']
+        ]
+    ], $items);
+}
 ?>
 <div class="row">
     <div class="col-sm-2">
@@ -14,16 +33,8 @@ $this->params['breadcrumbs'] = array_merge([
             'options' => [
                 'class' => 'nav nav-pills nav-stacked'
             ],
-            'items' => [
-                [
-                    'label' => '公众号管理',
-                    'url' => ['admin/account/index']
-                ],
-                [
-                    'label' => '自定义菜单管理',
-                    'url' => ['admin/menu/index']
-                ]
-            ]
+            'encodeLabels' => false,
+            'items' => $items
         ]) ?>
     </div>
     <div class="col-sm-10"><?= $content ?></div>

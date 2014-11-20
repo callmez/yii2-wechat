@@ -1,8 +1,6 @@
 <?php
 namespace callmez\wechat\components;
 
-use yii\web\Controller;
-
 class WechatController extends Controller
 {
     private $_wechats = [];

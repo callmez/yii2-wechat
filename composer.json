@@ -18,7 +18,8 @@
     "require": {
         "yiisoft/yii2": "*",
         "fabpot/goutte": "~2.0",
-        "callmez/yii2-storage": "*"
+        "callmez/yii2-storage": "*",
+        "npm-asset/art-template": "*"
     },
     "autoload": {
         "psr-4": {

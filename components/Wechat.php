@@ -2,9 +2,10 @@
 namespace callmez\wechat\components;
 
 use Yii;
+use callmez\wechat\sdk\Wechat as WechatSDK;
 use yii\base\InvalidConfigException;
 
-class Wechat extends \callmez\wechat\sdk\Wechat
+class Wechat extends WechatSDK
 {
     /**
      * Wechat Model
@@ -31,6 +32,19 @@ class Wechat extends \callmez\wechat\sdk\Wechat
         }
         !empty($this->model->access_token) && $this->setAccessToken($this->model->access_token);
         parent::init();
+    }
+
+    /**
+     * 返回错误信息(字符串形式)
+     * @param string $default
+     * @return bool
+     */
+    public function getLastErrorInfo($default = '未知错误')
+    {
+        if (isset($this->lastErrorInfo['errcode']) && isset($this->errorCode[$this->lastErrorInfo['errcode']])) {
+            return $this->lastErrorInfo['errcode'] . ':' . $this->errorCode[$this->lastErrorInfo['errcode']];
+        }
+        return is_array($this->lastErrorInfo) ? implode(':', $this->lastErrorInfo) : $this->lastErrorInfo;
     }
 
     /**

@@ -89,7 +89,7 @@ class AccountController extends AdminController
      */
     public function actionView($id = null)
     {
-        if (!($id === null && $wechat = $this->getManageWechat()) && !($wechat = $this->getWechat($id))) {
+        if (!($id === null && $wechat = $this->getMainWechat()) && !($wechat = $this->getWechat($id))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
         return $this->render('view', [
@@ -108,7 +108,7 @@ class AccountController extends AdminController
         if (!($wechat = $this->getWechat($id))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $this->setManageWechat($wechat);
+        $this->setMainWechat($wechat);
         Yii::$app->set('success', '设置管理公众号, 您现在可以管理该公众号了');
         return $this->redirect(['view']);
     }
@@ -158,7 +158,7 @@ class AccountController extends AdminController
         $post = Yii::$app->request->post();
         if ($accountModel->load($post) && $accountModel->login()) {
             $modelName = $model->formName();
-            foreach($accountModel->parse() as $k => $v) {
+            foreach ($accountModel->parse() as $k => $v) {
                 if ($model->hasAttribute($k)) {
                     $post[$modelName][$k] = $v;
                 }
@@ -187,26 +187,13 @@ class AccountController extends AdminController
                 throw new NotFoundHttpException("Upload error.");
             }
             if ($uploader->validate() && $uploader->save($path = $this->getUploadPath($model, $uploader))) {
-                $message = [
-                    'status' => 'success',
-                    'message' => [
-                        'value' => "{$storageName}://" . ltrim($path, '/'),
-                        'thumbnail' => $storage->thumbnail($path, [
-                            'width' => 100
-                        ])
-                    ]
-                ];
+                return $this->message([
+                    'value' => Yii::$app->storage->getWrapperPath($path, $storageName),
+                    'thumbnail' => $storage->thumbnail($path, ['width' => 100])
+                ], 'success');
             } else {
-                $message = [
-                    'status' => 'error',
-                    'message' => $uploader->getError()
-                ];
+                return $this->message($uploader->getError());
             }
-
-            $response = Yii::$app->response;
-            $response->format = Response::FORMAT_JSON;
-            $response->data = $message;
-            Yii::$app->end(0, $response);
         }
     }
 

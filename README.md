@@ -41,6 +41,7 @@ Yii-wechat
         ...
     }
     ```
+    
 2. 适合深度定制 在命令行界面下 进入`modules`文件夹执行命令`git clone https://github.com/callmez/yii2-wechat.git` 并在`composer.json`中声明命名空间路径
   ```json
     ...
@@ -65,6 +66,10 @@ Yii-wechat
   ]
   ...
 ```
+
+3. 最后生成数据库表(请确定数据库连接正常)
+
+  执行命令 `php yii migrate --migrationPath=@callmez/wechat/migrations` 根据提示安装数据库即可
 
 注意
 ----

@@ -11,6 +11,7 @@ use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\WechatSearch;
 use callmez\wechat\models\AccountForm;
+use callmez\wechat\components\Wechat as WechatSdk;
 use callmez\wechat\components\AdminController;
 use callmez\storage\helpers\UploadHelper;
 use callmez\storage\uploaders\AbstractUploader;
@@ -89,7 +90,7 @@ class AccountController extends AdminController
      */
     public function actionView($id = null)
     {
-        if (!($id === null && $wechat = $this->getMainWechat()) && !($wechat = $this->getWechat($id))) {
+        if (!($id === null && $wechat = $this->getMainWechat()) && !($wechat = WechatSdk::instanceByCondition($id))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
         return $this->render('view', [
@@ -105,7 +106,7 @@ class AccountController extends AdminController
      */
     public function actionManage($id)
     {
-        if (!($wechat = $this->getWechat($id))) {
+        if (!($wechat = WechatSdk::instanceByCondition($id))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
         $this->setMainWechat($wechat);

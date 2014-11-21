@@ -2,8 +2,8 @@
 namespace callmez\wechat\components;
 
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\View;
+use yii\filters\AccessControl;
 
 class AdminController extends WechatController
 {
@@ -52,7 +52,7 @@ class AdminController extends WechatController
     {
         if ($this->_mainWechat === null) {
             $id = Yii::$app->session->get(self::SESSION_MAIN_WECHAT);
-            if ($id === null || !($wechat = $this->getWechat($id))) {
+            if ($id === null || !($wechat = Wechat::instanceByCondition($id))) {
                 return false;
             }
             $this->setMainWechat($wechat);

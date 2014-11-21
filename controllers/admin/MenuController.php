@@ -10,12 +10,11 @@ class MenuController extends AdminController
         $wechat = $this->getMainWechat();
         $menus = $wechat->getMenuList();
         if (!$menus) {
-            return $this->message($wechat->getLastErrorInfo('获取菜单列表失败!'));
+            Yii::$app->end(0, $this->message($wechat->getLastErrorInfo('获取菜单列表失败!')));
         }
         return $this->render('index', [
             'wechat' => $wechat,
             'menus' => $menus
         ]);
     }
-
 }

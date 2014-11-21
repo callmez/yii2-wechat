@@ -27,8 +27,7 @@ if ($wechat = $this->context->getMainWechat()) {
 }
 ?>
 <div class="row">
-    <div class="col-sm-2">
-
+    <div class="col-sm-2 mb20">
         <?= Nav::widget([
             'options' => [
                 'class' => 'nav nav-pills nav-stacked'

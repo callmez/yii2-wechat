@@ -6,7 +6,7 @@ use yii\base\Action;
 use yii\web\Response;
 use yii\base\InvalidCallException;
 use yii\web\BadRequestHttpException;
-use callmez\wechat\models\Wechat;
+use callmez\wechat\components\Wechat;
 use callmez\wechat\models\RuleKeyword;
 use callmez\wechat\components\WechatController;
 

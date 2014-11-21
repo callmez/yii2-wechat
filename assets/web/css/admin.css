@@ -4,9 +4,19 @@
 .dl-horizontal-xs dd {
     margin-left: 120px !important;
 }
-.ml20 {
-    margin-right: 20px;
+.mb20 {
+    margin-bottom: 20px;
 }
-.mr20 {
-    margin-right: 20px;
+/* ============= 自定义菜单 ============= */
+.menus {
+}
+.menu {
+    margin-bottom: 15px;
+}
+.sub-menus {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 10px;
+    text-align: center;
 }

@@ -289,8 +289,7 @@ function xml2dom(xml){
 }
 function renderMessage(data, type)
 {
-    var template = '',
-        params = {};
+    var params = {};
 
     if (typeof data === 'string') {
         params.content = data;

@@ -34,6 +34,8 @@ class Controller extends \yii\web\Controller
             return $data;
         } elseif ($resultType === 'html') {
             return $this->render($this->messageLayout, $data);
+        } else {
+            return $message;
         }
     }
 }

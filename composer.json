@@ -20,7 +20,7 @@
         "fabpot/goutte": "~2.0",
         "callmez/yii2-storage": "*",
         "npm-asset/art-template": "3.*",
-        "bower-asset/angular": "1.2.*"
+        "bower-asset/angular": "1.2.*@stable | 1.3.*@stable"
     },
     "autoload": {
         "psr-4": {

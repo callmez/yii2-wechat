@@ -15,7 +15,6 @@
             "email": "callme-z@qq.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
         "yiisoft/yii2": "*",
         "fabpot/goutte": "~2.0",

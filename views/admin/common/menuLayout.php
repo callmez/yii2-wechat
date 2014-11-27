@@ -15,6 +15,10 @@ $items = [
     [
         'label' => '<span class="glyphicon glyphicon-list"></span> ' . '自定义菜单管理',
         'url' => ['admin/menu/index']
+    ],
+    [
+        'label' => '<span class="glyphicon glyphicon-list"></span> ' . '自动回复管理',
+        'url' => ['admin/reply/index']
     ]
 ];
 if ($wechat = $this->context->getMainWechat()) {

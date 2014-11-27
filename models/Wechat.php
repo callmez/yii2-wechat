@@ -124,6 +124,11 @@ class Wechat extends ActiveRecord
         ];
     }
 
+    public static function find()
+    {
+        return parent::find()->andWhere(['status' => self::STATUS_ACTIVE]);
+    }
+
     public function beforeSave($insert)
     {
         $this->access_token = serialize($this->access_token);

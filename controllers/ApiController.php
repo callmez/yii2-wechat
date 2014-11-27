@@ -325,7 +325,7 @@ class ApiController extends WechatController
             foreach ($models as $model) {
                 $params[] = [
                     'rule' => $model->rid,
-                    'priority' => $model->order,
+                    'priority' => $model->priority,
                     'keyword' => $model,
                     'weid' => $model->rule->wid,
                     'processor' => $model->processor

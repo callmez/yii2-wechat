@@ -16,9 +16,9 @@ use callmez\storage\widgets\UploadInput;
         ],
         'fieldConfig' => [
             'labelOptions' => [
-                'class' => 'control-label col-sm-3'
+                'class' => 'control-label col-sm-2'
             ],
-            'template' => "{label}\n<div class=\"col-sm-5\">\n{input}\n</div>\n<div class=\"col-sm-4\">\n{hint}\n{error}\n</div>"
+            'template' => "{label}\n<div class=\"col-sm-6\">\n{input}\n</div>\n<div class=\"col-sm-4\">\n{hint}\n{error}\n</div>"
         ]
     ]); ?>
 
@@ -54,7 +54,7 @@ use callmez\storage\widgets\UploadInput;
         'upload' => $upload
     ]) ?>
     <div class="form-group">
-        <div class="col-sm-offset-3 col-sm-5">
+        <div class="col-sm-offset-2 col-sm-6">
             <?= Html::submitButton($model->isNewRecord ? '提交设置' : '提交修改', ['class' => 'btn btn-block btn-primary']) ?>
         </div>
     </div>

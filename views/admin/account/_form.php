@@ -25,7 +25,7 @@ use callmez\storage\widgets\UploadInput;
     <?= $form->field($model, 'name')->textInput(['maxlength' => 40]) ?>
     <?= $form->field($model, 'type')->radioList($model::$types) ?>
     <?= $form->field($model, 'token')->textInput(['maxlength' => 50]) ?>
-    <?= $form->field($model, 'encoding_type')->radioList($model::$encodingTypes) ?>
+    <?= $form->field($model, 'encoding_type')->radioList($model::$encodings) ?>
     <?= $form->field($model, 'encoding_aes_key')->textInput(['maxlength' => 43]) ?>
     <?= $form->field($model, 'app_id')->textInput(['maxlength' => 50]) ?>
     <?= $form->field($model, 'app_secret')->textInput(['maxlength' => 50]) ?>

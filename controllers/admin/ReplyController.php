@@ -2,29 +2,31 @@
 
 namespace callmez\wechat\controllers\admin;
 
+
 use Yii;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Rule;
 use callmez\wechat\models\RuleSearch;
+use callmez\wechat\models\RuleKeyword;
 use callmez\wechat\components\AdminController;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * ReplyController implements the CRUD actions for Rule model.
  */
 class ReplyController extends AdminController
 {
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                ],
-            ],
-        ];
-    }
+//    public function behaviors()
+//    {
+//        return [
+//            'verbs' => [
+//                'class' => VerbFilter::className(),
+//                'actions' => [
+//                    'delete' => ['post'],
+//                ],
+//            ],
+//        ];
+//    }
 
     /**
      * Lists all Rule models.
@@ -60,15 +62,7 @@ class ReplyController extends AdminController
      */
     public function actionCreate()
     {
-        $model = new Rule();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
+        return $this->updateModel(new Rule());
     }
 
     /**
@@ -79,15 +73,7 @@ class ReplyController extends AdminController
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+        return $this->updateModel($this->findModel($id));
     }
 
     /**
@@ -117,5 +103,44 @@ class ReplyController extends AdminController
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }
+
+    public function updateModel(Rule $model)
+    {
+        $redirect = false;
+        if ($model->load(Yii::$app->request->post()) && ($model->wid = $this->getMainWechat()->model->id) && $model->save()) {
+            $redirect = ['update', 'id' => $model->id];
+        }
+        $ruleKewordModel = new RuleKeyword();
+        $keywords = $this->loadKeywordModel($model, $ruleKewordModel);
+        if ($redirect && empty($keywords)) {
+            return $this->redirect($redirect);
+        }
+        return $this->render('update', [
+            'model' => $model,
+            'keywords' => $keywords,
+            'ruleKewordModel' => $ruleKewordModel,
+        ]);
+    }
+
+    protected function loadKeywordModel(Rule $rule, RuleKeyword $keyword = null)
+    {
+        $keywords = [];
+        if (!$rule->getIsNewRecord()) {
+            $post = Yii::$app->request->post($keyword->formName(), []);
+            if (!empty($post['new'])) {
+                $keyword === null && $keyword = new RuleKeyword();
+                foreach ($post['new'] as $k => $data) {
+                    $_keyword = clone $keyword;
+                    $data['rid'] = $rule->id;
+                    $_keyword->setAttributes($data);
+                    if ($_keyword->save()) {
+                        continue;
+                    }
+                    $keywords[] = $_keyword;
+                }
+            }
+        }
+        return $keywords;
     }
 }

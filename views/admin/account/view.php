@@ -2,9 +2,7 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 use callmez\wechat\models\Wechat;
-use callmez\wechat\assets\AdminAsset;
 
-AdminAsset::register($this);
 $this->title = $wechat->model->name . ' 概况';
 $this->params['breadcrumbs'][] = $this->title;
 ?>

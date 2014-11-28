@@ -55,7 +55,7 @@ class AccountController extends AdminController
      */
     public function actionCreate()
     {
-        return $this->update(new Wechat());
+        return $this->updateModel(new Wechat());
     }
 
     /**
@@ -66,7 +66,7 @@ class AccountController extends AdminController
      */
     public function actionUpdate($id)
     {
-        return $this->update($this->findModel($id));
+        return $this->updateModel($this->findModel($id));
     }
 
     /**
@@ -130,7 +130,7 @@ class AccountController extends AdminController
         }
     }
 
-    public function update(Wechat $model)
+    public function updateModel(Wechat $model)
     {
         $accountModel = $this->loadAccountModel($model);
 

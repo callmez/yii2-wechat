@@ -29,7 +29,8 @@ class RuleKeyword extends ActiveRecord
         return [
             [['rid', 'keyword', 'type', ], 'required'],
             [['priority'], 'number', 'min' => 0, 'max' => 255],
-            [['rid', 'type', 'status', 'priority'], 'integer', 'integerOnly' => true]
+            [['priority'], 'default', 'value' => 0],
+            [['rid', 'type', 'status', 'priority'], 'integer'],
         ];
     }
 

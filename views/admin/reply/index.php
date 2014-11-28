@@ -2,38 +2,76 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel callmez\wechat\models\RuleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Rules';
+$this->title = '回复规则列表';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="rule-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php  echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Rule', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('创建回复规则', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
+        'layout' => "{summary}\n<div class='table-responsive'>\n{items}\n</div>\n{pager}",
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'wid',
+            [
+                'attribute' => 'id',
+                'options' => [
+                    'width' => 30
+                ]
+            ],
             'name',
-            'status',
-            'priority',
-            // 'created_at',
-            // 'updated_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'header' => '关键字',
+                'value' => function ($data) {
+                    return implode(', ', ArrayHelper::getColumn($data->keywords, 'keyword'));
+                },
+            ],
+            [
+                'attribute' => 'status',
+                'value' => function ($data) {
+                    return isset($data::$statuses[$data->status]) ? $data::$statuses[$data->status] : '';
+                },
+                'options' => [
+                    'width' => 45
+                ]
+            ],
+            [
+                'attribute' => 'priority',
+                'options' => [
+                    'width' => 50
+                ]
+            ],
+            [
+                'attribute' => 'created_at',
+                'format' => 'datetime',
+                'options' => [
+                    'width' => 150
+                ]
+            ],
+            [
+                'attribute' => 'updated_at',
+                'format' => 'datetime',
+                'options' => [
+                    'width' => 150
+                ]
+            ],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{update} {delete}',
+                'options' => [
+                    'width' => 50
+                ]
+            ],
         ],
     ]); ?>
 

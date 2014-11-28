@@ -4,14 +4,12 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\ListView;
 use yii\data\ActiveDataProvider;
-use callmez\wechat\models\RuleKeyword;
-use callmez\wechat\assets\ArtTemplateAsset;
-ArtTemplateAsset::register($this);
+use yii\data\ArrayDataProvider;
 ?>
 
 <div class="rule-form">
-
     <?php $form = ActiveForm::begin([
+        'action' => $this->context->action->id == 'create' && !$model->getIsNewRecord() ? ['update', 'id' => $model->id] : '',
         'options' => [
             'class' => 'form-horizontal'
         ],
@@ -24,31 +22,50 @@ ArtTemplateAsset::register($this);
     ]); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 50]) ?>
-    <?= $form->field($model, 'status')->dropDownList([
-        $model::STATUS_ACTIVE => '启用',
-        $model::STATUS_DELETED => '禁用'
-    ]) ?>
+    <?php $statuses = $model::$statuses; unset($statuses[$model::STATUS_DELETED]) ?>
+    <?= $form->field($model, 'status')->dropDownList($statuses) ?>
     <?= $form->field($model, 'priority')->textInput() ?>
-    <?php if (!$model->isNewRecord): ?>
-        <?= ListView::widget([
-            'dataProvider' => new ActiveDataProvider([
-                'query' => $model->getKeywords()
-            ]),
-            'itemView' => '_ruleKeyword',
-            'viewParams' => [
-                'form' => $form
-            ]
-        ]) ?>
-    <?php endif ?>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button id="addKeyword" class="btn btn-primary" type="button"><span class="glyphicon glyphicon-plus"></span> <b>添加关键字</b></button>
+            <button id="addKeyword" class="btn btn-success" type="button"><span class="glyphicon glyphicon-plus"></span> <b>添加关键字</b></button>
         </div>
     </div>
-
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <?= ListView::widget([
+                'dataProvider' => new ArrayDataProvider([
+                    'allModels' => $keywords
+                ]),
+                'itemView' => '_ruleKeyword',
+                'viewParams' => [
+                    'form' => $form
+                ],
+                'emptyText' => false,
+                'summary' => false
+            ]) ?>
+            <?php if (!$model->getIsNewRecord()): ?>
+                <?= ListView::widget([
+                    'dataProvider' => new ActiveDataProvider([
+                        'query' => $model->getKeywords(),
+                        'sort' => [
+                            'defaultOrder' => [
+                                'created_at' => SORT_DESC
+                            ]
+                        ]
+                    ]),
+                    'itemView' => '_ruleKeyword',
+                    'viewParams' => [
+                        'form' => $form
+                    ],
+                    'emptyText' => false,
+                    'summary' => false
+                ]) ?>
+            <?php endif ?>
+        </div>
+    </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-6">
-            <?= Html::submitButton($model->isNewRecord ? '提交设置' : '提交修改', ['class' => 'btn btn-block btn-primary']) ?>
+            <?= Html::submitButton($model->getIsNewRecord() ? '提交设置' : '提交修改', ['class' => 'btn btn-block btn-primary']) ?>
         </div>
     </div>
     <?php ActiveForm::end(); ?>
@@ -57,15 +74,21 @@ ArtTemplateAsset::register($this);
     <div class="row">
         <div class="col-sm-offset-2 col-sm-10">
             <?= $this->render('_ruleKeyword', [
-                'model' => new RuleKeyword,
+                'model' => $ruleKewordModel,
                 'form' => $form
             ]) ?>
         </div>
     </div>
 </script>
 <?php
-$this->registerJs("
+$keywordsNum = count($keywords);
+$script = <<<EOF
+    var i = {$keywordsNum};
     $('#addKeyword').click(function() {
-        $(this).closest('.form-group').after(template('keywordTemplate'))
+        $(this)
+            .closest('.form-group')
+            .after(template('keywordTemplate')().replace(/(name="[^"\[]+)(\[)([^"]+")/g, '\\$1[new][' + i++ + '][\\$3'));
+
     });
-");
+EOF;
+$this->registerJs($script);

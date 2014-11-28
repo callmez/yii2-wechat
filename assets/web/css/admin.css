@@ -1,3 +1,7 @@
+div.required label:after {
+    content: " *";
+    color: red;
+}
 .dl-horizontal-xs dt {
     width: 100px !important;
 }

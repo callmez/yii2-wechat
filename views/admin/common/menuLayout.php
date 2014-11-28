@@ -1,5 +1,7 @@
 <?php
 use yii\bootstrap\Nav;
+use callmez\wechat\assets\AdminAsset;
+AdminAsset::register($this);
 $this->params['breadcrumbs'] = array_merge([
     [
         'label' => '微信',

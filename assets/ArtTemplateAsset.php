@@ -8,6 +8,6 @@ class ArtTemplateAsset extends AssetBundle
 {
     public $sourcePath = '@npm/art-template';
     public $js = [
-        'dist/template-native.js',
+        'dist/template-native-debug.js',
     ];
 }

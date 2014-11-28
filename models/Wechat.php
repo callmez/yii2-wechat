@@ -68,7 +68,7 @@ class Wechat extends ActiveRecord
      * 消息加密模式列表
      * @var array
      */
-    public static $encodingTypes = [
+    public static $encodings = [
         self::ENCODING_NORMAL => '普通模式',
         self::ENCODING_COMPATIBLE => '兼容模式',
         self::ENCODING_SAFE => '安全模式'

@@ -9,6 +9,7 @@ use yii\data\ArrayDataProvider;
 
 <div class="rule-form">
     <?php $form = ActiveForm::begin([
+        // 如果提交的关键字中有错误需要现在页面,因为规则已经创建了. 直接提交更新页面
         'action' => $this->context->action->id == 'create' && !$model->getIsNewRecord() ? ['update', 'id' => $model->id] : '',
         'options' => [
             'class' => 'form-horizontal'

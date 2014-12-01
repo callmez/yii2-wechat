@@ -10,7 +10,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div ng-app="menuApp">
     <div ng-controller="menusController">
-        <button ng-if="menus.length < 3" ng-click="showModal()" id="menuButton" type="button" class="mb20 btn btn-block btn-success">添加一级菜单</button>
+        <button ng-if="menus.length < 3" ng-click="showModal('new')" id="menuButton" type="button" class="mb20 btn btn-block btn-success">添加一级菜单</button>
         <div class="mb20 btn-group btn-group-justified">
             <div ng-repeat="menu in menus" class="btn-group">
                 <a ng-click="showModal($index)" href="javascript:;" class="menu btn btn-lg btn-default">
@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="btn-group btn-group-justified">
             <div ng-repeat="(index, menu) in menus" class="btn-group">
                 <div class="sub-menus btn-group-vertical">
-                    <button ng-if="menu.sub_button.length < 5" id="subMenuButton" type="button" class="btn btn-block btn-success">添加二级菜单</button>
+                    <button ng-if="menu.sub_button.length < 5 && !menu.type" ng-click="showModal(index, 'new')" id="subMenuButton" type="button" class="btn btn-block btn-success">添加二级菜单</button>
                     <a ng-click="showModal(index, $index)" ng-repeat="subMenu in menu.sub_button" href="javascript:;" class="sub-menu btn btn-lg btn-default">
                         <button ng-click="menus[index].sub_button.splice($index, 1)" type="button" class="close">
                             <span aria-hidden="true">&times;</span>
@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <div ng-if="_menu.type" ng-hide="menuTypes[_menu.type].value" class="form-group">
                                 <label for="menuName" class="col-sm-2 control-label">{{_menu.type == 'click' ? '关键字' : _menu.type == 'view' ? '链接地址' : '类型值'}}</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="menuName" placeholder="请输入菜单名" ng-model="_menu[menuTypes[_menu.type].meta]">
+                                    <input ng-model="_menu[menuTypes[_menu.type].meta]" ng-value="{{menuTypes[_menu.type].value}}" type="text" class="form-control"  id="menuName" placeholder="请输入菜单名">
                                 </div>
                             </div>
                         </form>
@@ -86,6 +86,15 @@ menuApp.controller('menusController', function($scope) {
     $scope.menus = <?= json_encode($menus, JSON_UNESCAPED_UNICODE) ?>;
     $scope.menuTypes = <?= json_encode(\callmez\wechat\models\Wechat::$menuTypes, JSON_UNESCAPED_UNICODE) ?>;
     $scope.showModal = function(index, subMenuIndex) {
+        if (index == 'new') {
+            index = $scope.menus.length;
+            $scope.menus[index] = {
+                'sub_button': []
+            };
+        } else if (subMenuIndex == 'new') {
+            subMenuIndex = $scope.menus[index].sub_button.length;
+            $scope.menus[index].sub_button[subMenuIndex] = {};
+        }
         if (typeof subMenuIndex == 'undefined') {
             $scope._menu = $scope.menus[index];
         } else {
@@ -94,6 +103,5 @@ menuApp.controller('menusController', function($scope) {
 
         $('#menuModal').modal();
     }
-
 });
 </script>

@@ -99,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
             if (index == 'new') {
                 index = $scope.menus.length;
                 $scope.menus[index] = {
-                    'sub_button': []
+                    'sub_button': [] // 子菜单需要该属性显示添加菜单按钮
                 };
             } else if (subMenuIndex == 'new') {
                 subMenuIndex = $scope.menus[index].sub_button.length;

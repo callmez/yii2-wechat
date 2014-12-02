@@ -30,7 +30,6 @@ class Wechat extends WechatSDK
         if ($this->token === null) {
             $this->token = $this->model->token;
         }
-        !empty($this->model->access_token) && $this->setAccessToken($this->model->access_token);
         parent::init();
     }
 

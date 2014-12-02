@@ -2,43 +2,48 @@
 
 use yii\helpers\Html;
 use yii\bootstrap\Tabs;
-use callmez\wechat\assets\AngularAsset;
+use callmez\wechat\assets\AngularDragAndDropListsAsset;
 
-AngularAsset::register($this);
+AngularDragAndDropListsAsset::register($this);
 
 $this->title = '自定义菜单管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div ng-app="menuApp">
     <div ng-controller="menusController">
-        <button ng-if="menus.length < 3" ng-click="showModal('new')" id="menuButton" type="button" class="mb20 btn btn-block btn-success">添加一级菜单</button>
-        <div class="mb20 btn-group btn-group-justified">
-            <div ng-repeat="menu in menus" class="btn-group">
-                <a ng-click="showModal($index)" href="javascript:;" class="menu btn btn-lg btn-default">
+        <p><button ng-if="menus.length < 3" ng-click="showModal('new')" id="menuButton" type="button" class="btn btn-block btn-success">添加一级菜单</button></p>
+        <p ng-if="menus.length > 3" class="text-danger text-center">一级菜单最多不能超过3个</p>
+        <ul dnd-list="menus" class="menus btn-group btn-group-justified list-unstyled mb20">
+            <li ng-repeat="menu in menus" dnd-draggable="menu" dnd-effect-allowed="move" dnd-moved="menus.splice($index, 1)" class="menu btn-group">
+                <div ng-click="showModal($index)" class="btn btn-default">
                     <button ng-click="menus.splice($index, 1)" type="button" class="close">
                         <span aria-hidden="true">&times;</span>
                         <span class="sr-only">删除</span>
                     </button>
                     {{menu.name}}
-                </a>
-            </div>
-        </div>
-        <div class="btn-group btn-group-justified">
+                </div>
+            </li>
+        </ul>
+        <div class="mb20 btn-group btn-group-justified">
             <div ng-repeat="(index, menu) in menus" class="btn-group">
-                <div class="sub-menus btn-group-vertical">
+                <p ng-if="menu.sub_button.length > 5" class="text-danger text-center">二级菜单最多不能超过5个</p>
+                <ul dnd-list="menu.sub_button" class="sub-menus btn-group-vertical list-unstyled">
                     <button ng-if="menu.sub_button.length < 5 && !menu.type" ng-click="showModal(index, 'new')" id="subMenuButton" type="button" class="btn btn-block btn-success">添加二级菜单</button>
-                    <a ng-click="showModal(index, $index)" ng-repeat="subMenu in menu.sub_button" href="javascript:;"
-                       class="sub-menu btn btn-lg btn-default">
+                    <li ng-click="showModal(index, $index)" ng-repeat="subMenu in menu.sub_button" dnd-draggable="subMenu" dnd-effect-allowed="move" dnd-moved="menus[index].sub_button.splice($index, 1)" class="sub-menu btn btn-default">
                         <button ng-click="menus[index].sub_button.splice($index, 1)" type="button" class="close">
                             <span aria-hidden="true">&times;</span>
                             <span class="sr-only">删除</span>
                         </button>
                         {{subMenu.name}}
-                    </a>
-                </div>
+                    </li>
+                </ul>
             </div>
         </div>
-
+        <p>
+            <button ng-click="resetMenus()" type="button" class="btn btn-info"><span class="glyphicon glyphicon-step-backward"></span> 重置修改 </button>
+            <button ng-click="submitMenus()" ng-disabled="submit.disabled" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk"></span> {{submit.text || '提交修改'}} </button>
+        </p>
+        <p class="text-muted"><small><b>Tips</b>: 选中按钮可以拖动来变换顺序哟!</small></p>
         <!-- Modal -->
         <div class="modal fade" id="menuModal" tabindex="-1" role="dialog" aria-labelledby="menuModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -91,10 +96,37 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <script type="text/javascript">
-    var menuApp = angular.module('menuApp', []);
-    menuApp.controller('menusController', function ($scope) {
-        $scope.menus = <?= json_encode($menus, JSON_UNESCAPED_UNICODE) ?>;
+    var menuApp = angular.module('menuApp', ['dndLists']);
+    menuApp.controller('menusController', function ($scope, $http) {
+        $scope._menus = <?= json_encode($menus, JSON_UNESCAPED_UNICODE) ?>;
+        $scope.menus = angular.copy($scope._menus);
         $scope.menuTypes = <?= json_encode(\callmez\wechat\models\Wechat::$menuTypes, JSON_UNESCAPED_UNICODE) ?>;
+        $scope.resetMenus = function() {
+            if (confirm('确定要重置所做的修改么?')) {
+                $scope.menus = angular.copy($scope._menus);
+            }
+        }
+        $scope.submitMenus = function() {
+            $scope.submit = {
+                disabled: true,
+                text: '提交中...'
+            };
+            var data = {
+                menus: $scope.menus
+            };
+            data[yii.getCsrfParam()] = yii.getCsrfToken();
+            $http({
+                url: '',
+                method: 'post',
+                data: data,
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            }).success(function(response) {
+                $scope.submit = {
+                    disabled: false
+                };
+                alert(response.message)
+            });
+        }
         $scope.showModal = function (index, subMenuIndex) {
             if (index == 'new') {
                 index = $scope.menus.length;

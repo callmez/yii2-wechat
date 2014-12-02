@@ -12,7 +12,16 @@ div.required label:after {
     margin-bottom: 20px;
 }
 /* ============= 自定义菜单 ============= */
-.menus {
+.menus .dndDraggingSource, .sub-menus .dndDraggingSource {
+    display: none;
+}
+.menus .dndPlaceholder {
+    display: table-cell;
+    float: none;
+    width: 1%;
+}
+.sub-menus .dndPlaceholder {
+    min-height: 32px;
 }
 .sub-menus {
     display: block;
@@ -22,12 +31,19 @@ div.required label:after {
     text-align: center;
 }
 .menu, .sub-menu {
+    position: relative;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
 .menu .close, .sub-menu .close {
+    position: absolute;
+    right: 6px;
+    top: 4px;
     display: none;
+}
+.menu > .btn:active, .sub-menu.btn:active {
+    cursor: move;
 }
 .menu:hover .close, .sub-menu:hover .close {
     display: block;

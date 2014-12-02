@@ -33,7 +33,7 @@ Yii-wechat
    或者
 
    - 项目目录下的composer.json
-   - 添加`"callmez/yii2-wechat": "dev-master"`内容,然后执行`composer update`
+   - 添加`"callmez/yii2-wechat": "dev-master"`内容,然后执行`composer update` (模块中使用了angular的bower源,请确定使用[composer-asset-plugin](https://github.com/francoispluchino/composer-asset-plugin)` **大于** `beta4`的版本)
     ```
     "require": {
         ...
@@ -53,14 +53,29 @@ Yii-wechat
     ...
   ```
 
-### 安装完后, 在`config/web.php` 文件中配置`module`配置
+### 安装完后, 在`config/web.php` 文件中配置`module`配置和`components`配置(`...`号代表其他设置)
 
 ```php
   ...
-  `modules` => [
+  'modules' => [
     ...
-    'wechat' => [
+    'wechat' => [ // 指定微信模块
         'class' => 'callmez\wechat\Module',
+    ]
+    ...
+  ],
+  'components' => [
+    ...
+    'request' => [
+      ...
+      'request' => [
+            ...
+            'parsers' => [ // 因为模块中有使用angular.js  所以该设置是为正常解析angular提交post数据
+                ...
+                'application/json' => 'yii\web\JsonParser'
+            ]
+        ],
+      ...
     ]
     ...
   ]

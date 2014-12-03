@@ -39,17 +39,17 @@ class ApiController extends WechatController
             $response->content = $request->getQueryParam('echostr');
             return Yii::$app->end();
         } elseif ($request->method == 'POST') {
-            if (($this->message = $this->parseRequest()) === []) {
-                $response->content = 'Request Failed';
-                return Yii::$app->end();
-            }
-            Yii::info($this->message, __METHOD__);
-
             $this->wechat = Wechat::instanceByCondition(['hash' => $request->getQueryParam('hash')]);
             if (!$this->wechat || !$this->wechat->checkSignature()) {
                 $response->content = 'Access Denied!';
                 return Yii::$app->end();
             }
+
+            if (($this->message = $this->parseRequest()) === []) {
+                $response->content = 'Request Failed';
+                return Yii::$app->end();
+            }
+            Yii::info($this->message, __METHOD__);
 
             $params = $this->match();
             foreach ($params as $param) {
@@ -79,10 +79,9 @@ class ApiController extends WechatController
     public function parseRequest($message = null)
     {
         $return = [];
-        $message === null && $message = Yii::$app->request->getRawBody();
-        if (!empty($message) && $xml = simplexml_load_string($message, 'SimpleXMLElement', LIBXML_NOCDATA)) {
+        if (($xml = $this->wechat->parseRequestData($message)) !== []) {
             foreach($xml as $k => $v) {
-                if (in_array($k, ['FromUserName', 'ToUserName'])) {
+                if (in_array($k, ['FromUserName', 'ToUserName'])) { //转换成 from, to 关键字
                     $k = str_replace('UserName', '', $k);
                 }
                 $k[0] = strtolower($k[0]);

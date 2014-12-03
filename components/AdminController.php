@@ -95,18 +95,4 @@ class AdminController extends WechatController
             return $output;
         }
     }
-
-    /**
-     * 后台显示信息关闭menuLayout
-     * @param $message
-     * @param string $status
-     * @param null $redirect
-     * @param null $resultType
-     * @return array|string
-     */
-    public function message($message, $status = 'error', $redirect = null, $resultType = null)
-    {
-        $this->menuLayout = false;
-        return parent::message($message, $status, $redirect, $resultType = null);
-    }
 }

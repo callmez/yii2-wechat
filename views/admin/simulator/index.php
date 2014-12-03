@@ -15,16 +15,16 @@ $this->title = '微信请求模拟器';
 ])
 ?>
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-8">
             <div class="page-header"><h4><?= Html::encode($this->title) ?></h4></div>
             <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
+                <div class="col-sm-offset-3 col-sm-9">
                     <button type="submit" class="btn btn-block btn-primary">发送</button>
                 </div>
             </div>
             <div class="form-group">
-                <label for="wechat" class="col-sm-2 control-label">公 众 号</label>
-                <div class="col-sm-10">
+                <label for="wechat" class="col-sm-3 control-label">公 众 号</label>
+                <div class="col-sm-9">
                     <?php
                         $wechatApiLinks = [];
                         $wechatNames = ['请选择公众号'];
@@ -46,8 +46,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="type" class="col-sm-2 control-label">消息类型</label>
-                <div class="col-sm-10">
+                <label for="type" class="col-sm-3 control-label">消息类型</label>
+                <div class="col-sm-9">
                     <?= Html::radioList('type', null, array_combine(array_keys($typeArray), ArrayHelper::getColumn($typeArray, 'label')), [
                         'item' => function($index, $label, $name, $checked, $value) use ($typeArray){
                             $options = [
@@ -66,8 +66,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="from" class="col-sm-2 control-label">发送用户</label>
-                <div class="col-sm-10">
+                <label for="from" class="col-sm-3 control-label">发送用户</label>
+                <div class="col-sm-9">
                     <?= Html::textInput('from', null, [
                         'class' => 'form-control',
                         'placeholder' => '发送用户的OpenID'
@@ -75,8 +75,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="to" class="col-sm-2 control-label">接收用户</label>
-                <div class="col-sm-10">
+                <label for="to" class="col-sm-3 control-label">接收用户</label>
+                <div class="col-sm-9">
                     <?= Html::textInput('to', null, [
                         'class' => 'form-control',
                         'placeholder' => '接受用户的OpenID(选中了公众号之后,可以不填写)'
@@ -84,8 +84,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="content" class="col-sm-2 control-label">发送内容</label>
-                <div class="col-sm-10">
+                <label for="content" class="col-sm-3 control-label">发送内容</label>
+                <div class="col-sm-9">
                     <?= Html::textarea('content', null, [
                         'class' => 'form-control',
                         'rows' => 6,
@@ -94,8 +94,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="pic_url" class="col-sm-2 control-label">图片地址</label>
-                <div class="col-sm-10">
+                <label for="pic_url" class="col-sm-3 control-label">图片地址</label>
+                <div class="col-sm-9">
                     <?= Html::textInput('pic_url', null, [
                         'class' => 'form-control',
                         'placeholder' => '填写图片地址(暂只支持网络图片)'
@@ -103,8 +103,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="pic_url" class="col-sm-2 control-label">X 坐 标</label>
-                <div class="col-sm-10">
+                <label for="pic_url" class="col-sm-3 control-label">X 坐 标</label>
+                <div class="col-sm-9">
                     <?= Html::textInput('location_x', null, [
                         'class' => 'form-control',
                         'placeholder' => '例如: 10.000001'
@@ -112,8 +112,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="pic_url" class="col-sm-2 control-label">Y 坐 标</label>
-                <div class="col-sm-10">
+                <label for="pic_url" class="col-sm-3 control-label">Y 坐 标</label>
+                <div class="col-sm-9">
                     <?= Html::textInput('location_y', null, [
                         'class' => 'form-control',
                         'placeholder' => '例如: 10.000001'
@@ -121,8 +121,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div id="" class="form-group">
-                <label for="pic_url" class="col-sm-2 control-label">链接地址</label>
-                <div class="col-sm-10">
+                <label for="pic_url" class="col-sm-3 control-label">链接地址</label>
+                <div class="col-sm-9">
                     <?= Html::textInput('url', null, [
                         'class' => 'form-control',
                         'placeholder' => '发送的链接地址'
@@ -130,8 +130,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label for="pic_url" class="col-sm-2 control-label">EventKey</label>
-                <div class="col-sm-10">
+                <label for="pic_url" class="col-sm-3 control-label">EventKey</label>
+                <div class="col-sm-9">
                     <?= Html::textInput('event_key', null, [
                         'class' => 'form-control',
                         'placeholder' => '菜单事件名'
@@ -139,8 +139,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">发送消息</label>
-                <div class="col-sm-10">
+                <label class="col-sm-3 control-label">发送消息</label>
+                <div class="col-sm-9">
                     <?= Html::textarea('send', null, [
                         'class' => 'form-control',
                         'disabled' => true,
@@ -149,8 +149,8 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">接收消息</label>
-                <div class="col-sm-10">
+                <label class="col-sm-3 control-label">接收消息</label>
+                <div class="col-sm-9">
                     <?= Html::textarea('receive', null, [
                         'class' => 'form-control',
                         'disabled' => true,
@@ -159,7 +159,7 @@ $this->title = '微信请求模拟器';
                 </div>
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div id="preview" style="max-width:300px">
                 <div class="page-header"><h4>预览效果 <small><a id="cleanPreview" href="javascript:;">清空记录</a></small></h4></div>
             </div>

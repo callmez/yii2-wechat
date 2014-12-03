@@ -11,16 +11,20 @@ $this->params['breadcrumbs'] = array_merge([
 
 $items = [
     [
-        'label' => '<span class="glyphicon glyphicon-cog"></span> ' . '公众号管理',
+        'label' => '<span class="glyphicon glyphicon-cog"></span> 公众号管理',
         'url' => ['admin/account/index']
     ],
     [
-        'label' => '<span class="glyphicon glyphicon-list"></span> ' . '自定义菜单管理',
+        'label' => '<span class="glyphicon glyphicon-list"></span> 自定义菜单管理',
         'url' => ['admin/menu/index']
     ],
     [
-        'label' => '<span class="glyphicon glyphicon-list"></span> ' . '自动回复管理',
+        'label' => '<span class="glyphicon glyphicon-envelope"></span> 自动回复管理',
         'url' => ['admin/reply/index']
+    ],
+    [
+        'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',
+        'url' => ['admin/simulator/index']
     ]
 ];
 if ($wechat = $this->context->getMainWechat()) {

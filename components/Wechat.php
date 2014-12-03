@@ -2,8 +2,10 @@
 namespace callmez\wechat\components;
 
 use Yii;
-use callmez\wechat\sdk\Wechat as WechatSDK;
+use yii\base\Event;
+use yii\helpers\ArrayHelper;
 use yii\base\InvalidConfigException;
+use callmez\wechat\sdk\Wechat as WechatSDK;
 
 class Wechat extends WechatSDK
 {
@@ -31,6 +33,29 @@ class Wechat extends WechatSDK
             $this->token = $this->model->token;
         }
         parent::init();
+    }
+
+    /**
+     * @see inherit
+     */
+    public function getAccessToken($force = false)
+    {
+        if ($force || $this->_accessToken === null || $this->_accessToken['expire'] < YII_BEGIN_TIME) {
+            $result = !$force &&
+                $this->_accessToken === null &&
+                ArrayHelper::getValue($this->model->access_token, 'expire') > YII_BEGIN_TIME
+                ? $this->model->access_token : false;
+            if ($result === false) {
+                if (!($result = $this->requestAccessToken())) {
+                    throw new HttpException('Fail to get accessToken from wechat server.');
+                }
+                $this->trigger(self::EVENT_AFTER_ACCESS_TOKEN_UPDATE, new Event(['data' => $result]));
+                $this->model->access_token = $result;
+                $this->model->save(false, ['access_token']);
+            }
+            $this->setAccessToken($result);
+        }
+        return $this->_accessToken['token'];
     }
 
     /**

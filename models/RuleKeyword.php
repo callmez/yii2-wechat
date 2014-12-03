@@ -24,6 +24,11 @@ class RuleKeyword extends ActiveRecord
         return '{{%wechat_rule_keyword}}';
     }
 
+    public static function find()
+    {
+        return parent::find()->andWhere([self::tableName() . '.status' => self::STATUS_ACTIVE]);
+    }
+
     public function rules()
     {
         return [
@@ -52,14 +57,9 @@ class RuleKeyword extends ActiveRecord
         ];
     }
 
-    public static function find()
-    {
-        return parent::find()->andWhere(['status' => self::STATUS_ACTIVE]);
-    }
-
     public function getRule()
     {
-        return $this->hasOne(Rule::className(), ['wid' => 'id']);
+        return $this->hasOne(Rule::className(), ['id' => 'rid']);
     }
 
     /**
@@ -74,7 +74,7 @@ class RuleKeyword extends ActiveRecord
         if ($wid !== null) {
             $query->joinWith([
                 'rule' => function($query) use ($wid) {
-                    $query->andWhere(['wid' => $wid]);
+                    $query->andWhere([Rule::tableName() . '.wid' => $wid]);
                 }
             ]);
         }
@@ -90,6 +90,6 @@ class RuleKeyword extends ActiveRecord
             ':typeInclude' => RuleKeyword::TYPE_INCLUDE,
             ':typeRegular' => RuleKeyword::TYPE_REGULAR
         ];
-        return $query->where($conditons)->addParams($params)->all();
+        return $query->andWhere($conditons)->addParams($params)->all();
     }
 }

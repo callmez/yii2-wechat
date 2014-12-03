@@ -1,15 +1,15 @@
 <?php
 
-namespace callmez\wechat\controllers;
+namespace callmez\wechat\controllers\admin;
 
 use callmez\wechat\models\Wechat;
-use callmez\wechat\components\WechatController;
+use callmez\wechat\components\AdminController;
 
 /**
  * 微信模拟器
  * @package app\controllers
  */
-class SimulatorController extends WechatController
+class SimulatorController extends AdminController
 {
     public function actionIndex()
     {

@@ -133,6 +133,11 @@ class Wechat extends ActiveRecord
         return '{{%wechat}}';
     }
 
+    public static function find()
+    {
+        return parent::find()->andWhere([self::tableName() . '.status' => self::STATUS_ACTIVE]);
+    }
+
     public function rules()
     {
         return [
@@ -154,6 +159,33 @@ class Wechat extends ActiveRecord
             'timestamp' => [
                 'class' => 'yii\behaviors\TimestampBehavior',
             ],
+            'serialize' => [
+                'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'access_token',
+                    ActiveRecord::EVENT_BEFORE_UPDATE => 'access_token',
+                ],
+                'value' => function ($event) {
+                    if (is_array($event->sender->access_token)) {
+                        $event->sender->access_token = serialize($event->sender->access_token);
+                    }
+                    return $event->sender->access_token;
+                }
+            ],
+            'unserialize' => [
+                'class' => 'yii\behaviors\AttributeBehavior',
+                'attributes' => [
+                    ActiveRecord::EVENT_AFTER_FIND => 'access_token',
+                    ActiveRecord::EVENT_AFTER_INSERT => 'access_token',
+                    ActiveRecord::EVENT_AFTER_UPDATE => 'access_token',
+                ],
+                'value' => function ($event) {
+                    if (is_string($event->sender->access_token)) {
+                        $event->sender->access_token = unserialize($event->sender->access_token);
+                    }
+                    return $event->sender->access_token;
+                }
+            ]
         ];
     }
 
@@ -178,24 +210,12 @@ class Wechat extends ActiveRecord
         ];
     }
 
-    public static function find()
-    {
-        return parent::find()->andWhere(['status' => self::STATUS_ACTIVE]);
-    }
-
     public function beforeSave($insert)
     {
-        $this->access_token = serialize($this->access_token);
         if ($insert) {
-            $this->generateUniqueHashValue();
+            $this->hash = $this->generateUniqueHashValue();
         }
         return parent::beforeSave($insert);
-    }
-
-    public function afterFind()
-    {
-        $this->access_token = unserialize($this->access_token) ? : [];
-        return parent::afterFind();
     }
 
     /**
@@ -203,9 +223,10 @@ class Wechat extends ActiveRecord
      */
     protected function generateUniqueHashValue()
     {
-        $this->hash = Yii::$app->security->generateRandomString(5);
-        if (static::find()->where(['hash' => $this->hash])->exists()) {
-            $this->generateHashValue();
+        $hash = Yii::$app->security->generateRandomString(5);
+        if (static::find()->where(['hash' => $hash])->exists()) { // 生成最终唯一的hash
+            $hash = $this->generateUniqueHashValue();
         }
+        return $hash;
     }
 }

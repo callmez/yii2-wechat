@@ -23,6 +23,11 @@ class Rule extends ActiveRecord
         return '{{%wechat_rule}}';
     }
 
+    public static function find()
+    {
+        return parent::find()->andWhere([self::tableName() . '.status' => self::STATUS_ACTIVE]);
+    }
+
     public function rules()
     {
         return [
@@ -52,11 +57,6 @@ class Rule extends ActiveRecord
                 'class' => 'yii\behaviors\TimestampBehavior',
             ],
         ];
-    }
-
-    public static function find()
-    {
-        return parent::find()->andWhere(['status' => self::STATUS_ACTIVE]);
     }
 
     public function getKeywords()

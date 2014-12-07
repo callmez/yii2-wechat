@@ -145,7 +145,7 @@ class Wechat extends ActiveRecord
             [['encoding_aes_key'], 'required', 'when' => function ($model) { // 安全模式下encoding_aes_key必填
                 return $model->encoding_type == self::ENCODING_SAFE;
             }, 'whenClient' => 'function (attribute, value) {
-                return $("[name=\'' . Html::getInputName($this, 'encoding_type') . '\']:checked").val() == "' . Wechat::ENCODING_SAFE . '";
+                return $("[name=\'' . Html::getInputName($this, 'encoding_type') . '\']:checked").val() == "' . self::ENCODING_SAFE . '";
             }'],
             [['original'], 'unique'],
             [['type', 'encoding_type'], 'integer'],

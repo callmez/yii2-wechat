@@ -1,6 +1,7 @@
 <?php
 namespace callmez\wechat\models;
 
+use yii\helpers\Html;
 use yii\db\ActiveRecord;
 
 /**
@@ -9,13 +10,19 @@ use yii\db\ActiveRecord;
  */
 class Rule extends ActiveRecord
 {
+    const TYPE_REPLY = 0;
+    const TYPE_PROCCESSOR = 1;
+    public static $types = [
+        self::TYPE_REPLY => '自动回复',
+        self::TYPE_PROCCESSOR => '接口回复'
+    ];
     const STATUS_ACTIVE = 1;
     const STATUS_DISABLED = 0;
     const STATUS_DELETED = -1;
     public static $statuses = [
         self::STATUS_ACTIVE => '启用',
         self::STATUS_DISABLED => '禁用',
-        self::STATUS_DISABLED => '删除'
+        self::STATUS_DELETED => '删除'
     ];
 
     public static function tableName()
@@ -31,10 +38,20 @@ class Rule extends ActiveRecord
     public function rules()
     {
         return [
-            [['wid', 'name'], 'required'],
+            [['wid', 'name', 'type'], 'required'],
+            [['wid', 'status', 'priority'], 'integer'],
+            [['reply'], 'required', 'when' => function ($model) {
+                    return $model->type == self::TYPE_REPLY;
+                }, 'whenClient' => 'function (attribute, value) {
+                return $("[name=\'' . Html::getInputName($this, 'type') . '\']:checked").val() == "' . self::TYPE_REPLY . '";
+            }'],
+            [['processor'], 'required', 'when' => function ($model) {
+                    return $model->type == self::TYPE_PROCCESSOR;
+                }, 'whenClient' => 'function (attribute, value) {
+                return $("[name=\'' . Html::getInputName($this, 'type') . '\']:checked").val() == "' . self::TYPE_PROCCESSOR . '";
+            }'],
             [['priority'], 'number', 'min' => 0, 'max' => 255],
             [['priority'], 'default', 'value' => 0],
-            [['wid', 'status', 'priority'], 'integer']
         ];
     }
 
@@ -45,6 +62,9 @@ class Rule extends ActiveRecord
             'name' => '规则名称',
             'priority' => '优先级',
             'status' => '状态',
+            'type' => '回复类型',
+            'processor' => '处理接口',
+            'reply' => '自动回复内容',
             'created_at' => '创建时间',
             'updated_at' => '更新时间'
         ];

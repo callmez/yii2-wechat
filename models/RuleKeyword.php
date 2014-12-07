@@ -44,7 +44,7 @@ class RuleKeyword extends ActiveRecord
         return [
             'keyword' => '关键字',
             'type' => '匹配类型',
-            'priority' => '优先级'
+            'priority' => '优先级',
         ];
     }
 
@@ -80,9 +80,9 @@ class RuleKeyword extends ActiveRecord
         }
         $conditons = [
             'or',
-            ['and', 'type=:typeMatch', 'keyword=:keyword'], // 直接匹配关键字
-            ['and', 'type=:typeInclude', 'INSTR(:keyword, keyword) > 0'], // 包含关键字
-            ['and', 'type=:typeRegular', ':keyword REGEXP keyword'] // 正则匹配关键字
+            ['and', static::tableName() . '.type=:typeMatch', 'keyword=:keyword'], // 直接匹配关键字
+            ['and', static::tableName() . '.type=:typeInclude', 'INSTR(:keyword, keyword) > 0'], // 包含关键字
+            ['and', static::tableName() . '.type=:typeRegular', ':keyword REGEXP keyword'] // 正则匹配关键字
         ];
         $params = [
             ':keyword' => $keyword,

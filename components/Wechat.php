@@ -36,6 +36,7 @@ class Wechat extends WechatSDK
     }
 
     /**
+     * 使用数据库来存储access_token
      * @see inherit
      */
     public function getAccessToken($force = false)
@@ -82,7 +83,7 @@ class Wechat extends WechatSDK
         return $wechat ? Yii::createObject([
             'class' => static::className(),
             'model' => $wechat
-        ]) : false;
+        ]) : null;
     }
 
 }

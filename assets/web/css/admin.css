@@ -1,4 +1,4 @@
-div.required label:after {
+div.required > label:after {
     content: " *";
     color: red;
 }

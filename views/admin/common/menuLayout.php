@@ -19,7 +19,7 @@ $items = [
         'url' => ['admin/menu/index']
     ],
     [
-        'label' => '<span class="glyphicon glyphicon-envelope"></span> 自动回复管理',
+        'label' => '<span class="glyphicon glyphicon-envelope"></span> 回复管理',
         'url' => ['admin/reply/index']
     ],
     [

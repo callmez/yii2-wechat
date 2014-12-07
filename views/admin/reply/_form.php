@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 use yii\widgets\ListView;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\bootstrap\Tabs;
 ?>
 
 <div class="rule-form">
@@ -18,19 +19,37 @@ use yii\data\ArrayDataProvider;
             'labelOptions' => [
                 'class' => 'control-label col-sm-2'
             ],
-            'template' => "{label}\n<div class=\"col-sm-6\">\n{input}\n</div>\n<div class=\"col-sm-4\">\n{hint}\n{error}\n</div>"
+            'template' => "{label}\n<div class=\"col-sm-6\">\n{input}\n{hint}\n</div>\n<div class=\"col-sm-4\">\n{error}\n</div>"
         ]
     ]); ?>
-
     <?= $form->field($model, 'name')->textInput(['maxlength' => 50]) ?>
+    <?= $form->field($model, 'type')->radioList($model::$types, [
+        'itemOptions' => [
+            'labelOptions' => [
+                'class' => 'radio-inline'
+            ],
+            'data-switch' => 'type',
+            'data-closest' => '.form-group'
+        ]
+    ]) ?>
+    <?= $form->field($model, 'reply')->textarea([
+        'data-switch-name' => 'type',
+        'data-value' => $model::TYPE_REPLY,
+    ]) ?>
+    <?= $form->field($model, 'processor')->textInput([
+        'data-switch-name' => 'type',
+        'data-value' => $model::TYPE_PROCCESSOR,
+        'maxlength' => 100,
+    ]) ?>
     <?php $statuses = $model::$statuses; unset($statuses[$model::STATUS_DELETED]) ?>
     <?= $form->field($model, 'status')->dropDownList($statuses) ?>
-    <?= $form->field($model, 'priority')->textInput() ?>
+    <?= $form->field($model, 'priority')->textInput(['maxlength' => 3]) ?>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button id="addKeyword" class="btn btn-success" type="button"><span class="glyphicon glyphicon-plus"></span> <b>添加关键字</b></button>
+            <button id="addKeyword" class="btn btn-success" type="button"><span class="glyphicon glyphicon-plus"></span> <b>添加触发关键字</b></button>
         </div>
     </div>
+
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <?= ListView::widget([

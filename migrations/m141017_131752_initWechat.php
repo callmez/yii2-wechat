@@ -44,6 +44,9 @@ class m141017_131752_initWechat extends Migration
             'id' => Schema::TYPE_PK,
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
             'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '规则名称'",
+            'type' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0', COMMENT '回复类型'",
+            'reply' => Schema::TYPE_TEXT . " NOT NULL COMMENT '自动回复内容'",
+            'processor' => Schema::TYPE_STRING . "(100) NOT NULL DEFAULT '' COMMENT '处理器, 可以是模块名或者action类的namespace'",
             'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态'",
             'priority' => Schema::TYPE_BOOLEAN . "(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优先级'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
@@ -55,7 +58,6 @@ class m141017_131752_initWechat extends Migration
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属规则ID'",
-            'processor' => Schema::TYPE_STRING . "(100) NOT NULL DEFAULT '' COMMENT '处理器, 可以是模块名或者action类的namspace'",
             'keyword' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '规则关键字'",
             'type' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '关键字类型'",
             'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态'",
@@ -64,39 +66,6 @@ class m141017_131752_initWechat extends Migration
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('keyword', $tableName, 'keyword');
-
-//        //测试数据
-//        $wechat = new Wechat([
-//            'name' => '画卷人生',
-//            'hash' => 'dVbLx',
-//            'token' => 'lL2hcT4c41H3wL21Hlftlz4A4w22j12L',
-//            'access_token' => [
-//                'token' => 'CDo8N0BKhq61zMumyFYTr2noGsq37qJvGaacJhKNEUo09Yaur0e3hE0X9dn2Cs89Z-35jhk9pbHTgpPD0eWiTkzDJOhjtInxCVWTlFRg46A',
-//                'expire' => 1413633588
-//            ],
-//            'account' => 'myslynfsl',
-//            'original' => 'gh_c644bb981dee',
-//            'app_id' => 'wx2ef4c6ce95a2b30f',
-//            'app_secret' => '96916d01a08d154dd64c261eef3dea00',
-//        ]);
-//        $wechat->save();
-//
-//
-//        $rule = new Rule([
-//            'wid' => $wechat->id,
-//            'name' => '测试规则',
-//            'status' => Rule::STATUS_ACTIVE
-//        ]);
-//        $rule->save();
-//
-//        $ruleKeyword = new RuleKeyword([
-//            'rid' => $rule->id,
-//            'keyword' => '^test',
-//            'type' => RuleKeyword::TYPE_REGULAR,
-//            'status' => RuleKeyword::STATUS_ACTIVE,
-//            'processor' => 'app\controllers\wechat\ApiAction'
-//        ]);
-//        $ruleKeyword->save();
     }
 
     public function down()

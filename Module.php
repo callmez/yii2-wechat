@@ -3,8 +3,10 @@
 namespace callmez\wechat;
 
 use Yii;
+use yii\helpers\Url;
 use yii\base\InvalidCallException;
 use callmez\wechat\components\WechatReceiver;
+
 
 class Module extends \yii\base\Module
 {
@@ -22,7 +24,7 @@ class Module extends \yii\base\Module
     public $wechatReceiverRouterId = 'api';
 
     /**
-     *  增加微信接收器控制
+     *  增加微信接收器解析
      * @param string $id
      * @return \yii\base\Controller
      */
@@ -39,21 +41,14 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * 响应请求
+     * 获取微信对接接口地址
+     * @param array $params
+     * @return string
      */
-    protected function getWechatControllerID()
+    public function getWechatReceiverUrl(array $params = array())
     {
-        $request = Yii::$app->request;
-        switch ($request->method) {
-            case 'GET':
-                Yii::$app->response->content = $request->getQueryParam('echostr');
-                return Yii::$app->end();
-            case 'POST':
-                $this->wechat = $this->findWechat(); // 查找公众号
-                $this->message = $this->parseRequest(); // 解析请求信息
-                return $this->matchAction(); // 解析到控制器动作
-            default:
-                return [];
-        }
+        return Url::to(array_merge([
+            implode('/', ['', $this->id, $this->wechatReceiverRouterId])
+        ], $params), true);
     }
 }

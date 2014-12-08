@@ -108,6 +108,11 @@ class WechatReceiver extends Object
         return $controller;
     }
 
+    /**
+     * 返回接口控制器namespace
+     * @param $processor
+     * @return string
+     */
     public static function getProcessorController($processor)
     {
         if (strpos($processor, '\\') !== false) { // 命名空间指定处理类
@@ -118,6 +123,16 @@ class WechatReceiver extends Object
             $controller = 'app\controllers\\' . $processor . '\ProcessorController';
         }
         return $controller;
+    }
+
+    /**
+     * 返回接口控制器路径
+     * @param bool $absolute 是否绝对路径
+     */
+    public static function getProcessorControllerPath($processor, $absolute = false)
+    {
+        $path = Yii::getAlias('@' . str_replace('\\', '/', static::getProcessorController($processor)) . '.php', false);
+        return $absolute ? $path : ltrim(str_replace(Yii::getAlias('@app'), '', $path), '/');
     }
 
     /**

@@ -8,6 +8,10 @@ use yii\web\Response;
 class WechatProcessorController extends WechatController
 {
     /**
+     * @see inherit
+     */
+    public $enableAuthorizeUserInfo = false;
+    /**
      * 微信服务器请求内容
      * @var array
      */
@@ -17,7 +21,6 @@ class WechatProcessorController extends WechatController
      * @var object
      */
     public $wechat;
-
     /**
      * 未经过WechatReceiver类解析的请求或不是来自浏览器的请求都不能访问
      * @throws \yii\web\NotFoundHttpException

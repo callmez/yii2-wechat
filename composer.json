@@ -27,5 +27,8 @@
         "psr-4": {
             "callmez\\wechat\\": ""
         }
+    },
+    "extra": {
+        "bootstrap": "callmez\\wechat\\Bootstrap"
     }
 }

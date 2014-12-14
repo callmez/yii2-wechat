@@ -1,24 +1,22 @@
 <?php
 namespace callmez\wechat\generators\module;
 
-use callmez\wechat\helpers\WechatHelper;
 use Yii;
 use yii\gii\CodeFile;
 use yii\helpers\StringHelper;
 use yii\base\InvalidConfigException;
-use callmez\wechat\helpers\PathHelper;
-use callmez\wechat\components\Receiver;
+use callmez\wechat\Module;
+use callmez\wechat\models\Module as WechatModule;
 
 class Generator extends \yii\gii\Generator
 {
+    public $module;
     public $moduleName;
     public $moduleDescription;
-    public $identifier;
     public $version = '1.0';
     public $type;
-    public $ability;
     public $author;
-    public $url;
+    public $link;
     public $services = ['processor', 'receiver', 'mobile'];
 
     /**
@@ -53,11 +51,25 @@ class Generator extends \yii\gii\Generator
     public function generate()
     {
         $files = [];
-        $moduleSpace = WechatHelper::getModuleNamespace($this->identifier);
+        $moduleNamespace = Module::getModuleNamespace($this->module);
+        $params = [
+            'moduleNamespace' => $moduleNamespace
+        ];
+
+        $files[] = new CodeFile(
+            Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/Installer.php',
+            $this->render('installer.php', $params)
+        );
+
+        $files[] = new CodeFile(
+            Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/Module.php',
+            $this->render('module.php', $params)
+        );
+
         foreach ($this->services as $k => $name) {
             $files[] = new CodeFile(
-                Yii::getAlias('@' . str_replace('\\', '/', $moduleSpace)) . '.php',
-                $this->render("{$name}Controller.php")
+                Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/controllers/'. ucfirst($name) . 'Controller.php',
+                $this->render("controllers/{$name}Controller.php", $params)
             );
         }
         return $files;
@@ -66,7 +78,11 @@ class Generator extends \yii\gii\Generator
     public function rules()
     {
         return [
-            [['moduleName', 'identifier', 'type', 'version', 'author', 'services'], 'required']
+            [['module', 'moduleName', 'type', 'version', 'author', 'services'], 'required'],
+            [['module'], 'match', 'pattern' => '/^[a-z]+[a-zA-Z0-9]+$/', 'message' => '模块名必须为英文字符数字,且必须是小写英文字符开头'],
+            [['moduleName'], 'string', 'length' => [2, 10]],
+            [['type'], 'in', 'range' => array_keys(WechatModule::$types)],
+            [['services'], 'in', 'allowArray' => true, 'range' => array_keys(self::$serviceTypes)]
         ];
     }
 
@@ -78,14 +94,14 @@ class Generator extends \yii\gii\Generator
     public function attributeLabels()
     {
         return [
-            'moduleName' => '模块名称',
+            'module' => '模块名称',
+            'moduleName' => '模块显示名称',
             'moduleDescription' => '模块描述',
-            'identifier' => '模块唯一标识符',
             'version' => '版本',
             'type' => '插件类型',
             'ability' => '功能',
             'author' => '作者',
-            'url' => '链接',
+            'link' => '链接',
             'services' => '服务组件'
         ];
     }
@@ -93,20 +109,16 @@ class Generator extends \yii\gii\Generator
     public function hints()
     {
         return array_merge(parent::hints(), [
-            'moduleName' => '微信扩展模块名称',
+            'module' => '微信模块名称, 唯一模块标识,必须与模块目录命名一直. 如: <code>test</code>',
+            'moduleName' => '微信模块显示名称',
             'moduleDescription' => '微信扩展描述, 请简单描述该模块提供的微信功能',
-            'identifier' => '模块同一标识符, 开发微信服务作为重要的检索查询标记. 如: <code>test</code>',
             'version' => '模块版本, 默认为1.0, 可用作插件升级标识',
             'type' => '模块的类型.用来标记模块提供的微信功能区间',
             'ability' => '模块提供的功能,简单描述即可',
             'author' => '模块开发者姓名或昵称',
-            'url' => '模块的详细链接',
+            'link' => '模块的详细链接',
             'services' => '选择提供的服务组件'
         ]);
     }
 
-    public function getServiceMobileFile()
-    {
-
-    }
 }

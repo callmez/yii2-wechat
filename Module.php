@@ -6,8 +6,8 @@ use Yii;
 use yii\helpers\Url;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
+use callmez\wechat\components\BaseModule;
 use callmez\wechat\models\Module as ModuleModel;
-
 
 class Module extends \yii\base\Module
 {
@@ -32,8 +32,8 @@ class Module extends \yii\base\Module
 
     public function setModule($id, $module)
     {
-        if ($module !== null && !($module instanceof \callmez\wechat\components\Module)) {
-            throw new InvalidConfigException("The wechat sub-module must be instance of 'callmez\\wechat\\components\\Module'");
+        if ($module !== null && !($module instanceof BaseModule)) {
+            throw new InvalidConfigException('The wechat sub-module must be instance of "' . BaseModule::className() . '"');
         }
         parent::setModule($id, $module);
     }
@@ -58,7 +58,7 @@ class Module extends \yii\base\Module
      * @param $name
      * @return string
      */
-    public function getModuleNamespace($name)
+    public static function getModuleNamespace($name)
     {
         if (Yii::$app->hasModule($_name = ($pos = strpos($name, '/')) !== false ? substr($name, 0, $pos) : $name)) {
             $namespace = Yii::$app->getModule($_name)->controllerNamespace . '\\modules\\wechat\\modules';

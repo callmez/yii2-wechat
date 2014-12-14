@@ -17,6 +17,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
+        "symfony/yaml": "*",
         "fabpot/goutte": "~2.0",
         "callmez/yii2-storage": "*",
         "npm-asset/art-template": "3.*",

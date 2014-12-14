@@ -1,7 +1,7 @@
 <?php
 namespace callmez\wechat\components;
 
-class Module extends \yii\base\Module
+class BaseModule extends \yii\base\Module
 {
     /**
      * 微信扩展模块数据表数据Model类

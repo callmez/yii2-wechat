@@ -3,13 +3,13 @@
 namespace callmez\wechat\controllers\admin;
 
 use callmez\wechat\models\Wechat;
-use callmez\wechat\components\AdminController;
+use callmez\wechat\components\WechatAdminController;
 
 /**
  * 微信模拟器
  * @package app\controllers
  */
-class SimulatorController extends AdminController
+class SimulatorController extends WechatAdminController
 {
     public function actionIndex()
     {

@@ -2,8 +2,10 @@
 
 use yii\db\Schema;
 use yii\db\Migration;
-use callmez\wechat\models\Wechat;
+use callmez\wechat\models\Fans;
 use callmez\wechat\models\Rule;
+use callmez\wechat\models\Wechat;
+use callmez\wechat\models\Module;
 use callmez\wechat\models\RuleKeyword;
 
 class m141017_131752_initWechat extends Migration
@@ -38,13 +40,21 @@ class m141017_131752_initWechat extends Migration
         $this->createIndex('hash', $tableName, 'hash', true);
         $this->createIndex('app_id', $tableName, 'app_id');
 
+        // 微信扩展模块表
+        $tableName = Module::tableName();
+        $this->createTable($tableName, [
+            'id' => Schema::TYPE_PK,
+            'name' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '公众号名称'",
+        ]);
+
         // 规则表
         $tableName = Rule::tablename();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
             'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '规则名称'",
-            'type' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0', COMMENT '回复类型'",
+            'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '所属微信模块'",
+            'type' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '回复类型'",
             'reply' => Schema::TYPE_TEXT . " NOT NULL COMMENT '自动回复内容'",
             'processor' => Schema::TYPE_STRING . "(100) NOT NULL DEFAULT '' COMMENT '处理器, 可以是模块名或者action类的namespace'",
             'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态'",
@@ -66,13 +76,25 @@ class m141017_131752_initWechat extends Migration
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('keyword', $tableName, 'keyword');
+
+        $tableName = Fans::tableName();
+        $this->createTable($tableName, [
+            'id' => Schema::TYPE_PK,
+            'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
+            'openId' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '公众号唯一粉丝ID'",
+            'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注状态'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
+            'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
+        ]);
     }
 
     public function down()
     {
         $this->dropTable(Wechat::tableName());
+        $this->dropTable(Module::tableName());
         $this->dropTable(Rule::tableName());
         $this->dropTable(RuleKeyword::tableName());
+        $this->dropTable(Fans::tableName());
         return true;
     }
 }

@@ -10,7 +10,7 @@ $this->title = '自定义菜单管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div ng-app="menuApp">
-    <div ng-controller="menusController">
+    <div ng-controller="MenusController">
         <p><button ng-if="menus.length < 3" ng-click="showModal('new')" id="menuButton" type="button" class="btn btn-block btn-success">添加一级菜单</button></p>
         <p ng-if="menus.length > 3" class="text-danger text-center">一级菜单最多不能超过3个</p>
         <ul dnd-list="menus" class="menus btn-group btn-group-justified list-unstyled mb20">
@@ -96,8 +96,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <script type="text/javascript">
-    var menuApp = angular.module('menuApp', ['dndLists']);
-    menuApp.controller('menusController', function ($scope, $http) {
+    angular.module('menuApp', ['dndLists']).controller('MenusController', function ($scope, $http) {
         $scope._menus = <?= json_encode($menus, JSON_UNESCAPED_UNICODE) ?>;
         $scope.menus = angular.copy($scope._menus);
         $scope.menuTypes = <?= json_encode(\callmez\wechat\models\Wechat::$menuTypes, JSON_UNESCAPED_UNICODE) ?>;

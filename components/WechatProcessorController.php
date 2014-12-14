@@ -2,35 +2,21 @@
 namespace callmez\wechat\components;
 
 use Yii;
-use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\web\NotFoundHttpException;
 
+/**
+ * 微信消息处理控制类, 微信消息类服务需继承此类
+ * @package callmez\wechat\components
+ */
 class WechatProcessorController extends WechatController
 {
+    use ApiTrait;
     /**
-     * @see inherit
+     * 微信请求关闭csrf验证
+     * @var bool
      */
-    public $enableAuthorizeUserInfo = false;
-    /**
-     * 微信服务器请求内容
-     * @var array
-     */
-    public $message = [];
-    /**
-     * 微信SDK类
-     * @var object
-     */
-    public $wechat;
-    /**
-     * 未经过WechatReceiver类解析的请求或不是来自浏览器的请求都不能访问
-     * @throws \yii\web\NotFoundHttpException
-     */
-    public function init()
-    {
-        if ($this->wechat === null) {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
+    public $enableCsrfValidation = false;
 
     /**
      * 响应文本消息
@@ -50,10 +36,10 @@ class WechatProcessorController extends WechatController
      * 响应图文消息
      * 例: $this->responseNews([
      *     [
-     *     'title' => 'test title',
-     *     'description' => 'test description',
-     *     'picUrl' => 'pic url',
-     *     'url' => 'link'
+     *         'title' => 'test title',
+     *         'description' => 'test description',
+     *         'picUrl' => 'pic url',
+     *         'url' => 'link'
      *     ],
      *     [
      *      ...
@@ -172,8 +158,8 @@ class WechatProcessorController extends WechatController
     public function response(array $data)
     {
         $data = array_merge([
-            'FromUserName' => $this->message['to'],
-            'ToUserName' => $this->message['from']
+            'FromUserName' => $this->message->to,
+            'ToUserName' => $this->message->from
         ], $data);
         Yii::info($data, __METHOD__);
         $response = Yii::$app->response;

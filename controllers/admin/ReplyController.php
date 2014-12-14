@@ -9,12 +9,12 @@ use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Rule;
 use callmez\wechat\models\RuleSearch;
 use callmez\wechat\models\RuleKeyword;
-use callmez\wechat\components\AdminController;
+use callmez\wechat\components\WechatAdminController;
 
 /**
  * ReplyController implements the CRUD actions for Rule model.
  */
-class ReplyController extends AdminController
+class ReplyController extends WechatAdminController
 {
 //    public function behaviors()
 //    {
@@ -108,7 +108,7 @@ class ReplyController extends AdminController
     public function updateModel(Rule $model)
     {
         $redirect = false;
-        if ($model->load(Yii::$app->request->post()) && ($model->wid = $this->getMainWechat()->model->id) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && ($model->wid = $this->getWechat()->model->id) && $model->save()) {
             $redirect = ['update', 'id' => $model->id];
         }
         $ruleKewordModel = new RuleKeyword();

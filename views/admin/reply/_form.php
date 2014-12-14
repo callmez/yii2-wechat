@@ -6,7 +6,7 @@ use yii\widgets\ListView;
 use yii\widgets\ActiveForm;
 use yii\data\ArrayDataProvider;
 use yii\data\ActiveDataProvider;
-use callmez\wechat\components\WechatReceiver;
+use callmez\wechat\components\Receiver;
 ?>
 
 <div class="rule-form">
@@ -41,7 +41,7 @@ use callmez\wechat\components\WechatReceiver;
         'data-switch-name' => 'type',
         'data-value' => $model::TYPE_PROCCESSOR,
         'maxlength' => 100,
-    ])->hint($model->getIsNewRecord() ? '' : '响应文件: ' . WechatReceiver::getProcessorControllerPath($model->processor)) ?>
+    ]) ?>
     <?php $statuses = $model::$statuses; unset($statuses[$model::STATUS_DELETED]) ?>
     <?= $form->field($model, 'status')->dropDownList($statuses) ?>
     <?= $form->field($model, 'priority')->textInput(['maxlength' => 3]) ?>

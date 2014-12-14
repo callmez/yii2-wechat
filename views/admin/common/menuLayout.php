@@ -27,7 +27,7 @@ $items = [
         'url' => ['admin/simulator/index']
     ]
 ];
-if ($wechat = $this->context->getMainWechat()) {
+if ($wechat = $this->context->getWechat()) {
     $items = array_merge([
         [
             'label' => '<span class="glyphicon glyphicon-user"></span> ' . $wechat->model->name,

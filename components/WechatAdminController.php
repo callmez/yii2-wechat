@@ -5,14 +5,18 @@ use Yii;
 use yii\web\View;
 use yii\filters\AccessControl;
 
-class AdminController extends WechatController
+/**
+ * 微信后台类
+ * @package callmez\wechat\components
+ */
+class WechatAdminController extends WechatController
 {
-    const SESSION_MAIN_WECHAT = 'admin_main_wechat';
+    const SESSION_WECHAT = 'admin_wechat';
     /**
      * 当前管理的公众号
      * @var object
      */
-    private $_mainWechat;
+    private $_wechat;
 
     /**
      * 验证是否设置公众号
@@ -27,7 +31,7 @@ class AdminController extends WechatController
                 'rules' => [
                     [ // 检查是否设置管理公众号.未设置则条状公众号列表界面
                         'allow' => true,
-                        'matchCallback' => [$this, 'mainWechatRequired']
+                        'matchCallback' => [$this, 'wechatRequired']
                     ],
                 ],
             ]
@@ -38,35 +42,35 @@ class AdminController extends WechatController
      * 设置当前需要管理的公众号
      * @param $id
      */
-    public function setMainWechat(Wechat $wechat)
+    public function setWechat(Wechat $wechat)
     {
-        Yii::$app->session->set(self::SESSION_MAIN_WECHAT, $wechat->model->id);
-        $this->_mainWechat = $wechat;
+        Yii::$app->session->set(self::SESSION_WECHAT, $wechat->model->id);
+        $this->_wechat = $wechat;
     }
 
     /**
      * 获取当前管理的公众号
      * @return bool|object
      */
-    public function getMainWechat()
+    public function getWechat()
     {
-        if ($this->_mainWechat === null) {
-            $id = Yii::$app->session->get(self::SESSION_MAIN_WECHAT);
+        if ($this->_wechat === null) {
+            $id = Yii::$app->session->get(self::SESSION_WECHAT);
             if ($id === null || !($wechat = Wechat::instanceByCondition($id))) {
                 return false;
             }
-            $this->setMainWechat($wechat);
+            $this->setWechat($wechat);
         }
-        return $this->_mainWechat;
+        return $this->_wechat;
     }
 
     /**
      * 判断是否需要设置管理公众号
      * @return bool
      */
-    public function mainWechatRequired()
+    public function wechatRequired()
     {
-        if ($this->getMainWechat() || $this->id == 'admin/account') {
+        if ($this->getWechat() || $this->id == 'admin/account') {
             return true;
         }
         if (!Yii::$app->request->getIsAjax()) { // 先设置跳转地址

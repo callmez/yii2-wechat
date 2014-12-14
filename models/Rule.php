@@ -5,7 +5,7 @@ use yii\helpers\Html;
 use yii\db\ActiveRecord;
 
 /**
- * 规则表
+ * 微信服务规则表
  * @package callmez\wechat\models
  */
 class Rule extends ActiveRecord

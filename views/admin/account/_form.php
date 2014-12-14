@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use callmez\storage\widgets\UploadInput;
 
@@ -28,7 +29,7 @@ use callmez\storage\widgets\UploadInput;
         <div class="form-group">
             <label class="control-label col-sm-3" for="wechat-api">微信对接接口地址</label>
             <div class="col-sm-6">
-                <input type="text" id="wechat-api" class="form-control" value="<?= $this->context->module->getWechatReceiverUrl(['hash' => $model->hash]) ?>" disabled="disabled">
+                <input type="text" id="wechat-api" class="form-control" value="<?= Url::to(['hash' => $model->hash]) ?>" disabled="disabled">
                 <div class="help-block">该地址为微信与服务器通信接口地址<br>请复制该地址并填写至微信后台->开发者中心->URL(服务器地址)</div>
             </div>
         </div>

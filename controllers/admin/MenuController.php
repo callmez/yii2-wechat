@@ -2,13 +2,13 @@
 namespace callmez\wechat\controllers\admin;
 
 use Yii;
-use callmez\wechat\components\AdminController;
+use callmez\wechat\components\WechatAdminController;
 
-class MenuController extends AdminController
+class MenuController extends WechatAdminController
 {
     public function actionIndex()
     {
-        $wechat = $this->getMainWechat();
+        $wechat = $this->getWechat();
         // 创建菜单
         if ($menus = Yii::$app->getRequest()->getBodyParam('menus')) {
             if (!$wechat->createMenu($menus)) {

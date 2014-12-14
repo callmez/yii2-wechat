@@ -5,7 +5,8 @@ namespace callmez\wechat;
 use Yii;
 use yii\helpers\Url;
 use yii\base\InvalidCallException;
-use callmez\wechat\components\WechatReceiver;
+use yii\base\InvalidConfigException;
+use callmez\wechat\models\Module as ModuleModel;
 
 
 class Module extends \yii\base\Module
@@ -13,42 +14,60 @@ class Module extends \yii\base\Module
     public $controllerNamespace = 'callmez\wechat\controllers';
 
     /**
-     * 微信接收器类设置
+     * 微信请求接收器类设置
      * @var string|array
      */
-    public $wechatReceiver = 'callmez\wechat\components\WechatReceiver';
+    public $receiver = 'callmez\wechat\components\Receiver';
     /**
-     * 微信接收器触发的Route ID
+     * 微信请求接收器触发的Route ID
      * @var string
      */
-    public $wechatReceiverRouterId = 'api';
+    public $receiverRouterId = 'api';
 
-    /**
-     *  增加微信接收器解析
-     * @param string $id
-     * @return \yii\base\Controller
-     */
-    public function createControllerByID($id)
+    public function init()
     {
-        if ($this->wechatReceiverRouterId == $id) {
-            $receiver = Yii::createObject($this->wechatReceiver);
-            if (!($receiver instanceof WechatReceiver)) {
-                throw new InvalidCallException('The wechat receiver class must be instance of "' . WechatReceiver::className() . '" .');
-            }
-            return Yii::createObject($receiver->resolveController(), [$id, $this]);
+        parent::init();
+        $this->setModules(array_merge($this->loadModules(), $this->getModules()));
+    }
+
+    public function setModule($id, $module)
+    {
+        if ($module !== null && !($module instanceof \callmez\wechat\components\Module)) {
+            throw new InvalidConfigException("The wechat sub-module must be instance of 'callmez\\wechat\\components\\Module'");
         }
-        return parent::createControllerByID($id);
+        parent::setModule($id, $module);
     }
 
     /**
-     * 获取微信对接接口地址
-     * @param array $params
+     * 从数据库加载模块数据
+     */
+    public function loadModules()
+    {
+        $modules = [];
+        foreach(ModuleModel::find()->select(['id', 'name'])->indexBy('name')->asArray()->each(10) as $name => $data) {
+            $modules[$name] = [
+                'class' => $this->getModuleNamespace($name) . '\Module',
+                'model' => $data['id']
+            ];
+        }
+        return $modules;
+    }
+
+    /**
+     * 获取微信扩展模块命名空间
+     * @param $name
      * @return string
      */
-    public function getWechatReceiverUrl(array $params = array())
+    public function getModuleNamespace($name)
     {
-        return Url::to(array_merge([
-            implode('/', ['', $this->id, $this->wechatReceiverRouterId])
-        ], $params), true);
+        if (Yii::$app->hasModule($_name = ($pos = strpos($name, '/')) !== false ? substr($name, 0, $pos) : $name)) {
+            $namespace = Yii::$app->getModule($_name)->controllerNamespace . '\\modules\\wechat\\modules';
+            if ($pos !== false) {
+                $namespace .= '\\' . substr($name, $pos + 1);
+            }
+        } else {
+            $namespace = 'app\\modules\\wechat\\modules\\' . $name;
+        }
+        return rtrim(str_replace('/', '\\', $namespace), '\\');
     }
 }

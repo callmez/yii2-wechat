@@ -12,14 +12,14 @@ use callmez\wechat\models\Wechat;
 use callmez\wechat\models\WechatSearch;
 use callmez\wechat\models\AccountForm;
 use callmez\wechat\components\Wechat as WechatSdk;
-use callmez\wechat\components\AdminController;
+use callmez\wechat\components\WechatAdminController;
 use callmez\storage\helpers\UploadHelper;
 use callmez\storage\uploaders\AbstractUploader;
 
 /**
  * AccountController implements the CRUD actions for Wechat model.
  */
-class AccountController extends AdminController
+class AccountController extends WechatAdminController
 {
     public function behaviors()
     {
@@ -90,7 +90,7 @@ class AccountController extends AdminController
      */
     public function actionView($id = null)
     {
-        if (!($id === null && $wechat = $this->getMainWechat()) && !($wechat = WechatSdk::instanceByCondition($id))) {
+        if (!($id === null && $wechat = $this->getWechat()) && !($wechat = WechatSdk::instanceByCondition($id))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
         return $this->render('view', [
@@ -109,7 +109,7 @@ class AccountController extends AdminController
         if (!($wechat = WechatSdk::instanceByCondition($id))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $this->setMainWechat($wechat);
+        $this->setWechat($wechat);
         Yii::$app->set('success', '设置管理公众号, 您现在可以管理该公众号了');
         return $this->redirect(['view']);
     }

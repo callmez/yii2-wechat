@@ -7,6 +7,10 @@ use yii\helpers\ArrayHelper;
 use yii\base\InvalidConfigException;
 use callmez\wechat\sdk\Wechat as WechatSDK;
 
+/**
+ * 微信SDK, 增加微信公众号数据库操作
+ * @package callmez\wechat\components
+ */
 class Wechat extends WechatSDK
 {
     /**

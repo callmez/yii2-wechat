@@ -4,7 +4,7 @@ namespace callmez\wechat\models;
 use yii\db\ActiveRecord;
 
 /**
- * 规则出发关键字
+ * 微信服务规则触发关键字表
  * @package callmez\wechat\models
  */
 class RuleKeyword extends ActiveRecord

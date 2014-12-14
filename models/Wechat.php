@@ -7,7 +7,7 @@ use yii\db\ActiveRecord;
 use yii\validators\UniqueValidator;
 
 /**
- * 微信公众号
+ * 微信公众号表
  * @package callmez\wechat\models
  */
 class Wechat extends ActiveRecord

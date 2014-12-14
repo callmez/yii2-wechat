@@ -17,16 +17,16 @@ class Generator extends \yii\gii\Generator
     public $type;
     public $author;
     public $link;
-    public $services = ['processor', 'receiver', 'mobile'];
+    public $services = ['mobile', 'processor'];
 
     /**
      * 服务的组件
      * @var array
      */
     public static $serviceTypes = [
+        'mobile' => '移动页面服务',
         'processor' => '微信消息服务',
-        'receiver' => '微信订阅服务',
-        'mobile' => '移动页面服务'
+        'receiver' => '微信订阅服务'
     ];
 
     /**
@@ -57,6 +57,13 @@ class Generator extends \yii\gii\Generator
         ];
 
         $files[] = new CodeFile(
+            Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/info.yml',
+            $this->render('info.yml.php', [
+                'attributes' => $this->getYmlSettings()
+            ])
+        );
+
+        $files[] = new CodeFile(
             Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/Installer.php',
             $this->render('installer.php', $params)
         );
@@ -67,12 +74,27 @@ class Generator extends \yii\gii\Generator
         );
 
         foreach ($this->services as $k => $name) {
+            $name === 'mobile' && $name = 'default';
             $files[] = new CodeFile(
                 Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/controllers/'. ucfirst($name) . 'Controller.php',
                 $this->render("controllers/{$name}Controller.php", $params)
             );
         }
         return $files;
+    }
+
+    public function getYmlSettings()
+    {
+        return [
+            'module' => $this->module,
+            'version' => $this->version,
+            'name' => $this->moduleName,
+            'description' => $this->moduleDescription,
+            'type' => $this->type,
+            'autor' => $this->author,
+            'link' => $this->link,
+            'services' => $this->services
+        ];
     }
 
     public function rules()
@@ -120,5 +142,4 @@ class Generator extends \yii\gii\Generator
             'services' => '选择提供的服务组件'
         ]);
     }
-
 }

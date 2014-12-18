@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <div class="col-sm-10">
                                     <select ng-model="_menu.type" class="form-control">
                                         <option value="" ng-selected="!_menu.type">显示子菜单</option>
-                                        <option ng-repeat="(key, type) in menuTypes" ng-selected="key == _menu.type"
+                                        <option ng-repeat="key in notSorted(menuTypes)" ng-init="type = menuTypes[key]" ng-selected="key == _menu.type"
                                                 value="{{key}}">{{type.name}}
                                         </option>
                                     </select>
@@ -143,6 +143,14 @@ $this->params['breadcrumbs'][] = $this->title;
             }
 
             $('#menuModal').modal();
+        }
+
+        //ngRepeat排序
+        $scope.notSorted = function(obj){
+            if (!obj) {
+                return [];
+            }
+            return Object.keys(obj);
         }
     });
 </script>

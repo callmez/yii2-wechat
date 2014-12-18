@@ -13,17 +13,6 @@ class Module extends \yii\base\Module
 {
     public $controllerNamespace = 'callmez\wechat\controllers';
 
-    /**
-     * 微信请求接收器类设置
-     * @var string|array
-     */
-    public $receiver = 'callmez\wechat\components\Receiver';
-    /**
-     * 微信请求接收器触发的Route ID
-     * @var string
-     */
-    public $receiverRouterId = 'api';
-
     public function init()
     {
         parent::init();
@@ -46,7 +35,7 @@ class Module extends \yii\base\Module
         $modules = [];
         foreach(ModuleModel::find()->select(['id', 'name'])->indexBy('name')->asArray()->each(10) as $name => $data) {
             $modules[$name] = [
-                'class' => $this->getModuleNamespace($name) . '\Module',
+                'class' => $this->getWechatModuleNamespace($name) . '\Module',
                 'model' => $data['id']
             ];
         }
@@ -58,16 +47,13 @@ class Module extends \yii\base\Module
      * @param $name
      * @return string
      */
-    public static function getModuleNamespace($name)
+    public static function getWechatModuleNamespace($name)
     {
-        if (Yii::$app->hasModule($_name = ($pos = strpos($name, '/')) !== false ? substr($name, 0, $pos) : $name)) {
-            $namespace = Yii::$app->getModule($_name)->controllerNamespace . '\\modules\\wechat\\modules';
-            if ($pos !== false) {
-                $namespace .= '\\' . substr($name, $pos + 1);
-            }
+        if (Yii::$app->hasModule($name)) {
+            $namespace = 'app\\modules\\' . $name . '\\modules\\wechat';
         } else {
             $namespace = 'app\\modules\\wechat\\modules\\' . $name;
         }
-        return rtrim(str_replace('/', '\\', $namespace), '\\');
+        return str_replace('/', '\\', $namespace);
     }
 }

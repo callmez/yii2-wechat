@@ -15,6 +15,10 @@ $items = [
         'url' => ['admin/account/index']
     ],
     [
+        'label' => '<span class="glyphicon glyphicon-plus"></span> 扩展模块管理',
+        'url' => ['admin/module/index']
+    ],
+    [
         'label' => '<span class="glyphicon glyphicon-list"></span> 自定义菜单管理',
         'url' => ['admin/menu/index']
     ],
@@ -36,7 +40,7 @@ if ($wechat = $this->context->getWechat()) {
     ], $items);
 }
 ?>
-<div class="row">
+<div  class="row">
     <div class="col-sm-2 mb20">
         <?= Nav::widget([
             'options' => [

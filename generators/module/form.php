@@ -1,4 +1,5 @@
 <?php
+use Yii;
 use callmez\wechat\models\Module;
 $this->registerCss('
 div.required > label:after {
@@ -8,6 +9,9 @@ div.required > label:after {
 ');
 ?>
 <p class="text-warning"><small><code>*</code>号为必填</small></p>
+<?php if ($generator->module && Yii::$app->hasModule($generator->module)): ?>
+    <p class="alert alert-warning"><?= $generator->module ?>模块已存在, 将创建为<?= $generator->module ?>子模块</p>
+<?php endif ?>
 <?php
 echo $form->field($generator, 'module');
 echo $form->field($generator, 'moduleName');

@@ -155,25 +155,24 @@ class WechatProcessorController extends WechatController
      * @param array $data
      * @return array
      */
-    public function response(array $data)
+    public function response(array $data, $formatterConfig = [])
     {
         $data = array_merge([
             'FromUserName' => $this->message->to,
             'ToUserName' => $this->message->from
         ], $data);
         Yii::info($data, __METHOD__);
-        $response = Yii::$app->response;
-        $response->format = Response::FORMAT_XML;
-        if (is_array($response->formatters[$response->format])) {
-            $response->formatters[$response->format]['rootTag'] = 'xml';
-            $response->formatters[$response->format]['contentType'] = 'text/html';
-        } else {
-            $response->formatters[$response->format] = [
-                'class' => $response->formatters[$response->format],
-                'rootTag' => 'xml',
-                'contentType' => 'text/html',
-            ];
-        }
-        return $data;
+
+        $response = Yii::createObject([
+            'class' => Response::className(),
+            'format' => Response::FORMAT_XML,
+            'data' => $data
+        ]);
+        $response->formatters[Response::FORMAT_XML] = array_merge([
+            'class' => $response->formatters[Response::FORMAT_XML],
+            'rootTag' => 'xml',
+            'contentType' => 'text/html'
+        ], $formatterConfig);
+        return $response;
     }
 }

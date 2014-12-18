@@ -51,7 +51,7 @@ class Generator extends \yii\gii\Generator
     public function generate()
     {
         $files = [];
-        $moduleNamespace = Module::getModuleNamespace($this->module);
+        $moduleNamespace = Module::getWechatModuleNamespace($this->module);
         $params = [
             'moduleNamespace' => $moduleNamespace
         ];
@@ -101,7 +101,7 @@ class Generator extends \yii\gii\Generator
     {
         return [
             [['module', 'moduleName', 'type', 'version', 'author', 'services'], 'required'],
-            [['module'], 'match', 'pattern' => '/^[a-z]+[a-zA-Z0-9]+$/', 'message' => '模块名必须为英文字符数字,且必须是小写英文字符开头'],
+            [['module'], 'match', 'pattern' => '/^[a-z]+[a-zA-Z\d]*$/', 'message' => '模块名必须为英文字符数字,且必须是小写英文字符开头'],
             [['moduleName'], 'string', 'length' => [2, 10]],
             [['type'], 'in', 'range' => array_keys(WechatModule::$types)],
             [['services'], 'in', 'allowArray' => true, 'range' => array_keys(self::$serviceTypes)]

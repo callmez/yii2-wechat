@@ -92,13 +92,13 @@ $this->title = '微信请求模拟器';
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发送消息</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" name="send" ng-disabled="data.msgType != 'other'" rows="8"></textarea>
+                        <textarea ng-model="lastSend" ng-disabled="data.msgType != 'other'" class="form-control" name="send" rows="8"></textarea>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">接收消息</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" name="receive" disabled="" rows="5"></textarea>
+                        <textarea ng-model="lastReceive" class="form-control" name="receive" disabled="" rows="6"></textarea>
                     </div>
                 </div>
             </div>
@@ -172,17 +172,18 @@ $this->title = '微信请求模拟器';
                 disabled: true,
                 text: '提交中...'
             };
-
+            $scope.lastSend = "<xml>\n" + json2xml(data) + "\n</xml>";
             $http({
                 url: $scope.wechats[$scope.wechat].api,
-                data: ("<xml>\n" + json2xml(data) + "\n</xml>").replace(/[\r\n]/g, ''),
+                data: $scope.lastSend.replace(/[\r\n]/g, ''),
                 method: 'post',
                 headers: {"Content-type": "text/xml"}
             }).success(function(response) {
                 $scope.submit = {
                     disabled: false
                 };
-                var xml = angular.fromJson((xml2json(parseXml(response), '')));
+                $scope.lastReceive = response;
+                var xml = angular.fromJson(xml2json(parseXml(response), ''));
                 $scope.addHistory(xml.xml, 'receive');
             }).error(function(data, status, headers, config) {
                 $scope.submit = {
@@ -197,6 +198,7 @@ $this->title = '微信请求模拟器';
             if (data.hasOwnProperty('Articles') && data.Articles.item.hasOwnProperty('Title')) {
                 data.Articles.item = [data.Articles.item];
             }
+
             $scope.history.push({
                 type: type,
                 data: data

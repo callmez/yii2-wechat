@@ -15,8 +15,7 @@ class AdminAsset extends AssetBundle
     ];
     public $depends = [
         'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
-        'callmez\wechat\assets\ArtTemplateAsset'
+        'yii\bootstrap\BootstrapAsset'
     ];
 
 }

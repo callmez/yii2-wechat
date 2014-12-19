@@ -7,6 +7,7 @@ use yii\helpers\Url;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
 use callmez\wechat\components\BaseModule;
+use callmez\wechat\helpers\ModuleHelper;
 use callmez\wechat\models\Module as ModuleModel;
 
 class Module extends \yii\base\Module
@@ -35,25 +36,10 @@ class Module extends \yii\base\Module
         $modules = [];
         foreach(ModuleModel::find()->select(['id', 'name'])->indexBy('name')->asArray()->each(10) as $name => $data) {
             $modules[$name] = [
-                'class' => $this->getWechatModuleNamespace($name) . '\Module',
+                'class' => ModuleHelper::getWechatModuleNamespace($name) . '\Module',
                 'model' => $data['id']
             ];
         }
         return $modules;
-    }
-
-    /**
-     * 获取微信扩展模块命名空间
-     * @param $name
-     * @return string
-     */
-    public static function getWechatModuleNamespace($name)
-    {
-        if (Yii::$app->hasModule($name)) {
-            $namespace = 'app\\modules\\' . $name . '\\modules\\wechat';
-        } else {
-            $namespace = 'app\\modules\\wechat\\modules\\' . $name;
-        }
-        return str_replace('/', '\\', $namespace);
     }
 }

@@ -5,7 +5,7 @@ use Yii;
 use yii\gii\CodeFile;
 use yii\helpers\StringHelper;
 use yii\base\InvalidConfigException;
-use callmez\wechat\Module;
+use callmez\wechat\helpers\ModuleHelper;
 use callmez\wechat\models\Module as WechatModule;
 
 class Generator extends \yii\gii\Generator
@@ -51,14 +51,14 @@ class Generator extends \yii\gii\Generator
     public function generate()
     {
         $files = [];
-        $moduleNamespace = Module::getWechatModuleNamespace($this->module);
+        $moduleNamespace = ModuleHelper::getWechatModuleNamespace($this->module);
         $params = [
             'moduleNamespace' => $moduleNamespace
         ];
 
         $files[] = new CodeFile(
-            Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/info.yml',
-            $this->render('info.yml.php', [
+            Yii::getAlias('@' . str_replace('\\', '/', $moduleNamespace)) . '/wechat.yml',
+            $this->render('wechat.yml.php', [
                 'attributes' => $this->getYmlSettings()
             ])
         );

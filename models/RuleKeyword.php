@@ -86,7 +86,7 @@ class RuleKeyword extends ActiveRecord
         return $query
             ->joinWith($join = [
                 'rule' => function($query) use ($wid) {
-                    $wid !== $query->andWhere([Rule::tableName() . '.wid' => $wid]);
+                    $wid !== null && $query->andWhere([Rule::tableName() . '.wid' => $wid]);
                 }
             ])
             ->andWhere($conditons)

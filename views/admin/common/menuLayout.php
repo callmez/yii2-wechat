@@ -1,4 +1,5 @@
 <?php
+use \Yii;
 use yii\bootstrap\Nav;
 use callmez\wechat\assets\AdminAsset;
 AdminAsset::register($this);
@@ -12,23 +13,27 @@ $this->params['breadcrumbs'] = array_merge([
 $items = [
     [
         'label' => '<span class="glyphicon glyphicon-cog"></span> 公众号管理',
-        'url' => ['admin/account/index']
+        'url' => ['admin/account'],
+        'active' => $this->context->id == 'admin/account'
     ],
     [
         'label' => '<span class="glyphicon glyphicon-plus"></span> 扩展模块管理',
-        'url' => ['admin/module/index']
+        'url' => ['admin/module'],
+        'active' => $this->context->id == 'admin/module'
     ],
     [
         'label' => '<span class="glyphicon glyphicon-list"></span> 自定义菜单管理',
-        'url' => ['admin/menu/index']
+        'url' => ['admin/menu']
     ],
     [
         'label' => '<span class="glyphicon glyphicon-envelope"></span> 回复管理',
-        'url' => ['admin/reply/index']
+        'url' => ['admin/reply'],
+        'active' => $this->context->id == 'admin/reply'
     ],
     [
         'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',
-        'url' => ['admin/simulator/index']
+        'url' => ['admin/simulator'],
+        'active' => $this->context->id == 'admin/simulator'
     ]
 ];
 if ($wechat = $this->context->getWechat()) {

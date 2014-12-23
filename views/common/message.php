@@ -1,4 +1,5 @@
 <?php
+use \Yii;
 $statusSettings = [
     'success' => [
         'alertClass' =>  'alert-success'
@@ -39,7 +40,11 @@ $statusSettings = [
             ') ?>
             <?php endif ?>
             <p>
-                <a href="javascript:history.go(-1);">返回上一页</a>
+                <?php if ($referrer = Yii::$app->request->getReferrer()): ?>
+                    <a href="javascript:window.location.href = '<?= $referrer ?>';">返回上一页</a>
+                <?php else: ?>
+                    <a href="javascript:window.location.href = '<?= Yii::$app->request->getBaseUrl() ?>';">跳转首页</a>
+                <?php endif ?>
             </p>
         </div>
     </div>

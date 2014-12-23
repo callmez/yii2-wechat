@@ -44,8 +44,10 @@ class m141017_131752_initWechat extends Migration
         $tableName = Module::tableName();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
-            'name' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '公众号名称'",
+            'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '模块名称'",
+            'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块标识'",
         ]);
+        $this->createIndex('module', $tableName, 'module', true);
 
         // 规则表
         $tableName = Rule::tablename();

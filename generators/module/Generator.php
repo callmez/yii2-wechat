@@ -91,7 +91,7 @@ class Generator extends \yii\gii\Generator
             'name' => $this->moduleName,
             'description' => $this->moduleDescription,
             'type' => $this->type,
-            'autor' => $this->author,
+            'author' => $this->author,
             'link' => $this->link,
             'services' => $this->services
         ];
@@ -117,7 +117,7 @@ class Generator extends \yii\gii\Generator
     {
         return [
             'module' => '模块名称',
-            'moduleName' => '模块显示名称',
+            'moduleName' => '模块标识',
             'moduleDescription' => '模块描述',
             'version' => '版本',
             'type' => '插件类型',

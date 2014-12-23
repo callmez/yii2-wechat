@@ -2,11 +2,14 @@
 namespace callmez\wechat\helpers;
 
 use Yii;
+use Symfony\Component\Yaml\Yaml;
 
 class ModuleHelper
 {
     /**
      * 获取微信扩展模块命名空间
+     * 微信扩展模块: 放置在@app/modules/wechat/modules下
+     * 专用模块微信扩展: **设置**为该模块下的modules/wechat目录 (优先级会高于微信扩展模块)
      * @param $name
      * @return string
      */
@@ -18,44 +21,5 @@ class ModuleHelper
             $namespace = 'app\\modules\\wechat\\modules\\' . $name;
         }
         return str_replace('/', '\\', $namespace);
-    }
-
-    /**
-     * 查找微信扩展模块
-     */
-    public static function findWechatModules($path = '@app/modules')
-    {
-        $modules = [];
-        $callback = function($dir, $file) use (&$modules) {
-            $path = $dir . '/' . $file;
-            if (!file_exists($path . '/wechat.yml')) {
-                return ;
-            }
-            $modules[] = [
-                'name' => $file,
-                'path' => $path
-            ];
-        };
-        static::readDir(Yii::getAlias($path), function($dir, $file) use ($callback) {
-            $callback($dir, $file);
-            $dir = $dir . '/' . $file . '/modules';
-            if (!is_dir($dir)) {
-                return ;
-            }
-            static::readDir($dir, $callback);
-        });
-        return $modules;
-    }
-
-    protected static function readDir($dir, \Closure $callback)
-    {
-        $handle = opendir($dir);
-        while (($file = readdir($handle)) !== false) {
-            if (in_array($file, ['.', '..'])) {
-                continue;
-            }
-            $callback($dir, $file);
-        }
-        closedir($handle);
     }
 }

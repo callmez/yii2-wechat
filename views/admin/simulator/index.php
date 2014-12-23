@@ -2,6 +2,7 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap\ActiveForm;
+use callmez\wechat\models\Wechat;
 use callmez\wechat\helpers\WechatHelper;
 use callmez\wechat\assets\AngularAsset;
 

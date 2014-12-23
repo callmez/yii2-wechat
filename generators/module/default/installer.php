@@ -9,7 +9,7 @@ class Installer extends BaseInstaller
     {
     }
 
-    public function unstall()
+    public function uninstall()
     {
     }
 }

@@ -149,6 +149,7 @@ class Wechat extends ActiveRecord
             }'],
             [['original'], 'unique'],
             [['type', 'encoding_type'], 'integer'],
+            [['access_token'], 'default', 'value' => ''],
             [['encoding_aes_key', 'address', 'description', 'avatar', 'qr_code'], 'safe']
         ];
     }

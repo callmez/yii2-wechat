@@ -76,9 +76,7 @@ class WechatAdminController extends WechatController
         if (!Yii::$app->request->getIsAjax()) { // 先设置跳转地址
             Yii::$app->user->setReturnUrl(Yii::$app->request->getUrl());
         }
-        Yii::$app->session->setFlash('error', '未设置管理公众号, 请先选则你要管理的公众号');
-        Yii::$app->getResponse()->redirect(['wechat/admin/account']);
-        Yii::$app->end();
+        $this->flash('未设置管理公众号, 请先选则你要管理的公众号', 'error', ['/wechat/admin/account']);
     }
 
     /**

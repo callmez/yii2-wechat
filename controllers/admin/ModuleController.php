@@ -7,8 +7,6 @@ use yii\filters\VerbFilter;
 use yii\data\ArrayDataProvider;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Module;
-use callmez\wechat\models\ModuleSearch;
-use callmez\wechat\helpers\ModuleHelper;
 use callmez\wechat\components\ModuleInstaller;
 use callmez\wechat\components\ModuleDiscovery;
 use callmez\wechat\components\WechatAdminController;
@@ -50,17 +48,17 @@ class ModuleController extends WechatAdminController
 
     protected function moduleList($uninstall = false)
     {
-        $modules = Yii::createObject(ModuleDiscovery::className())->scan();
-        $installedModules = Module::find()->indexBy('name')->all();
+        $availableModules = $this->module->getAvailableModules();
+        $installedModules = $this->module->getInstalledModules();
         $dataProvider = new ArrayDataProvider([
-            'models' => $uninstall ? array_intersect_key($modules, $installedModules) : $modules
+            'models' => $uninstall ? $installedModules : $availableModules
         ]);
         $model = new Module();
 
         if (!empty($_POST['selection'])) {
             $method = $uninstall ? 'uninstallModule' : 'installModule';
             foreach ($_POST['selection'] as $k => $module) {
-                $this->{$method}($module, $installedModules, $modules);
+                $this->{$method}($module, $installedModules, $availableModules);
             }
             return $this->message('配置保存成功', 'success');
         }

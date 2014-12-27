@@ -44,8 +44,17 @@ class m141017_131752_initWechat extends Migration
         $tableName = Module::tableName();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
-            'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '模块名称'",
-            'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块标识'",
+            'name' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块名称'",
+            'module' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '模块标识'",
+            'class' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '模块Module文件namespace'",
+            'version' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '模块版本'",
+            'description' => Schema::TYPE_TEXT . " NOT NULL COMMENT '模块描述'",
+            'type' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '模块所属类型'",
+            'author' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '模块所属类型'",
+            'link' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '模块链接'",
+            'services' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '模块服务列表'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
+            'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('module', $tableName, 'module', true);
 

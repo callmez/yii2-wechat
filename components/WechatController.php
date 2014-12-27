@@ -38,13 +38,26 @@ abstract class WechatController extends Controller
             'redirect' => $redirect
         ];
 
-        if ($resultType === 'json') {
-            Yii::$app->getResponse()->format = Response::FORMAT_JSON;
-            return $data;
-        } elseif ($resultType === 'html') {
-            return $this->render($this->messageLayout, $data);
-        } else {
-            return $message;
+        switch ($resultType) {
+            case 'html':
+                return $this->render($this->messageLayout, $data);
+            case 'json':
+                Yii::$app->getResponse()->format = Response::FORMAT_JSON;
+                return $data;
+            case 'flash':
+                Yii::$app->session->setFlash($status, $message);
+                if ($redirect) {
+                    Yii::$app->getResponse()->redirect($redirect);
+                    Yii::$app->end();
+                }
+                return true;
+            default:
+                return $message;
         }
+    }
+
+
+    public function flash($message, $status = 'error', $redirect = null) {
+        return $this->message($message, $status, $redirect, 'flash');
     }
 }

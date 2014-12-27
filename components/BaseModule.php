@@ -1,6 +1,8 @@
 <?php
 namespace callmez\wechat\components;
 
+use callmez\wechat\models\Module;
+
 /**
  * 微信扩展模块基类, 微信扩展模块必须继承此类
  * @package callmez\wechat\components
@@ -13,18 +15,15 @@ abstract class BaseModule extends \yii\base\Module
      */
     public $_model;
 
-    public function setModel($model)
+    public function setModel(Module $model)
     {
         $this->_model = $model;
     }
 
     public function getModel()
     {
-        if (!is_object($this->_model)) {
-            $this->setModel(\callmez\wechat\models\Module::findOne($this->_model));
-            if ($this->_model === null) {
-                throw new InvalidConfigException('The wechat sub-module must set.');
-            }
+        if ($this->_model === null) {
+            throw new InvalidConfigException('The wechat sub-module must set.');
         }
         return $this->_model;
     }

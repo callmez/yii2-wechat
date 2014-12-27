@@ -2,6 +2,7 @@
 namespace callmez\wechat\components;
 
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\base\Object;
 use Symfony\Component\Yaml\Yaml;
 use callmez\wechat\models\Module;
@@ -22,17 +23,14 @@ class ModuleDiscovery extends Object
 
     private $_modules = [];
 
-    public function setDirectory($directory)
-    {
-        $this->_directory = Yii::getAlias($directory);
-    }
+    public $directoryAlias = '@app/modules';
 
-    public function getDirectory()
+    public function init()
     {
-        if ($this->_directory === null) {
-            $this->setDirectory('@app/modules');
+        if (!Yii::getRootAlias($this->directoryAlias)) {
+            throw new InvalidConfigException('The "directoryAlias" property is not available alias.');
         }
-        return $this->_directory;
+        $this->_directory = Yii::getAlias($this->directoryAlias);
     }
 
     /**
@@ -55,22 +53,24 @@ class ModuleDiscovery extends Object
         $callback = function($file, $wechat = true) {
             if ($wechat) {
                 $type = '_wechatModules';
-                $path = "{$this->getDirectory()}/wechat/modules/{$file}";
+                $path = "/wechat/modules/{$file}";
             } else {
                 $type = '_modules';
-                $path = "{$this->getDirectory()}/{$file}/modules/wechat";
+                $path = "/{$file}/modules/wechat";
             }
-            $configFile = $path . '/' . ModuleInstaller::$configFileName;
-            if (!file_exists($configFile)) {
+            $modulePath = $this->getAbsolutePath($path);
+            $configFile = $modulePath . '/' . ModuleInstaller::$configFileName;
+            if (!file_exists($configFile) || !class_exists($class = $this->getModuleClass($path))) {
                 return ;
             }
             $this->{$type}[$file] = array_merge(Module::$default, Yaml::parse(file_get_contents($configFile)), [
-                'path' => $path
+                'path' => $modulePath,
+                'class' => $class
             ]);
         };
-        $this->readDirectory($this->getDirectory(), function($file) use ($callback) {
+        $this->readDirectory($this->_directory, function($file) use ($callback) {
             if ($file == 'wechat') {
-                $this->readDirectory($this->getDirectory() . '/wechat/modules/', $callback);
+                $this->readDirectory($this->_directory . '/wechat/modules/', $callback);
             } else {
                 $callback($file, false);
             }
@@ -92,5 +92,22 @@ class ModuleDiscovery extends Object
             $callback($file);
         }
         closedir($handle);
+    }
+
+    protected function getAbsolutePath($path)
+    {
+        return $this->_directory . $path;
+    }
+
+    /**
+     * 根据相对路径(例: /wechat/modules/test)获取扩展模块Module文件的class namespace
+     * 微信扩展模块Module文件名必须为Module.php, Class名必须为Module
+     * @param $path
+     * @return string
+     */
+    protected function getModuleClass($path)
+    {
+        $namespace = ltrim($this->directoryAlias . $path . '/Module', '@');
+        return str_replace('/', '\\', $namespace);
     }
 }

@@ -2,11 +2,11 @@
 namespace callmez\wechat\components;
 
 use Yii;
+use yii\base\InvalidParamException;
 use yii\base\Object;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
 use callmez\wechat\models\Module;
-use callmez\wechat\helpers\ModuleHelper;
 
 /**
  * 微信扩展模块安装器
@@ -57,7 +57,12 @@ class ModuleInstaller extends Object
     public function getModuleNamespace()
     {
         if ($this->_moduleNamespace === null) {
-            $this->setModuleNamespace(ModuleHelper::getWechatModuleNamespace($this->getModel()->module));
+            if (!Yii::$app->hasModule('wechat')) {
+                throw new InvalidCallException('The "wechat" module must be set.');
+            } elseif (!($namespace = Yii::$app->getModule('wechat')->getModuleNamespace($this->getModel()->module, true))) {
+                throw new InvalidParamException("The module 'wechat' sub-module '{$this->getModel()->module}' is missing.");
+            }
+            $this->setModuleNamespace($namespace);
         }
         return $this->_moduleNamespace;
     }

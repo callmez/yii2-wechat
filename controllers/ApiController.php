@@ -1,16 +1,20 @@
 <?php
 namespace callmez\wechat\controllers;
 
+use callmez\wechat\models\Module;
 use Yii;
-use yii\rest\Controller;
+use yii\web\Controller;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidRouteException;
 use callmez\wechat\components\Wechat;
 use callmez\wechat\models\RuleKeyword;
+use callmez\wechat\components\ProcessorEvent;
 use callmez\wechat\components\WechatProcessorController;
 
 class ApiController extends Controller
 {
+    const EVENT_BEFORE_PROCESSOR = 'beforeProcessor';
+    const EVENT_AFTER_PROCESSOR = 'afterProcessor';
     /**
      * 微信服务器请求内容
      * @var object
@@ -21,7 +25,16 @@ class ApiController extends Controller
      * @var object
      */
     public $wechat;
+
+    /**
+     * @inheritdoc
+     */
     public $defaultAction = 'receiver';
+    /**
+     * @inheritdoc
+     */
+    public $enableCsrfValidation = false;
+
     /**
      * 微信请求接收器
      * @param $hash
@@ -37,10 +50,42 @@ class ApiController extends Controller
             case 'POST':
                 $this->wechat = $this->findWechat(); // 查找公众号
                 $this->message = $this->parseRequest(); // 解析请求信息
-                return $this->resolveProcessor();
+
+                $this->attachReceiverEvent(); // 注册 模块订阅事件
+
+                $result = null;
+                if($this->beforeProcessor()) {
+                    $result = $this->resolveProcessor(); // 处理请求
+                    $result = $this->afterProcessor($result);
+                }
+                return $result;
             default:
-                return [];
+                return null;
         }
+    }
+
+    /**
+     * 消息处理前事件
+     * @return bool
+     */
+    public function beforeProcessor()
+    {
+        $event = new ProcessorEvent($this->message, $this->wechat);
+        $this->trigger(self::EVENT_BEFORE_PROCESSOR, $event);
+        return $event->isValid;
+    }
+
+    /**
+     * 消息处理后事件
+     * @param $result
+     * @return mixed
+     */
+    public function afterProcessor($result)
+    {
+        $event = new ProcessorEvent($this->message, $this->wechat);
+        $event->result = $result;
+        $this->trigger(self::EVENT_AFTER_PROCESSOR, $event);
+        return $event->result;
     }
 
     /**
@@ -85,11 +130,25 @@ class ApiController extends Controller
     }
 
     /**
+     * 微信扩展模块的订阅接收器 事件注册
+     */
+    public function attachReceiverEvent()
+    {
+        foreach (Module::getInstallerModules() as $k => $module)
+        {
+            if (in_array('receiver', $module->services)) {
+
+            }
+        }
+    }
+
+    /**
      * 消息处理器转发
      * @return mixed
      */
     public function resolveProcessor()
     {
+        $result = null;
         foreach ($this->match() as $param) {
             if ($this->module->hasModule($param['module'])) {
                 $route = implode('/', [$param['module'], 'processor']);
@@ -100,20 +159,23 @@ class ApiController extends Controller
                     list($controller, $actionID) = $parts;
 
                     if (!($controller instanceof WechatProcessorController)) {
-                        throw new InvalidConfigException('The processor controller must be instance of "' . WechatProcessorController::className() . '"');
+                        throw new InvalidConfigException("The processor controller must be instance of '" . WechatProcessorController::className() . "'");
                     }
                     $controller->message = $this->message;
-                    $controller->setWechat($this->wechat);
+                    $controller->wechat = $this->wechat;
 
                     $oldController = Yii::$app->controller;
                     Yii::$app->controller = $controller;
                     $result = $controller->runAction($actionID, Yii::$app->requestedParams);
                     Yii::$app->controller = $oldController;
 
-                    return $result;
+                    if ($result !== null) {
+                        break;
+                    }
                 }
             }
         }
+        return $result;
     }
 
     /**

@@ -7,7 +7,7 @@ use yii\helpers\Url;
 use yii\base\InvalidCallException;
 use yii\base\InvalidConfigException;
 use callmez\wechat\components\BaseModule;
-use callmez\wechat\helpers\ModuleHelper;
+use callmez\wechat\components\ModuleDiscovery;
 use callmez\wechat\models\Module as ModuleModel;
 
 class Module extends \yii\base\Module
@@ -17,9 +17,16 @@ class Module extends \yii\base\Module
     public function init()
     {
         parent::init();
-        $this->setModules(array_merge($this->loadModules(), $this->getModules()));
+
+        $this->loadModules();
     }
 
+    /**
+     * 微信扩展模块必须继承BaseModule
+     * @param string $id
+     * @param array|null|\yii\base\Module $module
+     * @throws \yii\base\InvalidConfigException
+     */
     public function setModule($id, $module)
     {
         if ($module !== null && !($module instanceof BaseModule)) {
@@ -29,17 +36,67 @@ class Module extends \yii\base\Module
     }
 
     /**
-     * 从数据库加载模块数据
+     * 加载已安装的微信扩展模块
      */
     public function loadModules()
     {
-        $modules = [];
-        foreach(ModuleModel::find()->select(['id', 'name'])->indexBy('name')->asArray()->each(10) as $name => $data) {
-            $modules[$name] = [
-                'class' => ModuleHelper::getWechatModuleNamespace($name) . '\Module',
-                'model' => $data['id']
+        $modules = array_map(function($module) {
+            return [
+                'class' => $module->class,
+                'model' => $module
             ];
+        }, $this->getInstalledModules());
+
+        $this->setModules(array_merge($modules, $this->getModules()));
+    }
+
+    private $_availableModules;
+    /**
+     * 获取可用的微信扩展模块数据
+     * @return mixed
+     */
+    public function getAvailableModules()
+    {
+        if ($this->_availableModules === null) {
+            $this->_availableModules = Yii::createObject([
+                'class' => ModuleDiscovery::className()
+            ])->scan();
         }
-        return $modules;
+        return $this->_availableModules;
+    }
+
+    private $_installedModules;
+    /**
+     * 获取已安装的微信扩展模块数据
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public function getInstalledModules()
+    {
+        if ($this->_installedModules === null) {
+            $this->_installedModules = ModuleModel::find()->indexBy('module')->all();
+        }
+        return $this->_installedModules;
+    }
+
+    /**
+     * 获取微信扩展模块Module文件的namespace
+     * @param $id
+     * @param bool $includeAvailableModules 是否包含可用扩展模块
+     * @return bool
+     */
+    public function getModuleNamespace($id, $includeAvailableModules = false)
+    {
+        $namespace = null;
+        if (($modules = $this->getModules()) && isset($modules[$id])) {
+            if (!is_array($modules[$id])) {
+                $namespace = $modules[$id];
+            } elseif (isset($modules[$id]['class'])) {
+                $namespace = $modules[$id]['class'];
+            }
+        } elseif ($includeAvailableModules) { // 可用模块路径
+            $modules = $this->getAvailableModules();
+            isset($modules[$id]) && isset($modules[$id]['class']) && $namespace = $modules[$id]['class'];
+        }
+        return $namespace;
     }
 }

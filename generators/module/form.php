@@ -1,5 +1,5 @@
 <?php
-use Yii;
+use \Yii;
 use callmez\wechat\models\Module;
 $this->registerCss('
 div.required > label:after {
@@ -9,12 +9,9 @@ div.required > label:after {
 ');
 ?>
 <p class="text-warning"><small><code>*</code>号为必填</small></p>
-<?php if ($generator->module && Yii::$app->hasModule($generator->module)): ?>
-    <p class="alert alert-warning"><?= $generator->module ?>模块已存在, 将创建为<?= $generator->module ?>子模块</p>
-<?php endif ?>
 <?php
-echo $form->field($generator, 'module');
 echo $form->field($generator, 'moduleName');
+echo $form->field($generator, 'module');
 echo $form->field($generator, 'type')->radioList(Module::$types, [
     'itemOptions' => [
         'labelOptions' => [
@@ -25,7 +22,7 @@ echo $form->field($generator, 'type')->radioList(Module::$types, [
 echo $form->field($generator, 'author');
 echo $form->field($generator, 'link');
 echo $form->field($generator, 'moduleDescription')->textarea();
-echo $form->field($generator, 'services')->checkboxList($generator::$serviceTypes, [
+echo $form->field($generator, 'services')->checkboxList(Module::$serviceTypes, [
     'itemOptions' => [
         'labelOptions' => [
             'class' => 'checkbox-inline'
@@ -33,4 +30,12 @@ echo $form->field($generator, 'services')->checkboxList($generator::$serviceType
     ]
 ]);
 echo $form->field($generator, 'version');
+?>
+<?php
+if ($generator->module && Yii::$app->hasModule($generator->module)) {
+    $js = <<<EOF
+    $('.default-view-results').prepend('<div class="alert alert-danger">模块{$generator->module}已经存在, 扩展模块创建路径将创建到{$generator->module}/modules目录中</div>');
+EOF;
+    $this->registerJs($js);
+}
 ?>

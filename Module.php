@@ -65,17 +65,13 @@ class Module extends \yii\base\Module
         return $this->_availableModules;
     }
 
-    private $_installedModules;
     /**
      * 获取已安装的微信扩展模块数据
      * @return array|\yii\db\ActiveRecord[]
      */
     public function getInstalledModules()
     {
-        if ($this->_installedModules === null) {
-            $this->_installedModules = ModuleModel::find()->indexBy('module')->all();
-        }
-        return $this->_installedModules;
+        return ModuleModel::getInstalledModules();
     }
 
     /**

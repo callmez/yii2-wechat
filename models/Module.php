@@ -117,4 +117,27 @@ class Module extends ActiveRecord
             ]
         ];
     }
+
+    /**
+     * 获取已安装的微信扩展模块数据
+     * @return array|\yii\db\ActiveRecord[]
+     */
+    public static function getInstalledModules()
+    {
+        return static::getDb()->cache(function() {
+            return static::find()->indexBy('module')->all();
+        });
+    }
+
+    /**
+     * 获取含有指定服务的微信扩展模块数据
+     * @param $service string|array
+     */
+    public static function getServiceModules($service)
+    {
+        return array_filter(static::getInstalledModules(), function($module) use ($service) {
+            $result = array_intersect($module->services, (array)$service);
+            return !empty($result);
+        });
+    }
 }

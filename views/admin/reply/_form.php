@@ -7,6 +7,7 @@ use yii\widgets\ActiveForm;
 use yii\data\ArrayDataProvider;
 use yii\data\ActiveDataProvider;
 use callmez\wechat\components\Receiver;
+use callmez\wechat\helpers\ModuleHelper;
 ?>
 
 <div class="rule-form">
@@ -37,12 +38,11 @@ use callmez\wechat\components\Receiver;
         'data-switch-name' => 'type',
         'data-value' => $model::TYPE_REPLY,
     ]) ?>
-    <?= $form->field($model, 'processor')->textInput([
+    <?= $form->field($model, 'processor')->dropDownList($modules, [
         'data-switch-name' => 'type',
         'data-value' => $model::TYPE_PROCCESSOR,
         'maxlength' => 100,
     ]) ?>
-    <?php $statuses = $model::$statuses; unset($statuses[$model::STATUS_DELETED]) ?>
     <?= $form->field($model, 'status')->dropDownList($statuses) ?>
     <?= $form->field($model, 'priority')->textInput(['maxlength' => 3]) ?>
     <div class="form-group">

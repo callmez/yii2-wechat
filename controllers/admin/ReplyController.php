@@ -3,6 +3,7 @@
 namespace callmez\wechat\controllers\admin;
 
 
+use callmez\wechat\models\Module;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
@@ -62,7 +63,9 @@ class ReplyController extends WechatAdminController
      */
     public function actionCreate()
     {
-        return $this->updateModel(new Rule());
+        $rule = new Rule();
+        $rule->type = Rule::TYPE_REPLY;
+        return $this->updateModel($rule);
     }
 
     /**
@@ -108,7 +111,8 @@ class ReplyController extends WechatAdminController
     public function updateModel(Rule $model)
     {
         $redirect = false;
-        if ($model->load(Yii::$app->request->post()) && ($model->wid = $this->getWechat()->model->id) && $model->save()) {
+        $request = Yii::$app->request;
+        if ($model->load($request->post()) && ($model->wid = $this->getWechat()->model->id) && $model->save()) {
             $redirect = ['update', 'id' => $model->id];
         }
         $ruleKewordModel = new RuleKeyword();
@@ -116,8 +120,15 @@ class ReplyController extends WechatAdminController
         if ($redirect && empty($keywords)) {
             return $this->redirect($redirect);
         }
+        $statuses = $model::$statuses;
+        unset($statuses[$model::STATUS_DELETED]);
+        $modules = array_map(function($module) {
+            return $module->name;
+        }, Module::getServiceModules('processor'));
         return $this->render('update', [
             'model' => $model,
+            'modules' => $modules,
+            'statuses' => $statuses,
             'keywords' => $keywords,
             'ruleKewordModel' => $ruleKewordModel,
         ]);

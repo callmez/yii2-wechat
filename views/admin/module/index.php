@@ -14,15 +14,15 @@ $columns = [
     [
         'class' => 'yii\grid\CheckBoxColumn',
         'checkboxOptions' => function($model, $key, $index, $view) use ($installedModules, $uninstall) {
-                $options = [
-                    'value' => $key
-                ];
-                if (!$uninstall && array_key_exists($key, $installedModules)) {
-                    $options['checked'] = true;
-                    $options['disabled'] = true;
-                }
-                return $options;
-            },
+            $options = [
+                'value' => $key
+            ];
+            if (!$uninstall && array_key_exists($key, $installedModules)) {
+                $options['checked'] = true;
+                $options['disabled'] = true;
+            }
+            return $options;
+        },
         'options' => [
             'width' => 30
         ]

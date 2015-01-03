@@ -3,17 +3,17 @@
 namespace callmez\wechat\controllers\admin;
 
 
-use callmez\wechat\models\Module;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Rule;
 use callmez\wechat\models\RuleSearch;
 use callmez\wechat\models\RuleKeyword;
+use callmez\wechat\models\Module;
 use callmez\wechat\components\WechatAdminController;
 
 /**
- * ReplyController implements the CRUD actions for Rule model.
+ * 消息回复管理
  */
 class ReplyController extends WechatAdminController
 {
@@ -30,15 +30,18 @@ class ReplyController extends WechatAdminController
 //    }
 
     /**
-     * Lists all Rule models.
-     * @return mixed
+     * 显示规则列表
+     * @param string $module 模块规则, 为空则为自动回复规则
+     * @return string
      */
-    public function actionIndex()
+    public function actionIndex($module = null)
     {
         $searchModel = new RuleSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->query->filterModule($module);
 
         return $this->render('index', [
+            'module' => $module,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -61,11 +64,11 @@ class ReplyController extends WechatAdminController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($module = null)
     {
         $rule = new Rule();
         $rule->type = Rule::TYPE_REPLY;
-        return $this->updateModel($rule);
+        return $this->updateModel($rule, $module);
     }
 
     /**
@@ -74,9 +77,9 @@ class ReplyController extends WechatAdminController
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionUpdate($id, $module = null)
     {
-        return $this->updateModel($this->findModel($id));
+        return $this->updateModel($this->findModel($id), $module);
     }
 
     /**
@@ -108,7 +111,7 @@ class ReplyController extends WechatAdminController
         }
     }
 
-    public function updateModel(Rule $model)
+    public function updateModel(Rule $model, $module = null)
     {
         $redirect = false;
         $request = Yii::$app->request;
@@ -127,6 +130,7 @@ class ReplyController extends WechatAdminController
         }, Module::getServiceModules('processor'));
         return $this->render('update', [
             'model' => $model,
+            'module' => $module,
             'modules' => $modules,
             'statuses' => $statuses,
             'keywords' => $keywords,

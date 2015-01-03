@@ -1,5 +1,6 @@
 <?php
 
+use Yii;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php  echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('创建回复规则', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('创建回复规则', ['create', 'module' => $module], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -74,5 +75,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-
 </div>

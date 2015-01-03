@@ -5,7 +5,6 @@ use Yii;
 use yii\gii\CodeFile;
 use yii\helpers\StringHelper;
 use yii\base\InvalidConfigException;
-use callmez\wechat\helpers\ModuleHelper;
 use callmez\wechat\models\Module as ModuleModel;
 
 

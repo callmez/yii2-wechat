@@ -12,8 +12,6 @@ use callmez\wechat\models\Rule;
  */
 class RuleSearch extends Rule
 {
-    const STATUS_ACTIVE = 0;
-    const STATUS_DELETE = -1;
     /**
      * @inheritdoc
      */
@@ -21,7 +19,7 @@ class RuleSearch extends Rule
     {
         return [
             [['id', 'wid', 'status', 'priority', 'created_at', 'updated_at'], 'integer'],
-            [['name'], 'safe'],
+            [['name', 'module'], 'safe'],
         ];
     }
 
@@ -49,7 +47,7 @@ class RuleSearch extends Rule
             'query' => $query,
         ]);
 
-        if (!($this->load($params) && $this->validate())) {
+        if ($this->load($params) && !$this->validate()) {
             return $dataProvider;
         }
 
@@ -61,6 +59,7 @@ class RuleSearch extends Rule
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
+
 
         $query->andFilterWhere(['like', 'name', $this->name]);
 

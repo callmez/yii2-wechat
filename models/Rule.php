@@ -1,6 +1,7 @@
 <?php
 namespace callmez\wechat\models;
 
+use Yii;
 use yii\helpers\Html;
 use yii\db\ActiveRecord;
 
@@ -11,10 +12,10 @@ use yii\db\ActiveRecord;
 class Rule extends ActiveRecord
 {
     const TYPE_REPLY = 0;
-    const TYPE_PROCCESSOR = 1;
+    const TYPE_PROCESSOR= 1;
     public static $types = [
         self::TYPE_REPLY => '自动回复',
-        self::TYPE_PROCCESSOR => '接口回复'
+        self::TYPE_PROCESSOR => '接口回复'
     ];
     const STATUS_ACTIVE = 1;
     const STATUS_DISABLED = 0;
@@ -32,7 +33,8 @@ class Rule extends ActiveRecord
 
     public static function find()
     {
-        return parent::find()->andWhere([self::tableName() . '.status' => self::STATUS_ACTIVE]);
+        return Yii::createObject(RuleQuery::className(), [get_called_class()])
+            ->andWhere([self::tableName() . '.status' => self::STATUS_ACTIVE]);
     }
 
     public function rules()
@@ -46,9 +48,9 @@ class Rule extends ActiveRecord
                 return $("[name=\'' . Html::getInputName($this, 'type') . '\']:checked").val() == "' . self::TYPE_REPLY . '";
             }'],
             [['processor'], 'required', 'when' => function ($model) {
-                    return $model->type == self::TYPE_PROCCESSOR;
+                    return $model->type == self::TYPE_PROCESSOR;
                 }, 'whenClient' => 'function (attribute, value) {
-                return $("[name=\'' . Html::getInputName($this, 'type') . '\']:checked").val() == "' . self::TYPE_PROCCESSOR . '";
+                return $("[name=\'' . Html::getInputName($this, 'type') . '\']:checked").val() == "' . self::TYPE_PROCESSOR . '";
             }'],
             [['priority'], 'number', 'min' => 0, 'max' => 255],
             [['priority'], 'default', 'value' => 0],

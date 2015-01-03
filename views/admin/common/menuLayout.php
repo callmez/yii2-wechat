@@ -1,7 +1,8 @@
 <?php
 use \Yii;
 use yii\bootstrap\Nav;
-use callmez\wechat\models\Module;
+use callmez\wechat\widgets\Alert;
+
 use callmez\wechat\assets\AdminAsset;
 AdminAsset::register($this);
 $this->params['breadcrumbs'] = array_merge([
@@ -28,7 +29,7 @@ $items = [
         'active' => $this->context->id == 'admin/menu'
     ],
     [
-        'label' => '<span class="glyphicon glyphicon-envelope"></span> 回复管理',
+        'label' => '<span class="glyphicon glyphicon-envelope"></span> 自动回复',
         'url' => ['admin/reply'],
         'active' => $this->context->id == 'admin/reply'
     ],
@@ -48,8 +49,8 @@ if ($wechat = $this->context->getWechat()) {
 }
 
 ?>
-<?= \callmez\wechat\widgets\Alert::widget() ?>
-<div  class="row">
+<?= Alert::widget() ?>
+<div class="row">
     <div class="col-sm-2 mb20">
         <?= Nav::widget([
             'options' => [

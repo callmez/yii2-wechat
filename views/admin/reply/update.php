@@ -12,6 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="rule-update">
     <?= $this->render('_form', [
         'model' => $model,
+        'module' => $module,
         'modules' => $modules,
         'statuses' => $statuses,
         'keywords' => $keywords,

@@ -6,16 +6,18 @@ use yii\widgets\ListView;
 use yii\widgets\ActiveForm;
 use yii\data\ArrayDataProvider;
 use yii\data\ActiveDataProvider;
-use callmez\wechat\components\Receiver;
-use callmez\wechat\helpers\ModuleHelper;
+use callmez\wechat\assets\AngularAsset;
+
+AngularAsset::register($this);
 ?>
 
-<div class="rule-form">
+<div ng-app="ruleApp" class="rule-form">
     <?php $form = ActiveForm::begin([
         // 如果提交的关键字中有错误需要现在页面,因为规则已经创建了. 直接提交更新页面
         'action' => $this->context->action->id == 'create' && !$model->getIsNewRecord() ? ['update', 'id' => $model->id] : '',
         'options' => [
-            'class' => 'form-horizontal'
+            'class' => 'form-horizontal',
+            'ng-controller' => 'ReplyController'
         ],
         'fieldConfig' => [
             'labelOptions' => [
@@ -25,32 +27,33 @@ use callmez\wechat\helpers\ModuleHelper;
         ]
     ]); ?>
     <?= $form->field($model, 'name')->textInput(['maxlength' => 50]) ?>
-    <?= $form->field($model, 'type')->radioList($model::$types, [
-        'itemOptions' => [
-            'labelOptions' => [
-                'class' => 'radio-inline'
-            ],
-            'data-switch' => 'type',
-            'data-closest' => '.form-group'
-        ]
-    ]) ?>
-    <?= $form->field($model, 'reply')->textarea([
-        'data-switch-name' => 'type',
-        'data-value' => $model::TYPE_REPLY,
-    ]) ?>
-    <?= $form->field($model, 'processor')->dropDownList($modules, [
-        'data-switch-name' => 'type',
-        'data-value' => $model::TYPE_PROCCESSOR,
-        'maxlength' => 100,
-    ]) ?>
+
+    <?php if ($module): // 模块只能接口回复模式 ?>
+        <?= Html::activeHiddenInput($model, 'type', ['value' => $model::TYPE_PROCESSOR]) ?>
+        <?= Html::activeHiddenInput($model, 'processor', ['value' => $module]) ?>
+    <?php else: // 默认是自动回复模式 ?>
+        <?= Html::activeHiddenInput($model, 'type', ['value' => $model::TYPE_REPLY]) ?>
+        <?= $form->field($model, 'reply')->textarea() ?>
+    <?php endif ?>
+
     <?= $form->field($model, 'status')->dropDownList($statuses) ?>
     <?= $form->field($model, 'priority')->textInput(['maxlength' => 3]) ?>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-            <button id="addKeyword" class="btn btn-success" type="button"><span class="glyphicon glyphicon-plus"></span> <b>添加触发关键字</b></button>
+            <button ng-click="addKeyword()" class="btn btn-success" type="button">
+                <span class="glyphicon glyphicon-plus"></span> <b>添加触发关键字</b>
+            </button>
         </div>
     </div>
-
+    <div ng-repeat="(key, keyword) in keywords" class="row">
+        <div class="col-sm-offset-2 col-sm-10">
+            <?= $this->render('_ruleKeyword', [
+                'model' => $ruleKewordModel,
+                'form' => $form,
+                'index' => '{{key}}'
+            ]) ?>
+        </div>
+    </div>
     <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
             <?= ListView::widget([
@@ -91,25 +94,12 @@ use callmez\wechat\helpers\ModuleHelper;
     </div>
     <?php ActiveForm::end(); ?>
 </div>
-<script id="keywordTemplate" type="text/html">
-    <div class="row">
-        <div class="col-sm-offset-2 col-sm-10">
-            <?= $this->render('_ruleKeyword', [
-                'model' => $ruleKewordModel,
-                'form' => $form
-            ]) ?>
-        </div>
-    </div>
-</script>
-<?php
-$keywordsNum = count($keywords);
-$script = <<<EOF
-    var i = {$keywordsNum};
-    $('#addKeyword').click(function() {
-        $(this)
-            .closest('.form-group')
-            .after(template('keywordTemplate')().replace(/(name="[^"\[]+)(\[)([^"]+")/g, '\\$1[new][' + i++ + '][\\$3'));
+<script type="text/javascript">
+    angular.module('ruleApp', []).controller('ReplyController', function ($scope, $http) {
+        $scope.keywords = [];
 
+        $scope.addKeyword = function() {
+            $scope.keywords.push([]);
+        };
     });
-EOF;
-$this->registerJs($script);
+</script>

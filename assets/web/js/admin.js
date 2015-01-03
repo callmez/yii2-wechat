@@ -1,11 +1,22 @@
 jQuery(function($) {
+
+    /**
+     * 切换
+     *
+     * data-switch="name"
+     * data-closest="selector"
+     * data-value="value"
+     *
+     * data-switch-target="name"
+     * data-value="value"
+     */
     $('[data-switch]').each(function() {
         var _this = $(this);
         var name = _this.data('switch');
         if (!name) {
             return;
         }
-        var target = $('[data-switch-name="' + name + '"]');
+        var target = $('[data-switch-target="' + name + '"]');
         var closest = _this.data('closest') || target;
         var closestFunction = _this.data('closest') ? 'closest' : 'constructor';
         var selector;

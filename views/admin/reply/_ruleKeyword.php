@@ -1,6 +1,6 @@
 <?php
 use yii\helpers\Html;
-$prefix = isset($index) ? $model->getIsNewRecord() ? "[new][{$index}]" : "[{$index}]" : '';
+$prefix = isset($index) ? ($model->getIsNewRecord() ? "[new][{$index}]" : "[{$index}]") : '';
 ?>
 <div class="panel panel-default">
     <div class="panel-heading">

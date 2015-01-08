@@ -12,7 +12,7 @@ $this->title = '扩展模块管理';
 $this->params['breadcrumbs'][] = $this->title;
 $columns = [
     [
-        'class' => 'yii\grid\CheckBoxColumn',
+        'class' => 'yii\grid\CheckboxColumn',
         'checkboxOptions' => function($model, $key, $index, $view) use ($installedModules, $uninstall) {
             $options = [
                 'value' => $key

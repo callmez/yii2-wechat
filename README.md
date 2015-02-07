@@ -4,6 +4,9 @@ Yii-wechat
 
 感谢选择 Yii-wechat，基于 [Yii2](https://github.com/yiisoft/yii2) 框架基础实现的模块。
 
+# 鉴于整个微信生态的规模和模块的局限性(模块不能最大提现微信的功能定制型), 决定放弃此项并着手移植到[HuaJuan](https://github.com/callmez/huajuan), 在移植完成后将会删除此项目, 谢谢关注.
+
+
 环境条件
 -------
 简而言之：

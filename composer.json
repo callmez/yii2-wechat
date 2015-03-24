@@ -17,10 +17,7 @@
     ],
     "require": {
         "yiisoft/yii2": "*",
-        "symfony/yaml": "2.*",
-        "fabpot/goutte": "~2.0",
-        "callmez/yii2-storage": "*",
-        "npm-asset/art-template": "*",
+        "callmez/yii2-wechat-sdk" : "*",
         "bower-asset/angular": "1.2.*@stable | 1.3.*@stable",
         "bower-asset/angular-drag-and-drop-lists": "1.*"
     },

@@ -3,96 +3,27 @@
 namespace callmez\wechat;
 
 use Yii;
-use yii\helpers\Url;
-use yii\base\InvalidCallException;
-use yii\base\InvalidConfigException;
-use callmez\wechat\components\BaseModule;
-use callmez\wechat\components\ModuleDiscovery;
-use callmez\wechat\models\Module as ModuleModel;
 
+// 定义毫秒时间戳
+defined('TIMESTAMP') or define('TIMESTAMP', (int)YII_BEGIN_TIME);
+// 自动注册存储目录(可以在config中配置)
+isset(Yii::$aliases['@storage']) or Yii::setAlias('@storage', Yii::getAlias('@web/storage'));
+isset(Yii::$aliases['@storageRoot']) or Yii::setAlias('@storageRoot', Yii::getAlias('@webroot/storage'));
+
+/**
+ * 微信模块
+ * @package callmez\wechat
+ */
 class Module extends \yii\base\Module
 {
+    /**
+     * 模块的名称
+     * @var string
+     */
+    public $name = '微信';
+    /**
+     * 模块控制器的命名空间
+     * @var string
+     */
     public $controllerNamespace = 'callmez\wechat\controllers';
-
-    public function init()
-    {
-        parent::init();
-
-        $this->loadModules();
-    }
-
-    /**
-     * 微信扩展模块必须继承BaseModule
-     * @param string $id
-     * @param array|null|\yii\base\Module $module
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function setModule($id, $module)
-    {
-        if ($module !== null && !($module instanceof BaseModule)) {
-            throw new InvalidConfigException('The wechat sub-module must be instance of "' . BaseModule::className() . '"');
-        }
-        parent::setModule($id, $module);
-    }
-
-    /**
-     * 加载已安装的微信扩展模块
-     */
-    public function loadModules()
-    {
-        $modules = array_map(function($module) {
-            return [
-                'class' => $module->class,
-                'model' => $module
-            ];
-        }, $this->getInstalledModules());
-
-        $this->setModules(array_merge($modules, $this->getModules()));
-    }
-
-    private $_availableModules;
-    /**
-     * 获取可用的微信扩展模块数据
-     * @return mixed
-     */
-    public function getAvailableModules()
-    {
-        if ($this->_availableModules === null) {
-            $this->_availableModules = Yii::createObject([
-                'class' => ModuleDiscovery::className()
-            ])->scan();
-        }
-        return $this->_availableModules;
-    }
-
-    /**
-     * 获取已安装的微信扩展模块数据
-     * @return array|\yii\db\ActiveRecord[]
-     */
-    public function getInstalledModules()
-    {
-        return ModuleModel::getInstalledModules();
-    }
-
-    /**
-     * 获取微信扩展模块Module文件的namespace
-     * @param $id
-     * @param bool $includeAvailableModules 是否包含可用扩展模块
-     * @return bool
-     */
-    public function getModuleNamespace($id, $includeAvailableModules = false)
-    {
-        $namespace = null;
-        if (($modules = $this->getModules()) && isset($modules[$id])) {
-            if (!is_array($modules[$id])) {
-                $namespace = $modules[$id];
-            } elseif (isset($modules[$id]['class'])) {
-                $namespace = $modules[$id]['class'];
-            }
-        } elseif ($includeAvailableModules) { // 可用模块路径
-            $modules = $this->getAvailableModules();
-            isset($modules[$id]) && isset($modules[$id]['class']) && $namespace = $modules[$id]['class'];
-        }
-        return $namespace;
-    }
 }

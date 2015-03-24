@@ -1,1 +1,0 @@
-<?= Symfony\Component\Yaml\Yaml::dump($attributes) ?>

@@ -5,13 +5,12 @@ use Yii;
 use yii\base\Event;
 use yii\helpers\ArrayHelper;
 use yii\base\InvalidConfigException;
-use callmez\wechat\sdk\Wechat as WechatSDK;
 
 /**
  * 微信SDK, 增加微信公众号数据库操作
  * @package callmez\wechat\components
  */
-class Wechat extends WechatSDK
+class Wechat extends \callmez\wechat\sdk\Wechat
 {
     /**
      * Wechat Model
@@ -41,26 +40,15 @@ class Wechat extends WechatSDK
 
     /**
      * 使用数据库来存储access_token
-     * @see inherit
+     * @inherit
      */
-    public function getAccessToken($force = false)
+    protected function requestAccessToken($grantType = 'client_credential')
     {
-        if ($force || $this->_accessToken === null || $this->_accessToken['expire'] < YII_BEGIN_TIME) {
-            $result = !$force &&
-                $this->_accessToken === null &&
-                ArrayHelper::getValue($this->model->access_token, 'expire') > YII_BEGIN_TIME
-                ? $this->model->access_token : false;
-            if ($result === false) {
-                if (!($result = $this->requestAccessToken())) {
-                    throw new HttpException('Fail to get accessToken from wechat server.');
-                }
-                $this->trigger(self::EVENT_AFTER_ACCESS_TOKEN_UPDATE, new Event(['data' => $result]));
-                $this->model->access_token = $result;
-                $this->model->save(false, ['access_token']);
-            }
-            $this->setAccessToken($result);
+        if ($result = parent::requestAccessToken($grantType)) {
+            $this->model->access_token = $result;
+            $this->model->save(false, ['access_token']);
         }
-        return $this->_accessToken['token'];
+        return $result;
     }
 
     /**
@@ -91,19 +79,4 @@ class Wechat extends WechatSDK
         }
         return is_array($this->lastErrorInfo) ? implode(':', $this->lastErrorInfo) : $this->lastErrorInfo;
     }
-
-    /**
-     * 查询Wechat model类并返回实例
-     * @param array $condition
-     * @return bool|object
-     */
-    public static function instanceByCondition($condition)
-    {
-        $wechat = \callmez\wechat\models\Wechat::findOne($condition);
-        return $wechat ? Yii::createObject([
-            'class' => static::className(),
-            'model' => $wechat
-        ]) : null;
-    }
-
 }

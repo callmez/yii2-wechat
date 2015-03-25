@@ -126,18 +126,6 @@ class Wechat extends \yii\db\ActiveRecord
         ];
     }
 
-    private $_sdk;
-    public function getSdk()
-    {
-        if ($this->_sdk === null) {
-            $this->_sdk = Yii::createObject([
-                'class' => WechatSDK::className(),
-                'model' => $this
-            ]);
-        }
-        return $this->_sdk;
-    }
-
     /**
      * @inheritdoc
      */
@@ -177,6 +165,42 @@ class Wechat extends \yii\db\ActiveRecord
             $this->hash = $this->generateUniqueHashValue();
         }
         return parent::beforeSave($insert);
+    }
+
+    private $_sdk;
+
+    /**
+     * 获取实例化后的公众号SDK类
+     * @return mixed|object
+     */
+    public function getSdk()
+    {
+        if ($this->_sdk === null) {
+            $this->_sdk = Yii::createObject([
+                'class' => WechatSDK::className(),
+                'model' => $this
+            ]);
+        }
+        return $this->_sdk;
+    }
+
+    /**
+     * 数组格式的access_token
+     * @return mixed
+     */
+    public function getAccessToken()
+    {
+        return unserialize($this->access_token, true);
+    }
+
+    /**
+     * 实例化保存access_token
+     * @param array $accessToken
+     * @return string
+     */
+    public function setAccessToken(array $accessToken)
+    {
+        $this->access_token = serialize($accessToken);
     }
 
     /**

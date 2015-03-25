@@ -5,7 +5,7 @@
  * @license http://www.yiiframework.com/license/
  */
 
-namespace callmez\wechat\widgets;
+namespace callmez\wechat\modules\admin\widgets;
 
 /**
  * Alert widget renders a message from session flash. All flash messages are displayed

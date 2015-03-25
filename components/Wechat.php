@@ -45,7 +45,7 @@ class Wechat extends \callmez\wechat\sdk\Wechat
     protected function requestAccessToken($grantType = 'client_credential')
     {
         if ($result = parent::requestAccessToken($grantType)) {
-            $this->model->access_token = $result;
+            $this->model->accessToken = $result;
             $this->model->save(false, ['access_token']);
         }
         return $result;

@@ -30,23 +30,27 @@ use callmez\wechat\models\Wechat;
 
     <?//= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'app_id')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'app_secret')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'token')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'encoding_type')->inline()->radioList(Wechat::$encodings) ?>
 
     <?= $form->field($model, 'encoding_aes_key')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'app_id')->textInput(['maxlength' => true]) ?>
+    <?php if (!$model->getIsNewRecord()): ?>
 
-    <?= $form->field($model, 'app_secret')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'hash')->textInput(['disabled' => true]) ?>
 
-    <?= $form->field($model, 'hash')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'access_token')->textInput(['maxlength' => true]) ?>
+    <?php endif ?>
 
-    <?= $form->field($model, 'avatar')->fileTextGroup(Html::activeFileInput($model, 'uploadAvatar') . '点击上传图片')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'avatar', ['enableClientValidation' => false])->fileInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'qr_code')->fileTextGroup(Html::activeFileInput($model, 'uploadQrCode') . '点击上传图片')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'qr_code', ['enableClientValidation' => false])->fileInput(['maxlength' => true]) ?>
 
     <div class="form-group">
         <div class="col-sm-offset-3 col-sm-6">

@@ -1,7 +1,7 @@
 <?php
 use \Yii;
 use yii\bootstrap\Nav;
-use callmez\wechat\widgets\Alert;
+use callmez\wechat\modules\admin\widgets\Alert;
 use callmez\wechat\modules\admin\assets\AdminAsset;
 
 AdminAsset::register($this);

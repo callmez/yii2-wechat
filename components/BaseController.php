@@ -63,19 +63,6 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * 主公众号抽象函数
-     * @param Wechat $wechat
-     * @return mixed
-     */
-    abstract public function setWechat(Wechat $wechat);
-
-    /**
-     * 主公众号抽象, 通过该函数扩展公众号可以管理该公众号的相关功能
-     * @return mixed
-     */
-    abstract public function getWechat();
-
-    /**
      * 生成API接口地址
      * @param Wechat $wechat 公众号
      * @param array $params 补充的参数
@@ -96,4 +83,17 @@ abstract class BaseController extends Controller
             'signature' => $signature
         ], $params), $scheme);
     }
+
+    /**
+     * 主公众号抽象函数
+     * @param Wechat $wechat
+     * @return mixed
+     */
+    abstract public function setWechat(Wechat $wechat);
+
+    /**
+     * 主公众号抽象, 通过该函数扩展公众号可以管理该公众号的相关功能
+     * @return mixed
+     */
+    abstract public function getWechat();
 }

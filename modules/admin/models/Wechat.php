@@ -9,44 +9,25 @@ use yii\db\ActiveRecord;
 
 class Wechat extends \callmez\wechat\models\Wechat
 {
-    /**
-     * 头像上传组件
-     * @var UploadedFile|null
-     */
-    public $uploadAvatar;
-    /**
-     * 二维码上传组件
-     * @var UploadedFile|null
-     */
-    public $uploadQrCode;
-
     public function rules()
     {
         return array_merge([
-            [['uploadAvatar', 'uploadQrCode'], 'checkUpload', 'skipOnEmpty' => false],
-            [['uploadAvatar', 'uploadQrCode'], 'file', 'extensions' => ['gif', 'jpg', 'png'], 'skipOnEmpty' => true],
-            [['uploadAvatar', 'uploadQrCode'], 'applyUpload', 'skipOnEmpty' => true],
+            [['avatar', 'qr_code'], 'checkUpload', 'skipOnEmpty' => false],
+            [['avatar', 'qr_code'], 'file', 'extensions' => ['gif', 'jpg', 'png']],
+            [['avatar', 'qr_code'], 'applyUpload'],
         ], parent::rules());
     }
 
     /**
-     * 检查是否有上传
+     * 检查是否有上传,无上传则复原旧属性
      * @param $attribute
      * @param $params
      */
     public function checkUpload($attribute, $params)
     {
-        $this->$attribute = UploadedFile::getInstance($this, $attribute);
+        $this->$attribute = UploadedFile::getInstance($this, $attribute) ?: $this->getOldAttribute($attribute);
     }
 
-    /**
-     * 上传对应的字段对象
-     * @var array
-     */
-    protected $uploadMap = [
-        'uploadAvatar' => 'avatar',
-        'uploadQrCode' => 'qr_code'
-    ];
 
     /**
      * 上传的图片赋值到指定字段对象中
@@ -55,26 +36,14 @@ class Wechat extends \callmez\wechat\models\Wechat
      */
     public function applyUpload($attribute, $params)
     {
-        if (!isset($this->uploadMap[$attribute])) {
-            $this->addError($attribute, '没有上传转换对象');
-        }
-        $targetAttribute = $this->uploadMap[$attribute];
         $file = $this->$attribute;
         if ($file instanceof UploadedFile) {
             $path = '/wechat/' . $attribute . '/' . md5($this->hash) . '.' . $file->getExtension();
             $realpath = Yii::getAlias('@storageRoot' . $path);
             FileHelper::createDirectory(dirname($realpath));
             if ($file->saveAs($realpath)) {
-                $this->$targetAttribute = $path;
+                $this->$attribute = $path;
             }
         }
-    }
-
-    public function attributeLabels()
-    {
-        return array_merge(parent::attributeLabels(), [
-            'uploadAvatar' => '头像地址',
-            'uploadQrCode' => '二维码地址',
-        ]);
     }
 }

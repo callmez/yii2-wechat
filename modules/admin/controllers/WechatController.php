@@ -4,6 +4,7 @@ namespace callmez\wechat\modules\admin\controllers;
 
 use Yii;
 use yii\filters\VerbFilter;
+use yii\widgets\ActiveForm;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\modules\admin\models\Wechat;
 use callmez\wechat\modules\admin\models\WechatSearch;
@@ -40,20 +41,8 @@ class WechatController extends Controller
     {
         $model = $this->findModel($id);
         $this->setWechat($model);
-        $this->flash('success', '设置管理公众号, 您现在可以管理该公众号了');
-        return $this->redirect(['view']);
-    }
-
-    /**
-     * Displays a single Wechat model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $this->flash('当前管理公众号设置为"' . $model->name . '", 您现在可以管理该公众号了', 'success');
+        return $this->redirect(['/wechat/admin/default']);
     }
 
     /**
@@ -65,13 +54,17 @@ class WechatController extends Controller
     {
         $model = new Wechat();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            if (isset($_POST['ajax'])) {
+                Yii::$app->getResponse()->format = Response::FORMAT_JSON;
+                return ActiveForm::validate($model);
+            } elseif ($model->save()) {
+                return $this->flash('添加成功!', 'success', ['update', 'id' => $model->id]);
+            }
         }
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -84,13 +77,17 @@ class WechatController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        if ($model->load(Yii::$app->request->post())) {
+            if (isset($_POST['ajax'])) {
+                Yii::$app->getResponse()->format = Response::FORMAT_JSON;
+                return ActiveForm::validate($model);
+            } elseif ($model->save()) {
+                $this->flash('更新成功', 'success');
+            }
         }
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**

@@ -7,7 +7,7 @@ use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 use yii\db\ActiveRecord;
 
-class Wechat extends \callmez\wechat\models\Wechat
+class WechatForm extends \callmez\wechat\models\Wechat
 {
     public function rules()
     {

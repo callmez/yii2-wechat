@@ -5,10 +5,8 @@ namespace callmez\wechat\modules\admin\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use callmez\wechat\models\Wechat;
 
-/**
- * WechatSearch represents the model behind the search form about `callmez\wechat\models\Wechat`.
- */
 class WechatSearch extends Wechat
 {
     /**

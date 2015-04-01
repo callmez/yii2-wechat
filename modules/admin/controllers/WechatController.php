@@ -6,7 +6,7 @@ use Yii;
 use yii\filters\VerbFilter;
 use yii\widgets\ActiveForm;
 use yii\web\NotFoundHttpException;
-use callmez\wechat\modules\admin\models\Wechat;
+use callmez\wechat\modules\admin\models\WechatForm;
 use callmez\wechat\modules\admin\models\WechatSearch;
 use callmez\wechat\modules\admin\components\Controller;
 
@@ -52,7 +52,7 @@ class WechatController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Wechat();
+        $model = new WechatForm();
 
         if ($model->load(Yii::$app->request->post())) {
             if (isset($_POST['ajax'])) {
@@ -112,7 +112,7 @@ class WechatController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Wechat::findOne($id)) !== null) {
+        if (($model = WechatForm::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

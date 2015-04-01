@@ -41,8 +41,8 @@ class Module extends \yii\base\Module
             'url' => ['/wechat/admin/menu'],
         ],
         [
-            'label' => '<span class="glyphicon glyphicon-envelope"></span> 自动回复',
-            'url' => ['/wechat/admin/reply'],
+            'label' => '<span class="glyphicon glyphicon-envelope"></span> 响应规则',
+            'url' => ['/wechat/admin/rule'],
         ],
         [
             'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',

@@ -41,7 +41,7 @@ class Wechat extends \yii\db\ActiveRecord
     /**
      * 删除状态
      */
-    const STATUS_DELETE = -1;
+    const STATUS_DELETED = -1;
     /**
      * 普通订阅号
      */

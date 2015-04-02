@@ -10,7 +10,7 @@ use callmez\wechat\models\RuleKeyword;
 
 class m150217_131752_initWechat extends Migration
 {
-    public function up()
+    public function safeUp()
     {
         //微信公众号表
         $tableName = Wechat::tableName();
@@ -78,12 +78,11 @@ class m150217_131752_initWechat extends Migration
 
     }
 
-    public function down()
+    public function safeDown()
     {
         $this->dropTable(Wechat::tableName());
         $this->dropTable(Rule::tableName());
         $this->dropTable(RuleKeyword::tableName());
         $this->dropTable(Fans::tableName());
-        return true;
     }
 }

@@ -3,7 +3,8 @@ Yii-wechat
 ==========
 
 感谢选择 Yii-wechat，基于 [Yii2](https://github.com/yiisoft/yii2) 框架基础实现的模块。
-请参考 [Yii2-app-wechat](https://github.com/callmez/yii2-app-wechat)微信应用模板(可生成使用)了解本模块的相关功能
+
+## 请参考 [Yii2-app-wechat](https://github.com/callmez/yii2-app-wechat)微信应用模板(可生成使用)了解本模块的相关功能
 
 环境条件
 -------

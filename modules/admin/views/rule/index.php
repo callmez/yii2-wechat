@@ -1,40 +1,69 @@
 <?php
 
 use yii\helpers\Html;
+use callmez\wechat\models\Rule;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $searchModel callmez\wechat\modules\admin\models\RuleSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Rules';
+$this->title = '回复规则列表';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="rule-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?//= $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Rule', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('创建回复规则', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'wid',
+            [
+                'attribute' => 'id',
+                'options' => [
+                    'width' => 80
+                ]
+            ],
             'name',
             'module',
-            'status',
+            [
+                'attribute' => 'status',
+                'value' => function($model) {
+                    return Rule::$statuses[$model->status];
+                },
+                'options' => [
+                    'width' => 80
+                ]
+            ],
             // 'priority',
-            // 'created_at',
-            // 'updated_at',
+            [
+                'attribute' => 'created_at',
+                'format' => 'datetime',
+                'options' => [
+                    'width' => 160
+                ]
+            ],
+            [
+                'attribute' => 'updated_at',
+                'format' => 'datetime',
+                'options' => [
+                    'width' => 160
+                ]
+            ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'options' => [
+                    'width' => 70
+                ]
+            ]
         ],
     ]); ?>
 

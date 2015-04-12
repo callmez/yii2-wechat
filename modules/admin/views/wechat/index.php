@@ -10,7 +10,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="wechat-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <?= $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?//= $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
         <?= Html::a('添加公众号', ['create'], ['class' => 'btn btn-success']) ?>
@@ -20,24 +21,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{manage} {update} {delete}',
-                'buttons' => [
-                    'manage' => function ($url, $model) {
-                        return Html::a('<span class="text-danger glyphicon glyphicon glyphicon-cog"></span>', $url, [
-                            'data' => [
-                                'toggle' => 'tooltip',
-                                'placement' => 'bottom'
-                            ],
-                            'title' => '管理此公众号'
-                        ]);
-                    }
-                ],
-                'options' => [
-                    'width' => 70
-                ]
-            ],
             [
                 'attribute' => 'id',
                 'options' => [
@@ -79,6 +62,24 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'datetime',
                 'options' => [
                     'width' => 160
+                ]
+            ],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{manage} {update} {delete}',
+                'buttons' => [
+                    'manage' => function ($url, $model) {
+                        return Html::a('<span class="text-danger glyphicon glyphicon glyphicon-cog"></span>', $url, [
+                            'data' => [
+                                'toggle' => 'tooltip',
+                                'placement' => 'bottom'
+                            ],
+                            'title' => '管理此公众号'
+                        ]);
+                    }
+                ],
+                'options' => [
+                    'width' => 70
                 ]
             ]
         ],

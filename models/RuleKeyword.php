@@ -48,8 +48,10 @@ class RuleKeyword extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['rid', 'keyword', 'type'], 'required'],
             [['rid', 'priority', 'type', 'created_at', 'updated_at'], 'integer'],
-            [['keyword'], 'string', 'max' => 255]
+            [['keyword'], 'string', 'max' => 255],
+            [['priority'], 'default', 'value' => 0]
         ];
     }
 

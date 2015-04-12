@@ -2,8 +2,10 @@
 
 namespace callmez\wechat\modules\admin\controllers;
 
+use callmez\wechat\models\RuleKeyword;
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Rule;
 use callmez\wechat\modules\admin\models\RuleSearch;
@@ -22,7 +24,7 @@ class RuleController extends Controller
     {
         $searchModel = new RuleSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        $dataProvider->query->andWhere(['wid' => $this->getWechat()->id]);
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -49,14 +51,19 @@ class RuleController extends Controller
     public function actionCreate()
     {
         $model = new Rule();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        $keyword = new RuleKeyword();
+        $keywords = [];
+        if ($model->load(Yii::$app->request->post())) {
+            $model->wid = $this->getWechat()->id;
+            if ($model->save() && $this->saveRuleKeyword($model, $keyword, $keywords)) {
+                return $this->flash('添加成功!', 'success', ['update', 'id' => $model->id]);
+            }
         }
+        return $this->render('create', [
+            'model' => $model,
+            'keyword' => $keyword,
+            'keywords' => $keywords
+        ]);
     }
 
     /**
@@ -68,14 +75,42 @@ class RuleController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        $keyword = new RuleKeyword();
+        $keywords = $model->keywords;
+        if ($model->load(Yii::$app->request->post())) {
+            $model->wid = $this->getWechat()->id;
+            if ($this->saveRuleKeyword($model, $keyword, $keywords) && $model->save()) {
+                return $this->flash('修改成功!', 'success', ['update', 'id' => $model->id]);
+            }
         }
+        return $this->render('update', [
+            'model' => $model,
+            'keyword' => $keyword,
+            'keywords' => $keywords
+        ]);
+    }
+
+    protected function saveRuleKeyword($rule, $keyword, $keywords = [])
+    {
+        $_keywords = ArrayHelper::index($keywords, 'id');
+        $keywords = [];
+        $valid = true;
+        foreach (Yii::$app->request->post($keyword->formName(), []) as $k => $data) {
+            if (!empty($data['id']) && $_keywords[$data['id']]) {
+                $_keyword = $_keywords[$data['id']];
+                unset($_keywords[$data['id']]);
+            } else {
+                $_keyword = clone $keyword;
+            }
+            unset($data['id']);
+            $keywords[] = $_keyword;
+            $_keyword->setAttributes(array_merge($data, [
+                'rid' => $rule->id
+            ]));
+            $valid = $valid && $_keyword->save();
+        }
+        !empty($_keywords) && RuleKeyword::deleteAll(['id' => array_keys($_keywords)]); // 无更新的则删除
+        return $valid;
     }
 
     /**

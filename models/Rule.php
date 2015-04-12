@@ -53,9 +53,11 @@ class Rule extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['wid', 'name', 'module', 'status'], 'required'],
             [['wid', 'status', 'priority', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 50],
-            [['module'], 'string', 'max' => 20]
+            [['module'], 'string', 'max' => 20],
+            [['priority'], 'default', 'value' => 0]
         ];
     }
 
@@ -74,5 +76,11 @@ class Rule extends \yii\db\ActiveRecord
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];
+    }
+
+    public function getKeywords()
+    {
+        return $this->hasMany(RuleKeyword::className(), ['rid' => 'id'])
+            ->inverseOf('rule');
     }
 }

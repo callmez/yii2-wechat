@@ -11,6 +11,8 @@ use callmez\wechat\modules\admin\components\Controller;
  */
 class SimulatorController extends Controller
 {
+    public $enableWechatRequired = false;
+
     public function actionIndex()
     {
         return $this->render('index');

@@ -18,7 +18,7 @@ class RuleSearch extends Rule
     public function rules()
     {
         return [
-            [['id', 'wid', 'status', 'priority', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'wid', 'status', 'priority'], 'integer'],
             [['name', 'module'], 'safe'],
         ];
     }

@@ -17,22 +17,30 @@ class Controller extends BaseController
      */
     const SESSION_WECHAT = 'admin_wechat';
     /**
+     * 开启公众号设置验证
+     * @var bool
+     */
+    public $enableWechatRequired = true;
+    /**
      * 必须指定先管理公众号才能访问页面
      * @return array
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'matchCallback' => [$this, 'wechatRequired']
+        if ($this->enableWechatRequired) {
+            return [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'matchCallback' => [$this, 'wechatRequired']
+                        ]
                     ]
                 ]
-            ]
-        ];
+            ];
+        }
+        return [];
     }
 
     private $_wechat;

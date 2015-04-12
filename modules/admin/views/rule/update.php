@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model callmez\wechat\models\Rule */
 
-$this->title = 'Update Rule: ' . ' ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Rules', 'url' => ['index']];
+$this->title = '修改回复规则: ' . ' ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => '回复规则列表', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = '修改';
 ?>
 <div class="rule-update">
 
@@ -16,6 +16,8 @@ $this->params['breadcrumbs'][] = 'Update';
 
     <?= $this->render('_form', [
         'model' => $model,
+        'keyword' => $keyword,
+        'keywords' => $keywords
     ]) ?>
 
 </div>

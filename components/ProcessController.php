@@ -5,9 +5,14 @@ use Yii;
 use yii\web\Response;
 use yii\web\NotFoundHttpException;
 use yii\base\InvalidConfigException;
+use callmez\wechat\models\Fans;
 use callmez\wechat\components\BaseController;
 use callmez\wechat\controllers\ApiController;
 
+/**
+ * 微信请求处理基类
+ * @package callmez\wechat\components
+ */
 class ProcessController extends BaseController
 {
     /**
@@ -15,9 +20,10 @@ class ProcessController extends BaseController
      * @var bool
      */
     public $enableCsrfValidation = false;
-
+    /**
+     * @var \callmez\wechat\models\Wechat;
+     */
     private $_wechat;
-
     /**
      * 微信请求消息
      * @var Object
@@ -58,6 +64,23 @@ class ProcessController extends BaseController
     }
 
     /**
+     * @var \callmez\wechat\models\Fans
+     */
+    private $_fans = false;
+
+    /**
+     * 获取触发微信请求的微信用户信息
+     * @return Fans
+     */
+    public function getFans()
+    {
+        if ($this->_fans === false) {
+            $this->_fans = Fans::findByOpenId($this->message['fromUserName']);
+        }
+        return $this->_fans;
+    }
+
+    /**
      * 响应文本消息
      * 例: $this->responseText('hello world');
      * @param $content
@@ -80,9 +103,7 @@ class ProcessController extends BaseController
      *         'picUrl' => 'pic url',
      *         'url' => 'link'
      *     ],
-     *     [
      *      ...
-     *     ]
      * ]);
      * @param array $articles
      * @return array

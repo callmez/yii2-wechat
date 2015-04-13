@@ -6,6 +6,11 @@ use yii\helpers\Url;
 use yii\web\Controller;
 use callmez\wechat\models\Wechat;
 
+/**
+ * 微信控制器基类.
+ * 所有微信功能类都必须基于此类派生功能
+ * @package callmez\wechat\components
+ */
 abstract class BaseController extends Controller
 {
     /**

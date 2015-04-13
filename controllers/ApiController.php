@@ -2,11 +2,11 @@
 namespace callmez\wechat\controllers;
 
 use Yii;
+use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\RuleKeyword;
 use callmez\wechat\components\ProcessEvent;
 use callmez\wechat\components\BaseController;
-use app\modules\test\controllers\ProcessController;
 
 class ApiController extends BaseController
 {
@@ -195,7 +195,36 @@ class ApiController extends BaseController
         return [];
     }
 
+    /**
+     * 粉丝相关操作的默认模块
+     * @var string
+     */
+    public $defaultFansModule = 'fans';
+    /**
+     * 关注事件
+     * @return array|void
+     */
     protected function matchEventSubscribe()
+    {
+        $params = [];
+        if (property_exists($this->message, 'eventkey') && strexists($this->message->eventkey, 'qrscene')) { // 扫码关注
+            list(, $this->message->eventkey) = explode('_', $this->message->eventkey); // 取二维码的参数值
+            return $this->matchEventScan();
+        } elseif (Yii::$app->hasModule($this->defaultFansModule)) { // 请自定义全局Fans模块来接收关注事件响应
+            $params[] = [
+                'module' => $this->defaultFansModule,
+                'process' => 'subscribe'
+            ];
+        } else { // 默认由WecomeController类处理
+            $params[] = [
+                'module' => $this->module->id,
+                'process' => 'welcome'
+            ];
+        }
+        return $params;
+    }
+
+    public static function matchEventUnsubscribe()
     {
         
     }

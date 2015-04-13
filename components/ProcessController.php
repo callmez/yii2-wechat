@@ -11,6 +11,7 @@ use callmez\wechat\controllers\ApiController;
 
 /**
  * 微信请求处理基类
+ * 所有微信服务请求过来的处理类必须继承该类
  * @package callmez\wechat\components
  */
 class ProcessController extends BaseController

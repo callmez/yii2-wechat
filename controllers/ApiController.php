@@ -12,13 +12,20 @@ class ApiController extends BaseController
 {
     const EVENT_BEFORE_PROCESS = 'beforeProcess';
     const EVENT_AFTER_PROCESS = 'afterProcess';
-
     /**
      * 微信请求关闭CSRF验证
      * @var bool
      */
     public $enableCsrfValidation = false;
-
+    /**
+     * 处理相关请求的模块.
+     * 例:
+     * [
+     *     'subscribe' => 'fans' // 需模块存在 否则依然走默认模块
+     * ]
+     * @var array
+     */
+    public $moduleMap = [];
     /**
      * @var Object
      */
@@ -141,8 +148,7 @@ class ApiController extends BaseController
      * 默认处理程序路由
      * @var string
      */
-    public $defaultProcessRoute = 'process';
-
+    public $defaultProcess = 'process';
     /**
      * 根据微信的请求信息分发到指定处理流程
      * @return int|mixed|null
@@ -153,7 +159,7 @@ class ApiController extends BaseController
         $result = null;
         foreach ($this->match() as $params) {
             !isset($params['mdoule']) && $params['mdoule'] = $this->module->id;
-            !isset($params['process']) && $params['process'] = $this->defaultProcessRoute;
+            !isset($params['process']) && $params['process'] = $this->defaultProcess;
             $route = implode('/', [$params['module'], $params['process']]);
             unset($params['module'], $params['process']);
             if (($result = Yii::$app->runAction($route, $params)) !== null) { // 直接转发路由请求
@@ -196,11 +202,6 @@ class ApiController extends BaseController
     }
 
     /**
-     * 粉丝相关操作的默认模块
-     * @var string
-     */
-    public $defaultFansModule = 'fans';
-    /**
      * 关注事件
      * @return array|void
      */
@@ -210,9 +211,9 @@ class ApiController extends BaseController
         if (property_exists($this->message, 'eventkey') && strexists($this->message->eventkey, 'qrscene')) { // 扫码关注
             list(, $this->message->eventkey) = explode('_', $this->message->eventkey); // 取二维码的参数值
             return $this->matchEventScan();
-        } elseif (Yii::$app->hasModule($this->defaultFansModule)) { // 请自定义全局Fans模块来接收关注事件响应
+        } elseif (isset($this->moduleMap['subscribe']) && Yii::$app->hasModule($this->moduleMap['subscribe'])) {
             $params[] = [
-                'module' => $this->defaultFansModule,
+                'module' => $this->moduleMap['subscribe'],
                 'process' => 'subscribe'
             ];
         } else { // 默认由WecomeController类处理
@@ -224,9 +225,24 @@ class ApiController extends BaseController
         return $params;
     }
 
-    public static function matchEventUnsubscribe()
+    /**
+     * 取消关注事件
+     * @return array
+     */
+    protected function matchEventUnsubscribe()
     {
-        
+        if (isset($this->moduleMap['unsubscribe']) && Yii::$app->hasModule($this->moduleMap['unsubscribe'])) {
+            $params[] = [
+                'module' => $this->moduleMap['unsubscribe'],
+                'process' => 'unsubscribe'
+            ];
+        } else { // 默认由UnsubscribeController类处理
+            $params[] = [
+                'module' => $this->module->id,
+                'process' => 'unsubscribe'
+            ];
+        }
+        return $params;
     }
 
     protected function matchEventScan()

@@ -9,13 +9,21 @@ use Yii;
  *
  * @property integer $id
  * @property integer $wid
- * @property string $openId
+ * @property string $open_id
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
  */
 class Fans extends \yii\db\ActiveRecord
 {
+    /**
+     * 取消关注
+     */
+    const STATUS_UNSUBSCRIBED = -1;
+    /**
+     * 关注状态
+     */
+    const STATUS_SUBSCRIBED = 0;
     /**
      * @inheritdoc
      */
@@ -31,7 +39,7 @@ class Fans extends \yii\db\ActiveRecord
     {
         return [
             [['wid', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['openId'], 'string', 'max' => 50]
+            [['open_id'], 'string', 'max' => 50]
         ];
     }
 
@@ -43,10 +51,19 @@ class Fans extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'wid' => '所属微信公众号ID',
-            'openId' => '公众号唯一粉丝ID',
+            'open_id' => '公众号唯一粉丝ID',
             'status' => '关注状态',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];
+    }
+
+    /**
+     * 取消关注状态
+     * @return bool
+     */
+    public function unsubscribe()
+    {
+        return $this->updateAttributes(['status' => self::STATUS_UNSUBSCRIBED]) > 0;
     }
 }

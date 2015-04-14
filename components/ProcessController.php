@@ -76,7 +76,7 @@ class ProcessController extends BaseController
     public function getFans()
     {
         if ($this->_fans === false) {
-            $this->_fans = Fans::findByOpenId($this->message['fromUserName']);
+            $this->_fans = Fans::findOne(['open_id' => $this->message->fromUserName]);
         }
         return $this->_fans;
     }

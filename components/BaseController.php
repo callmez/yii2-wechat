@@ -17,7 +17,7 @@ abstract class BaseController extends Controller
      * 消息的基本视图
      * @var string
      */
-    public $messageLayout = '//common/message';
+    public $messageLayout = '@callmez/wechat/views/common/message';
     /**
      * 发送消息
      * @param $message

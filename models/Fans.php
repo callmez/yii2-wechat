@@ -3,6 +3,7 @@
 namespace callmez\wechat\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * This is the model class for table "{{%wechat_fans}}".
@@ -24,6 +25,14 @@ class Fans extends \yii\db\ActiveRecord
      * 关注状态
      */
     const STATUS_SUBSCRIBED = 0;
+
+    public function behaviors()
+    {
+        return [
+            'timestamp' => TimestampBehavior::className()
+        ];
+    }
+
     /**
      * @inheritdoc
      */

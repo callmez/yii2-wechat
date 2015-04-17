@@ -21,7 +21,8 @@ class FansController extends ProcessController
      */
     public function actionSubscribe()
     {
-        if (!($fans = $this->getFans())) {
+        if (!($this->getFans())) {
+            $fans = new Fans();
             $fans->setAttributes([
                 'wid' => $this->getWechat()->id,
                 'open_id' => $this->message['fromUserName'],

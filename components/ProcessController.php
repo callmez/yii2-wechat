@@ -76,7 +76,7 @@ class ProcessController extends BaseController
     public function getFans()
     {
         if ($this->_fans === false) {
-            $this->_fans = Fans::findOne(['open_id' => $this->message->fromUserName]);
+            $this->_fans = Fans::findOne(['open_id' => $this->message['fromUserName']]);
         }
         return $this->_fans;
     }
@@ -219,8 +219,8 @@ class ProcessController extends BaseController
     public function response(array $data, $formatterConfig = [])
     {
         $data = array_merge([
-            'FromUserName' => $this->message->toUserName,
-            'ToUserName' => $this->message->fromUserName
+            'FromUserName' => $this->message['toUserName'],
+            'ToUserName' => $this->message['fromUserName']
         ], $data);
         Yii::info($data, __METHOD__);
 

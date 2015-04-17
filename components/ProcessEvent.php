@@ -11,7 +11,7 @@ class ProcessEvent extends Event
 {
     /**
      * 微信请求内容信息
-     * @var Object
+     * @var array
      */
     public $message;
 

@@ -2,6 +2,7 @@
 namespace callmez\wechat\controllers;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\RuleKeyword;
@@ -27,7 +28,7 @@ class ApiController extends BaseController
      */
     public $moduleMap = [];
     /**
-     * @var Object
+     * @var array
      */
     public $message;
 
@@ -109,10 +110,10 @@ class ApiController extends BaseController
             Yii::$app->response->content = 'Request Failed!';
             Yii::$app->end();
         }
-        $return = new \stdClass();
+        $return = [];
         foreach ($xml as $attribute => $value) {
             $attribute = lcfirst($attribute);
-            $return->$attribute = (string)$value;
+            $return[$attribute] = (string)$value;
         }
         Yii::info($return, __METHOD__);
         return $return;
@@ -144,10 +145,6 @@ class ApiController extends BaseController
         return $event->result;
     }
 
-    /**
-     * 默认处理程序路由
-     * @var string
-     */
     public $defaultProcess = 'process';
     /**
      * 根据微信的请求信息分发到指定处理流程
@@ -158,16 +155,24 @@ class ApiController extends BaseController
     {
         $result = null;
         foreach ($this->match() as $params) {
-            !isset($params['mdoule']) && $params['mdoule'] = $this->module->id;
-            !isset($params['process']) && $params['process'] = $this->defaultProcess;
-            $route = implode('/', [$params['module'], $params['process']]);
-            unset($params['module'], $params['process']);
-            if (($result = Yii::$app->runAction($route, $params)) !== null) { // 直接转发路由请求
-                break; // 如果有数据则跳出循环直接输出.
+            $receive = ArrayHelper::remove($params, 'receive');
+            if ($receive || $process = ArrayHelper::remove($params, 'process', $this->defaultProcess)) {
+                $route = implode('/', [ArrayHelper::remove($params, 'module', $this->module->id), $receive ?: $process]);
+                $result = Yii::$app->runAction($route, $params); // 直接转发路由请求
+                // 订阅器则继续循环, 如果有数据则跳出循环直接输出.
+                if (!$receive && $result !== null) {
+                    break;
+                }
             }
         }
         return $result;
     }
+
+    public $defaultMatch = [
+        [
+            'receive' => 'fans/record' // 记录用户请求
+        ]
+    ];
 
     /**
      * 微信请求类型处理
@@ -181,11 +186,15 @@ class ApiController extends BaseController
      */
     public function match()
     {
-        $method = 'match' . ($this->message->msgType == 'event' ? 'Event' . $this->message->event : $this->message->msgType);
+        $params = $this->defaultMatch;
+        $method = 'match' . ($this->message['msgType'] == 'event' ? 'Event' . $this->message['event'] : $this->message['msgType']);
         if (method_exists($this, $method)) {
-            return call_user_func([$this, $method]);
+            $params = array_merge($params, call_user_func([$this, $method]));
         }
-        return [];
+        ArrayHelper::multisort($params, [function ($item) {
+           return isset($item['receive']);
+        }, 'priority'], SORT_DESC);// 按订阅器(优先)和权重(次计算)倒序排序, 订阅器优先按权重处理
+        return $params;
     }
 
     /**
@@ -195,7 +204,7 @@ class ApiController extends BaseController
     protected function matchEventClick()
     {
         // 触发作为关键字处理
-        if (property_exists($this->message, 'eventKey') && $this->message->content = $this->message->eventKey) {
+        if (array_key_exists($this->message, 'eventKey') && $this->message['content'] = $this->message['eventKey']) {
             return $this->matchText();
         }
         return [];
@@ -208,11 +217,11 @@ class ApiController extends BaseController
     protected function matchEventSubscribe()
     {
         $params = [];
-        if (property_exists($this->message, 'eventkey') && strexists($this->message->eventkey, 'qrscene')) { // 扫码关注
-            list(, $this->message->eventkey) = explode('_', $this->message->eventkey); // 取二维码的参数值
+        if (array_key_exists($this->message, 'eventkey') && strexists($this->message['eventkey'], 'qrscene')) { // 扫码关注
+            list(, $this->message['eventkey']) = explode('_', $this->message['eventkey']); // 取二维码的参数值
             return $this->matchEventScan();
         } elseif (isset($this->moduleMap['subscribe']) && Yii::$app->hasModule($this->moduleMap['subscribe'])) {
-            $params[] = [
+            $params[] = [ // 关注操作, 默认的操作已经由FansController::actionRecord自动处理. 这里只需处理关注记录完成后的相关处理
                 'module' => $this->moduleMap['subscribe'],
                 'process' => 'subscribe'
             ];
@@ -227,23 +236,11 @@ class ApiController extends BaseController
 
     /**
      * 取消关注事件
+     * 注:取消关注时间已经合并到FansController::actionRecord中处理
      * @return array
      */
-    protected function matchEventUnsubscribe()
-    {
-        if (isset($this->moduleMap['unsubscribe']) && Yii::$app->hasModule($this->moduleMap['unsubscribe'])) {
-            $params[] = [
-                'module' => $this->moduleMap['unsubscribe'],
-                'process' => 'unsubscribe'
-            ];
-        } else { // 默认由UnsubscribeController类处理
-            $params[] = [
-                'module' => $this->module->id,
-                'process' => 'unsubscribe'
-            ];
-        }
-        return $params;
-    }
+    //protected function matchEventUnsubscribe()
+    //{}
 
     protected function matchEventScan()
     {
@@ -263,10 +260,11 @@ class ApiController extends BaseController
     protected function matchText()
     {
         $params = [];
-        $models = RuleKeyword::findAllByKeyword($this->message->content, $this->getWechat()->id);
+        $models = RuleKeyword::findAllByKeyword($this->message['content'], $this->getWechat()->id);
         foreach ($models as $model) {
             $params[] = [
-                'module' => $model->rule->module
+                'module' => $model->rule->module,
+                'priority' => $model->priority
             ];
         }
         return $params;

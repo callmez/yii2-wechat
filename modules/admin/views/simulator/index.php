@@ -10,7 +10,7 @@ foreach (Wechat::find()->all() as $k => $wechat) {
     $wechats[$wechat->id] = [
         'name' => $wechat->name,
         'original' => $wechat->original,
-        'api' => $this->context->generateApiLink($wechat, [
+        'api' => $this->context->getApiLink($wechat, [
             'hash' => $wechat->hash,
             'token' => $wechat->token
         ])

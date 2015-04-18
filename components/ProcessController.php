@@ -22,10 +22,6 @@ class ProcessController extends BaseController
      */
     public $enableCsrfValidation = false;
     /**
-     * @var \callmez\wechat\models\Wechat;
-     */
-    private $_wechat;
-    /**
      * 微信请求消息
      * @var Object
      */
@@ -37,12 +33,16 @@ class ProcessController extends BaseController
         if (!($api instanceof ApiController)) { // 必须是从callmez\Wechat\controllers\ApiController引导
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $this->message = $api->message;
+        $this->message = &$api->message;
         $this->setWechat($api->getWechat());
 
         parent::init();
     }
 
+    /**
+     * @var \callmez\wechat\models\Wechat;
+     */
+    private $_wechat;
     /**
      * 正常的微信请求会通过callmez\wechat\controllers\ApiController实例并传入Wechat model
      * @param Wechat $wechat
@@ -68,7 +68,6 @@ class ProcessController extends BaseController
      * @var \callmez\wechat\models\Fans
      */
     private $_fans = false;
-
     /**
      * 获取触发微信请求的微信用户信息
      * @return Fans
@@ -76,7 +75,7 @@ class ProcessController extends BaseController
     public function getFans()
     {
         if ($this->_fans === false) {
-            $this->_fans = Fans::findOne(['open_id' => $this->message['fromUserName']]);
+            $this->_fans = Fans::findByOpenId($this->message['fromUserName']);
         }
         return $this->_fans;
     }

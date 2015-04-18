@@ -68,6 +68,16 @@ class Fans extends \yii\db\ActiveRecord
     }
 
     /**
+     * 通过唯一的openid查询粉丝
+     * @param $open_id
+     * @return mixed
+     */
+    public static function findByOpenId($open_id)
+    {
+        return self::findOne(['open_id' => $open_id]);
+    }
+
+    /**
      * 取消关注状态
      * @return bool
      */

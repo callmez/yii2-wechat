@@ -68,13 +68,13 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * 生成API接口地址
+     * 获取API接口地址
      * @param Wechat $wechat 公众号
      * @param array $params 补充的参数
      * @param bool $scheme 完整地址,或者其他协议完整地址
      * @return string
      */
-    public function generateApiLink(Wechat $wechat, array $params = [], $scheme = false)
+    public function getApiLink(Wechat $wechat, array $params = [], $scheme = false)
     {
         $token = $wechat->token;
         $nonce = Yii::$app->security->generateRandomString(5);

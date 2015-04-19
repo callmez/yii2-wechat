@@ -26,15 +26,20 @@ class ProcessController extends BaseController
      * @var Object
      */
     public $message;
+    /**
+     * API处理Controller
+     * @var Object
+     */
+    public $api;
 
     public function init()
     {
-        $api = Yii::$app->requestedAction->controller;
-        if (!($api instanceof ApiController)) { // 必须是从callmez\Wechat\controllers\ApiController引导
+        $this->api = Yii::$app->requestedAction->controller;
+        if (!($this->api instanceof ApiController)) { // 必须是从callmez\Wechat\controllers\ApiController引导
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $this->message = &$api->message;
-        $this->setWechat($api->getWechat());
+        $this->message = &$this->api->message;
+        $this->setWechat($this->api->getWechat());
 
         parent::init();
     }
@@ -75,7 +80,7 @@ class ProcessController extends BaseController
     public function getFans()
     {
         if ($this->_fans === false) {
-            $this->_fans = Fans::findByOpenId($this->message['fromUserName']);
+            $this->_fans = Fans::findByOpenId($this->message['FromUserName']);
         }
         return $this->_fans;
     }
@@ -88,10 +93,10 @@ class ProcessController extends BaseController
      */
     public function responseText($content)
     {
-        return $this->response([
+        return [
             'MsgType' => 'text',
             'Content' => $content
-        ]);
+        ];
     }
 
     /**
@@ -125,7 +130,7 @@ class ProcessController extends BaseController
                 'Url' => $article['url']
             ];
         }
-        return $this->response($response);
+        return $response;
     }
 
     /**
@@ -138,12 +143,12 @@ class ProcessController extends BaseController
      */
     public function responseImage($mid)
     {
-        return $this->response([
+        return [
             'MsgType' => 'image',
             'Image' => [
                 'MediaId' => $mid
             ]
-        ]);
+        ];
     }
 
     /**
@@ -156,12 +161,12 @@ class ProcessController extends BaseController
      */
     public function responseVoice($mid)
     {
-        return $this->response([
+        return [
             'MsgType' => 'voice',
             'Image' => [
                 'MediaId' => $mid
             ]
-        ]);
+        ];
     }
 
     /**
@@ -175,13 +180,13 @@ class ProcessController extends BaseController
      */
     public function responseVideo(array $video)
     {
-        return $this->response([
+        return [
             'MsgType' => 'video',
             'Video' => [
                 'MediaId' => $video['mid'],
                 'ThumbMediaId' => $video['thumbMid']
             ]
-        ]);
+        ];
     }
 
     /**
@@ -198,7 +203,7 @@ class ProcessController extends BaseController
      */
     public function responseMusic(array $music)
     {
-        return $this->response([
+        return [
             'MsgType' => 'music',
             'Image' => [
                 'Title' => $music['title'],
@@ -207,32 +212,6 @@ class ProcessController extends BaseController
                 'HQMusicUrl' => isset($music['hqMusicUrl']) ? $music['hqMusicUrl'] : $music['musicUrl'],
                 'ThumbMediaId' => $music['thumbMid']
             ]
-        ]);
-    }
-
-    /**
-     * 输出xml内容
-     * @param array $data
-     * @return array
-     */
-    public function response(array $data, $formatterConfig = [])
-    {
-        $data = array_merge([
-            'FromUserName' => $this->message['toUserName'],
-            'ToUserName' => $this->message['fromUserName']
-        ], $data);
-        Yii::info($data, __METHOD__);
-
-        $response = Yii::createObject([
-            'class' => Response::className(),
-            'format' => Response::FORMAT_XML,
-            'data' => $data
-        ]);
-        $response->formatters[Response::FORMAT_XML] = array_merge([
-            'class' => $response->formatters[Response::FORMAT_XML],
-            'rootTag' => 'xml',
-            'contentType' => 'text/html'
-        ], $formatterConfig);
-        return $response;
+        ];
     }
 }

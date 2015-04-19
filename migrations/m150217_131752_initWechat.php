@@ -7,6 +7,7 @@ use callmez\wechat\models\Rule;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\Module;
 use callmez\wechat\models\RuleKeyword;
+use callmez\wechat\models\MessageHistory;
 
 class m150217_131752_initWechat extends Migration
 {
@@ -72,10 +73,22 @@ class m150217_131752_initWechat extends Migration
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
             'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '公众号唯一粉丝ID'",
             'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注状态'",
-            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
 
+        $tableName = MessageHistory::tableName();
+        $this->createTable($tableName, [
+            'id' => Schema::TYPE_PK,
+            'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
+            'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属规则ID'",
+            'kid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属关键字ID'",
+            'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '公众号唯一粉丝ID'",
+            'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '处理模块'",
+            'message' => Schema::TYPE_TEXT . " NOT NULL COMMENT '消息体内容'",
+            'type' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '发送类型'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注时间'",
+        ]);
     }
 
     public function safeDown()
@@ -84,5 +97,6 @@ class m150217_131752_initWechat extends Migration
         $this->dropTable(Rule::tableName());
         $this->dropTable(RuleKeyword::tableName());
         $this->dropTable(Fans::tableName());
+        $this->dropTable(MessageHistory::tableName());
     }
 }

@@ -1,25 +1,19 @@
 <?php
 
 use yii\helpers\Html;
-use callmez\wechat\models\Rule;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel callmez\wechat\modules\admin\models\RuleSearch */
+/* @var $searchModel callmez\wechat\modules\admin\models\FansSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = '回复规则列表';
+$this->title = '粉丝管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="rule-index">
+<div class="fans-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <?//= $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a('创建回复规则', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -31,18 +25,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'width' => 75
                 ]
             ],
-            'name',
-            'module',
             [
-                'attribute' => 'status',
-                'value' => function($model) {
-                    return Rule::$statuses[$model->status];
-                },
-                'options' => [
-                    'width' => 80
-                ]
+                'attribute' => 'open_id',
             ],
-            // 'priority',
             [
                 'attribute' => 'created_at',
                 'format' => 'datetime',
@@ -51,10 +36,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ],
             [
-                'attribute' => 'updated_at',
-                'format' => 'datetime',
+                'class' => 'yii\grid\ActionColumn',
+                'template' => '{history}',
+                'buttons' => [
+                    'history' => function ($url, $model, $key) {
+                         return Html::a('通信记录', ['/wechat/admin/history']);
+                    }
+                ],
                 'options' => [
-                    'width' => 160
+                    'width' => 80
                 ]
             ],
             [

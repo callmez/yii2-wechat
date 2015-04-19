@@ -7,8 +7,7 @@ use yii\helpers\Html;
 
 $this->title = '修改回复规则: ' . ' ' . $model->name;
 $this->params['breadcrumbs'][] = ['label' => '回复规则列表', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = '修改';
+$this->params['breadcrumbs'][] = $model->name;
 ?>
 <div class="rule-update">
 

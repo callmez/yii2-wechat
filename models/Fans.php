@@ -25,6 +25,10 @@ class Fans extends \yii\db\ActiveRecord
      * 关注状态
      */
     const STATUS_SUBSCRIBED = 0;
+    public static $statuses = [
+        self::STATUS_SUBSCRIBED => '关注',
+        self::STATUS_UNSUBSCRIBED => '取消关注'
+    ];
 
     public function behaviors()
     {
@@ -47,6 +51,7 @@ class Fans extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['wid', 'open_id'], 'required'],
             [['wid', 'status', 'created_at', 'updated_at'], 'integer'],
             [['open_id'], 'string', 'max' => 50]
         ];
@@ -60,9 +65,9 @@ class Fans extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'wid' => '所属微信公众号ID',
-            'open_id' => '公众号唯一粉丝ID',
+            'open_id' => '微信ID',
             'status' => '关注状态',
-            'created_at' => '创建时间',
+            'created_at' => '关注时间',
             'updated_at' => '修改时间',
         ];
     }

@@ -45,6 +45,10 @@ class Module extends \yii\base\Module
             'url' => ['/wechat/admin/rule'],
         ],
         [
+            'label' => '<span class="glyphicon glyphicon-user"></span> 粉丝管理',
+            'url' => ['/wechat/admin/fans'],
+        ],
+        [
             'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',
             'url' => ['/wechat/admin/simulator'],
         ]

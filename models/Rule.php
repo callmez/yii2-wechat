@@ -54,7 +54,7 @@ class Rule extends \yii\db\ActiveRecord
     {
         return [
             [['wid', 'name', 'module', 'status'], 'required'],
-            [['wid', 'status', 'priority', 'created_at', 'updated_at'], 'integer'],
+            [['wid', 'status', 'priority'], 'integer'],
             [['name'], 'string', 'max' => 50],
             [['module'], 'string', 'max' => 20],
             [['priority'], 'default', 'value' => 0]

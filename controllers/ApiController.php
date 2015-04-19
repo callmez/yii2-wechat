@@ -2,6 +2,7 @@
 namespace callmez\wechat\controllers;
 
 use Yii;
+use yii\web\Response;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
@@ -51,9 +52,15 @@ class ApiController extends BaseController
                 $result = null;
                 if($this->beforeProcess()) {
                     $result = $this->resolveProcess(); // 处理请求
+                    if (is_array($result)) {
+                        $result = array_merge([
+                            'FromUserName' => $this->message['ToUserName'],
+                            'ToUserName' => $this->message['FromUserName']
+                        ], $result);
+                    }
                     $result = $this->afterProcess($result);
                 }
-                return $result;
+                return is_array($result) ? $this->generateResponse($result) : $result;
             default:
                 throw new NotFoundHttpException('The requested page does not exist.');
 
@@ -112,11 +119,32 @@ class ApiController extends BaseController
         }
         $return = [];
         foreach ($xml as $attribute => $value) {
-            $attribute = lcfirst($attribute);
-            $return[$attribute] = (string)$value;
+            $return[$attribute] = $value;
         }
         Yii::info($return, __METHOD__);
         return $return;
+    }
+
+    /**
+     * 生成响应内容Response
+     * @param array $data
+     * @return object
+     */
+    public function generateResponse(array $data)
+    {
+        Yii::info($data, __METHOD__);
+
+        $response = Yii::createObject([
+            'class' => Response::className(),
+            'format' => Response::FORMAT_XML,
+            'data' => $data
+        ]);
+        $response->formatters[Response::FORMAT_XML] = [
+            'class' => $response->formatters[Response::FORMAT_XML],
+            'rootTag' => 'xml',
+            'contentType' => 'text/html' // 输出html为兼容性考虑
+        ];
+        return $response;
     }
 
     /**
@@ -145,7 +173,21 @@ class ApiController extends BaseController
         return $event->result;
     }
 
+    /**
+     * 默认处理路由
+     * @var string
+     */
     public $defaultProcess = 'process';
+    /**
+     * 最后一个执行的处理类
+     * @var string
+     */
+    public $lastProcessController;
+    /**
+     * 最后执行的处理类的参数
+     * @var array
+     */
+    public $lastProcessParams = [];
     /**
      * 根据微信的请求信息分发到指定处理流程
      * @return int|mixed|null
@@ -155,10 +197,20 @@ class ApiController extends BaseController
     {
         $result = null;
         foreach ($this->match() as $params) {
+            $this->lastProcessParams = $params;
             $receive = ArrayHelper::remove($params, 'receive');
             if ($receive || $process = ArrayHelper::remove($params, 'process', $this->defaultProcess)) {
                 $route = implode('/', [ArrayHelper::remove($params, 'module', $this->module->id), $receive ?: $process]);
-                $result = Yii::$app->runAction($route, $params); // 直接转发路由请求
+                // 转发路由请求 see Yii::$app->runAction()
+                $parts = Yii::$app->createController($route);
+                if (is_array($parts)) {
+                    list($controller, $actionID) = $parts;
+                    $oldController = Yii::$app->controller;
+                    $this->lastProcessController = Yii::$app->controller = $controller;
+                    $result = $controller->runAction($actionID, $params);
+                    Yii::$app->controller = $oldController;
+                }
+
                 // 订阅器则继续循环, 如果有数据则跳出循环直接输出.
                 if (!$receive && $result !== null) {
                     break;
@@ -169,9 +221,7 @@ class ApiController extends BaseController
     }
 
     public $defaultMatch = [
-        [
-            'receive' => 'fans/record' // 记录用户请求
-        ]
+        ['receive' => 'fans/record'] // 记录用户请求 注意:如果无特殊原因, 此条设置必须保留以完成整个请求的完整处理
     ];
 
     /**
@@ -187,7 +237,7 @@ class ApiController extends BaseController
     public function match()
     {
         $params = $this->defaultMatch;
-        $method = 'match' . ($this->message['msgType'] == 'event' ? 'Event' . $this->message['event'] : $this->message['msgType']);
+        $method = 'match' . ($this->message['MsgType'] == 'event' ? 'Event' . $this->message['Event'] : $this->message['MsgType']);
         if (method_exists($this, $method)) {
             $params = array_merge($params, call_user_func([$this, $method]));
         }
@@ -204,7 +254,7 @@ class ApiController extends BaseController
     protected function matchEventClick()
     {
         // 触发作为关键字处理
-        if (array_key_exists($this->message, 'eventKey') && $this->message['content'] = $this->message['eventKey']) {
+        if (array_key_exists($this->message, 'EventKey') && $this->message['Content'] = $this->message['EventKey']) {
             return $this->matchText();
         }
         return [];
@@ -217,12 +267,12 @@ class ApiController extends BaseController
     protected function matchEventSubscribe()
     {
         $params = [];
-        if (array_key_exists($this->message, 'eventkey') && strexists($this->message['eventkey'], 'qrscene')) { // 扫码关注
-            list(, $this->message['eventkey']) = explode('_', $this->message['eventkey']); // 取二维码的参数值
+        if (array_key_exists($this->message, 'Eventkey') && strexists($this->message['Eventkey'], 'qrscene')) { // 扫码关注
+            list(, $this->message['Eventkey']) = explode('_', $this->message['Eventkey']); // 取二维码的参数值
             return $this->matchEventScan();
-        } elseif (isset($this->moduleMap['subscribe']) && Yii::$app->hasModule($this->moduleMap['subscribe'])) {
+        } elseif (isset($this->moduleMap['Subscribe']) && Yii::$app->hasModule($this->moduleMap['Subscribe'])) {
             $params[] = [ // 关注操作, 默认的操作已经由FansController::actionRecord自动处理. 这里只需处理关注记录完成后的相关处理
-                'module' => $this->moduleMap['subscribe'],
+                'module' => $this->moduleMap['Subscribe'],
                 'process' => 'subscribe'
             ];
         } else { // 默认由WecomeController类处理
@@ -260,11 +310,12 @@ class ApiController extends BaseController
     protected function matchText()
     {
         $params = [];
-        $models = RuleKeyword::findAllByKeyword($this->message['content'], $this->getWechat()->id);
+        $models = RuleKeyword::findAllByKeyword($this->message['Content'], $this->getWechat()->id);
         foreach ($models as $model) {
             $params[] = [
                 'module' => $model->rule->module,
-                'priority' => $model->priority
+                'priority' => $model->priority,
+                'keyword' => $model
             ];
         }
         return $params;

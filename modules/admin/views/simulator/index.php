@@ -125,7 +125,7 @@ foreach (Wechat::find()->all() as $k => $wechat) {
         </div>
         <div class="col-sm-4">
             <div class="page-header">
-                <h4>预览效果 <small><a href="javascript:;" class="text-primary">清空记录</a></small></h4>
+                <h4>预览效果 <small><a href="javascript:;" class="text-primary" ng-click="history = []">清空记录</a></small></h4>
             </div>
             <div ng-repeat="_history in history" class="clearfix">
                 <div class="{{_history.type}} clearfix">

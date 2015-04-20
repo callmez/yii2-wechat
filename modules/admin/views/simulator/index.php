@@ -138,14 +138,14 @@ foreach (Wechat::find()->all() as $k => $wechat) {
                                 <div ng-if="_history.data.Articles.item.length == 1" class="single">
                                     <span class="alt">{{news.Title}}</span>
                                     <span class="time">{{date}}</span>
-                                    <img ng-if="news.PicUrl" src="{{news.PicUrl}}" />
+                                    <img ng-if="news.PicUrl" ng-src="{{news.PicUrl}}" />
                                     <p class="desc">{{news.Description}}</p>
                                     <span class="link">查看全文</span>
                                 </div>
                                 <div ng-if="_history.data.Articles.item.length > 1" class="{{key == 0 ? 'top' : 'list'}}">
-                                    <img ng-if="key > 0 && news.PicUrl" src="{{news.PicUrl}}" />
+                                    <img ng-if="key > 0 && news.PicUrl" ng-src="{{news.PicUrl}}" />
                                     <span class="alt">{{news.Title}}</span>
-                                    <img ng-if="key == 0 && news.PicUrl" src="{{news.PicUrl}}" />
+                                    <img ng-if="key == 0 && news.PicUrl" ng-src="{{news.PicUrl}}" />
                                 </div>
                             </a>
                         </li>

@@ -3,11 +3,11 @@
 namespace callmez\wechat\modules\admin\controllers;
 
 use Yii;
-use callmez\wechat\models\MessageHistory;
-use callmez\wechat\modules\admin\models\MessageHistorySearch;
-use callmez\wechat\modules\admin\components\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
+use callmez\wechat\models\MessageHistory;
+use callmez\wechat\modules\admin\components\Controller;
+use callmez\wechat\modules\admin\models\MessageHistorySearch;
 
 /**
  * MessageHistoryController implements the CRUD actions for MessageHistory model.

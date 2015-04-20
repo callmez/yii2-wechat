@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'template' => '{history}',
                 'buttons' => [
                     'history' => function ($url, $model, $key) {
-                         return Html::a('通信记录', ['/wechat/admin/history']);
+                         return Html::a('发送消息', ['message', 'id' => $key]);
                     }
                 ],
                 'options' => [

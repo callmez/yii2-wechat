@@ -1,3 +1,9 @@
+/* 后台菜单 */
+.list-group-item.active a {
+    color: #fff;
+}
+
+/* 上传控件 */
 .file-input {
     position: relative;
     overflow: hidden;

@@ -3,11 +3,12 @@
 namespace callmez\wechat\modules\admin\controllers;
 
 use Yii;
+use yii\filters\VerbFilter;
+use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Fans;
 use callmez\wechat\modules\admin\models\FansSearch;
 use callmez\wechat\modules\admin\components\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use callmez\wechat\modules\admin\models\MessageHistorySearch;
 
 /**
  * FansController implements the CRUD actions for Fans model.
@@ -47,6 +48,28 @@ class FansController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+
+    /**
+     * 粉丝发送消息
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionMessage($id)
+    {
+        $model = $this->findModel($id);
+        $searchModel = new MessageHistorySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->query->andWhere([
+            'open_id' => $model->open_id,
+            'wid' => $this->getWechat()->id,
+        ]);
+        return $this->render('message', [
+            'model' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 
     /**

@@ -33,29 +33,77 @@ class Module extends \yii\base\Module
      */
     public $defaultMenus = [
         [
-            'label' => '<span class="glyphicon glyphicon-cog"></span> 公众号管理',
-            'url' => ['/wechat/admin/wechat'],
+            'label' => '系统管理',
+            'items' => [
+                [
+                    'label' => '<span class="glyphicon glyphicon-cog"></span> 公众号管理',
+                    'url' => ['/wechat/admin/wechat/index'],
+                    'options' => [
+                        'class' => 'list-group-item'
+                    ]
+                ],
+            ]
         ],
         [
-            'label' => '<span class="glyphicon glyphicon-list"></span> 自定义菜单管理',
-            'url' => ['/wechat/admin/menu'],
+            'label' => '基本功能',
+            'items' => [
+                [
+                    'label' => '<span class="glyphicon glyphicon-envelope"></span> 回复规则',
+                    'url' => ['/wechat/admin/rule/index'],
+                    'options' => [
+                        'class' => 'list-group-item'
+                    ]
+                ]
+            ]
         ],
         [
-            'label' => '<span class="glyphicon glyphicon-envelope"></span> 回复规则',
-            'url' => ['/wechat/admin/rule'],
+            'label' => '高级功能',
+            'items' => [
+                [
+                    'label' => '<span class="glyphicon glyphicon-list"></span> 自定义菜单管理',
+                    'url' => ['/wechat/admin/menu/index'],
+                    'options' => [
+                        'class' => 'list-group-item'
+                    ]
+                ]
+            ]
         ],
         [
-            'label' => '<span class="glyphicon glyphicon-user"></span> 粉丝管理',
-            'url' => ['/wechat/admin/fans'],
+            'label' => '粉丝营销',
+            'items' => [
+                [
+                    'label' => '<span class="glyphicon glyphicon-user"></span> 粉丝管理',
+                    'url' => ['/wechat/admin/fans/index'],
+                    'options' => [
+                        'class' => 'list-group-item'
+                    ]
+                ]
+            ]
         ],
         [
-            'label' => '<span class="glyphicon glyphicon-floppy-disk"></span> 通信记录',
-            'url' => ['/wechat/admin/message-history'],
+            'label' => '数据统计',
+            'items' => [
+                [
+                    'label' => '<span class="glyphicon glyphicon-floppy-disk"></span> 通信记录',
+                    'url' => ['/wechat/admin/message-history/index'],
+                    'options' => [
+                        'class' => 'list-group-item'
+                    ]
+                ]
+            ]
         ],
         [
-            'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',
-            'url' => ['/wechat/admin/simulator'],
-        ]
+            'label' => '功能测试',
+            'items' => [
+                [
+                    'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',
+                    'url' => ['/wechat/admin/simulator/index'],
+                    'options' => [
+                        'class' => 'list-group-item'
+                    ]
+                ]
+            ]
+        ],
     ];
 
     /**

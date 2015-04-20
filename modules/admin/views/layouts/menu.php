@@ -1,6 +1,6 @@
 <?php
 use \Yii;
-use yii\bootstrap\Nav;
+use yii\widgets\Menu;
 use callmez\wechat\modules\admin\widgets\Alert;
 use callmez\wechat\modules\admin\assets\AdminAsset;
 
@@ -16,11 +16,16 @@ $this->params['breadcrumbs'] = array_merge([
     <?= Alert::widget() ?>
     <div class="row">
         <div class="col-sm-2 mb20">
-            <?= Nav::widget([
-                'options' => [
-                    'class' => 'nav nav-pills nav-stacked'
-                ],
+            <?= Menu::widget([
                 'encodeLabels' => false,
+                'options' => [
+                    'class' => 'list-unstyled'
+                ],
+                'labelTemplate' => '<div class="panel-heading"><h4 class="panel-title">{label}</h4></div>',
+                'submenuTemplate' => "\n<ul class='list-group'>\n{items}\n</ul>\n",
+                'itemOptions' => [
+                    'class' => 'panel panel-default'
+                ],
                 'items' => $this->context->module->getMenus()
             ]) ?>
         </div>

@@ -135,7 +135,12 @@ class RuleController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Rule::findOne($id)) !== null) {
+        $query = Rule::find()
+            ->andWhere([
+                'id' => $id,
+                'wid' => $this->getWechat()->id
+            ]);
+        if (($model = $query->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

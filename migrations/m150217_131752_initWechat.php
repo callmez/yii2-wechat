@@ -53,6 +53,7 @@ class m150217_131752_initWechat extends Migration
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
+        $this->createIndex('wid', $tableName, 'wid');
 
         // 规则关键字表
         $tableName = RuleKeyword::tablename();
@@ -66,16 +67,19 @@ class m150217_131752_initWechat extends Migration
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('keyword', $tableName, 'keyword');
+        $this->createIndex('rid', $tableName, 'rid');
 
         $tableName = Fans::tableName();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
-            'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '公众号唯一粉丝ID'",
+            'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '微信ID'",
             'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注状态'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
+        $this->createIndex('wid', $tableName, 'wid');
+        $this->createIndex('open_id', $tableName, 'open_id');
 
         $tableName = MessageHistory::tableName();
         $this->createTable($tableName, [
@@ -83,12 +87,15 @@ class m150217_131752_initWechat extends Migration
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
             'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属规则ID'",
             'kid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属关键字ID'",
-            'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '公众号唯一粉丝ID'",
+            'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '请求用户微信ID'",
             'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '处理模块'",
             'message' => Schema::TYPE_TEXT . " NOT NULL COMMENT '消息体内容'",
             'type' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '发送类型'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注时间'",
         ]);
+        $this->createIndex('wid', $tableName, 'wid');
+        $this->createIndex('open_id', $tableName, 'open_id');
+        $this->createIndex('module', $tableName, 'module');
     }
 
     public function safeDown()

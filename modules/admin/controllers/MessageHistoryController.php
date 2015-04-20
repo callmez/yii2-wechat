@@ -3,27 +3,26 @@
 namespace callmez\wechat\modules\admin\controllers;
 
 use Yii;
-use callmez\wechat\models\Fans;
-use callmez\wechat\modules\admin\models\FansSearch;
+use callmez\wechat\models\MessageHistory;
+use callmez\wechat\modules\admin\models\MessageHistorySearch;
 use callmez\wechat\modules\admin\components\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * FansController implements the CRUD actions for Fans model.
+ * MessageHistoryController implements the CRUD actions for MessageHistory model.
  */
-class FansController extends Controller
+class MessageHistoryController extends Controller
 {
     /**
-     * Lists all Fans models.
+     * Lists all MessageHistory models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new FansSearch();
+        $searchModel = new MessageHistorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->query->andWhere(['wid' => $this->getWechat()->id]);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -31,26 +30,19 @@ class FansController extends Controller
     }
 
     /**
-     * Updates an existing Fans model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * Displays a single MessageHistory model.
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionView($id)
     {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
+        return $this->render('view', [
+            'model' => $this->findModel($id),
+        ]);
     }
 
     /**
-     * Deletes an existing Fans model.
+     * Deletes an existing MessageHistory model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -63,15 +55,15 @@ class FansController extends Controller
     }
 
     /**
-     * Finds the Fans model based on its primary key value.
+     * Finds the MessageHistory model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Fans the loaded model
+     * @return MessageHistory the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        $query = Fans::find()
+        $query = MessageHistory::find()
             ->andWhere([
                 'id' => $id,
                 'wid' => $this->getWechat()->id

@@ -49,6 +49,10 @@ class Module extends \yii\base\Module
             'url' => ['/wechat/admin/fans'],
         ],
         [
+            'label' => '<span class="glyphicon glyphicon-floppy-disk"></span> 通信记录',
+            'url' => ['/wechat/admin/message-history'],
+        ],
+        [
             'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',
             'url' => ['/wechat/admin/simulator'],
         ]

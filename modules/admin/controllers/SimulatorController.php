@@ -1,5 +1,4 @@
 <?php
-
 namespace callmez\wechat\modules\admin\controllers;
 
 use Yii;
@@ -15,7 +14,7 @@ class SimulatorController extends Controller
 
     public function actionIndex()
     {
+        // TODO 按照模拟器的预览效果统一其他代码里的模拟功能
         return $this->render('index');
     }
-
 }

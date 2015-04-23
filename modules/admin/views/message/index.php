@@ -14,7 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="message-history-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <<div class="page-header">
+        <h3><?= Html::encode($this->title) ?></h3>
+    </div>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
@@ -34,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'message',
                 'value' => function($model) {
+                    // TODO 增加详细的信息内容展示, 包括详细内容页
                     switch($type = ArrayHelper::getValue($model->message, 'MsgType')) {
                         case 'text':
                             return $model->message['Content'];

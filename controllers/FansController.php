@@ -51,7 +51,7 @@ class FansController extends ProcessController
         if (is_array($event->result)) {
             $_history = clone $history;
             $_history->setAttributes(array_merge($attributes, [
-                'open_id' => $event->result['FromUserName'],
+                'open_id' => $event->result['ToUserName'],
                 'message' => $event->result,
                 'type' => MessageHistory::TYPE_RESPONSE
             ]));

@@ -35,9 +35,13 @@ use callmez\wechat\components\Wechat as WechatSDK;
 class Wechat extends \yii\db\ActiveRecord
 {
     /**
+     * 未激活状态
+     */
+    const STATUS_INACTIVE = 0;
+    /**
      * 激活状态
      */
-    const STATUS_ACTIVE = 0;
+    const STATUS_ACTIVE = 1;
     /**
      * 删除状态
      */

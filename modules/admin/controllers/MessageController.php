@@ -12,7 +12,7 @@ use callmez\wechat\modules\admin\models\MessageHistorySearch;
 /**
  * MessageHistoryController implements the CRUD actions for MessageHistory model.
  */
-class MessageHistoryController extends Controller
+class MessageController extends Controller
 {
     /**
      * Lists all MessageHistory models.

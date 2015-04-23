@@ -13,7 +13,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="message-history-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="page-header">
+        <h3><?= Html::encode($this->title) ?></h3>
+    </div>
 
     <?= DetailView::widget([
         'model' => $model,

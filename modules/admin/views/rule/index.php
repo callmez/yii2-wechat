@@ -13,7 +13,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="rule-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="page-header">
+        <h3><?= Html::encode($this->title) ?></h3>
+    </div>
 
     <?//= $this->render('_search', ['model' => $searchModel]); ?>
 

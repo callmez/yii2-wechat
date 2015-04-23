@@ -43,11 +43,18 @@ class ApiController extends BaseController
     public function actionIndex($hash)
     {
         $request = Yii::$app->getRequest();
+        $wechat = $this->findWechat($hash);
+        if (!$wechat->getSdk()->checkSignature()) {
+            return 'Sign check fail!';
+        }
         switch ($request->getMethod()) {
             case 'GET':
+                if ($wechat->status == Wechat::STATUS_INACTIVE) {
+                    $wechat->updateAttributes(['status' => Wechat::STATUS_ACTIVE]);
+                }
                 return $request->getQueryParam('echostr');
             case 'POST':
-                $this->setWechat($this->findWechat($hash));
+                $this->setWechat($wechat);
                 $this->message = $this->parseRequest($request->getRawBody());
                 $result = null;
                 if($this->beforeProcess()) {

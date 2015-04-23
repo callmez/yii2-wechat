@@ -73,6 +73,20 @@ class Fans extends \yii\db\ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     * @param bool $subscribed 默认查询订阅状态
+     * @return FansQuery
+     */
+    public static function find($subscribed = true)
+    {
+        $query = new FansQuery(get_called_class());
+        if ($subscribed) {
+            $query->subscribed();
+        }
+        return $query;
+    }
+
+    /**
      * 通过唯一的openid查询粉丝
      * @param $open_id
      * @return mixed

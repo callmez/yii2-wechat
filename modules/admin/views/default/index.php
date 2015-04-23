@@ -1,5 +1,8 @@
 <div class="admin-default-index">
-    <h1>微信系统后台管理</h1>
+    <div class="page-header"><h1>微信系统后台管理</h1></div>
+    <div class="page-header">
+        <h3>微信系统后台管理</h3>
+    </div>
     <p>
         This is the view content for action "<?= $this->context->action->id ?>".
         The action belongs to the controller "<?= get_class($this->context) ?>"

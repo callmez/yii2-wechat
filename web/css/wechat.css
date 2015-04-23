@@ -1,0 +1,121 @@
+/* 微信模拟界面 */
+.wechat-message-list {
+    padding: 15px;
+    background: #fff;
+}
+.wechat-message-list .message {
+    position: relative;
+    margin-bottom: 10px;
+}
+.wechat-message-list .message.send {
+    text-align: right;
+}
+.wechat-message-list .message.receive {
+    text-align: left;
+}
+.wechat-message-list .message .content {
+    border-radius: 3px;
+    display: inline-block;
+    padding: 6px 12px;
+}
+.wechat-message-list .message.send .content {
+    border: 1px solid #4cae4c;
+    margin-right: 44px;
+}
+.wechat-message-list .message.receive .content {
+    border: 1px solid #dcdcdc;
+    margin-left: 44px;
+}
+.wechat-message-list .message.send .content.text {
+    background-color: #5cb85c;
+    color: #fff;
+}
+.wechat-message-list .message.receive .content.text {
+    background-color: #fff;
+    color: #000;
+}
+.wechat-message-list .message .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 3px;
+    position: absolute;
+    top: 0;
+}
+.wechat-message-list .message.send .avatar {
+    right: 0;
+}
+.wechat-message-list .message.receive .avatar {
+    left: 0;
+}
+.wechat-message-list .message .news {
+    list-style: none;
+    padding: 0;
+    border: 1px solid #cdcdcd;
+    box-shadow: 0 3px 6px #999;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 2px;
+    background-color: #FFF;
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#FFFFFF));
+    background-image: -moz-linear-gradient(top, #FFFFFF 0%, #FFFFFF 100%);
+    margin: 0px auto;
+}
+.wechat-message-list .message .news a {
+    color: #000;
+}
+.wechat-message-list .message .news a:hover {
+    text-decoration: none;
+}
+.wechat-message-list .message .news img {
+    width: 100%;
+}
+.wechat-message-list .message .news li {
+    padding: 9px;
+    border-bottom: 1px solid #ccc;
+    color: #000;
+    position: relative;
+}
+.wechat-message-list .message .news li .top {
+    position: relative;
+}
+.wechat-message-list .message .news li .top .alt {
+    color: #fff;
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.5);
+}
+.wechat-message-list .message .news li .list {
+    margin-bottom: 15px;
+}
+.wechat-message-list .message .news li .list img {
+    width: 45px;
+    height: 45px;
+    float: right;
+}
+.wechat-message-list .message .news li .list .alt {
+    margin-right: 100px;
+    display: block;
+}
+.wechat-message-list .message .news li .single {
+    padding: 6px;
+}
+.wechat-message-list .message .news li .single .alt {
+    display: block;
+    line-height: 1.2em;
+    text-align: left;
+    font-size: 20px;
+}
+.wechat-message-list .message .news li .single .time {
+    display: block;
+    color: #8c8c8c;
+    font-size: 12px;
+    margin: 10px 0;
+}
+.wechat-message-list .message .news li .single .desc {
+    color: #8c8c8c;
+    margin: 10px 0 20px
+}

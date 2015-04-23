@@ -190,7 +190,7 @@ class ProcessController extends BaseController
     }
 
     /**
-     * 响应音频消息
+     * 响应音乐消息
      * 例: $this->responseMusic([
      *     'title' => 'music title',
      *     'description' => 'music description',

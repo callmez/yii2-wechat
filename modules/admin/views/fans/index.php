@@ -31,6 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'open_id',
             ],
             [
+                'attribute' => 'status',
+                'format' => 'html',
+                'value' => function($model) {
+                    return $model->status;
+                }
+            ],
+            [
                 'attribute' => 'created_at',
                 'format' => 'datetime',
                 'options' => [

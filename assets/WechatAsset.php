@@ -14,4 +14,7 @@ class WechatAsset extends AssetBundle
     public $css = [
         'css/wechat.css'
     ];
+    public $depends = [
+        'callmez\wechat\assets\FontAwesomeAsset',
+    ];
 }

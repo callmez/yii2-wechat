@@ -1,3 +1,8 @@
+/* Common */
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /* 微信模拟界面 */
 .wechat-message-list {
     padding: 15px;

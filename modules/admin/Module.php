@@ -36,11 +36,8 @@ class Module extends \yii\base\Module
             'label' => '系统管理',
             'items' => [
                 [
-                    'label' => '<span class="glyphicon glyphicon-cog"></span> 公众号管理',
+                    'label' => '<span class="fa fa-cog"></span> 公众号管理',
                     'url' => ['/wechat/admin/wechat/index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
                 ],
             ]
         ],
@@ -48,11 +45,8 @@ class Module extends \yii\base\Module
             'label' => '基本功能',
             'items' => [
                 [
-                    'label' => '<span class="glyphicon glyphicon-envelope"></span> 回复规则',
+                    'label' => '<span class="fa fa-reply"></span> 回复规则',
                     'url' => ['/wechat/admin/rule/index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
                 ]
             ]
         ],
@@ -60,11 +54,8 @@ class Module extends \yii\base\Module
             'label' => '高级功能',
             'items' => [
                 [
-                    'label' => '<span class="glyphicon glyphicon-list"></span> 自定义菜单管理',
+                    'label' => '<span class="fa fa-bars"></span> 自定义菜单管理',
                     'url' => ['/wechat/admin/menu/index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
                 ]
             ]
         ],
@@ -72,18 +63,12 @@ class Module extends \yii\base\Module
             'label' => '粉丝营销',
             'items' => [
                 [
-                    'label' => '<span class="glyphicon glyphicon-user"></span> 粉丝管理',
+                    'label' => '<span class="fa fa-user"></span> 粉丝管理',
                     'url' => ['/wechat/admin/fans/index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
                 ],
                 [
-                    'label' => '<span class="glyphicon glyphicon-user"></span> 粉丝分组(待开发)',
+                    'label' => '<span class="fa fa-users"></span> 粉丝分组(待开发)',
                     'url' => ['/wechat/admin/fans/group'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
                 ]
             ]
         ],
@@ -91,25 +76,16 @@ class Module extends \yii\base\Module
             'label' => '通知中心',
             'items' => [
                 [
-                    'label' => '<span class="glyphicon glyphicon-floppy-disk"></span> 通信记录',
+                    'label' => '<span class="fa fa-history"></span> 通信记录',
                     'url' => ['/wechat/admin/message/index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
                 ],
                 [
-                    'label' => '<span class="glyphicon glyphicon-user"></span> 客服消息',
-                    'url' => ['/wechat/admin//index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
+                    'label' => '<span class="fa fa-comment-o"></span> 客服消息',
+                    'url' => ['/wechat/admin/message/cutom'],
                 ],
                 [
-                    'label' => '<span class="glyphicon glyphicon-user"></span> 微信群发',
-                    'url' => ['/wechat/admin/fans/index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
+                    'label' => '<span class="fa fa-wechat"></span> 微信群发',
+                    'url' => ['/wechat/admin/message/wechat'],
                 ]
             ]
         ],
@@ -117,11 +93,8 @@ class Module extends \yii\base\Module
             'label' => '功能测试',
             'items' => [
                 [
-                    'label' => '<span class="glyphicon glyphicon-send"></span> 微信模拟器',
+                    'label' => '<span class="fa fa-bug"></span> 微信模拟器',
                     'url' => ['/wechat/admin/simulator/index'],
-                    'options' => [
-                        'class' => 'list-group-item'
-                    ]
                 ]
             ]
         ],

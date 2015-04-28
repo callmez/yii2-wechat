@@ -37,9 +37,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'module',
             [
                 'attribute' => 'status',
+                'format' => 'html',
                 'value' => function($model) {
-                    return Rule::$statuses[$model->status];
+                    return Html::tag('span', Rule::$statuses[$model->status], [
+                        'class' => 'label label-' . ($model->status == Rule::STATUS_ACTIVE ? 'success' : 'info')
+                    ]);
                 },
+                'filter' => Rule::$statuses,
                 'options' => [
                     'width' => 80
                 ]

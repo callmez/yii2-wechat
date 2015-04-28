@@ -37,9 +37,17 @@ $this->params['breadcrumbs'][] = $this->title;
 //            'original',
             [
                 'attribute' => 'type',
+                'format' => 'html',
                 'value' => function($model) {
-                    return Wechat::$types[$model->type];
-                }
+                    return Html::tag('span', Wechat::$types[$model->type], [
+                        'class' => 'label label-info'
+                    ]);
+                },
+                'filter' => Wechat::$types,
+                'options' => [
+                    'width' => 120
+                ]
+
             ],
 //            'app_id',
 //            'app_secret',

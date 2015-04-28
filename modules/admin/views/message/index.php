@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="message-history-index">
 
-    <<div class="page-header">
+    <div class="page-header">
         <h3><?= Html::encode($this->title) ?></h3>
     </div>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -47,11 +47,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'type',
+                'format' => 'html',
                 'value' => function($model) {
-                    return MessageHistory::$types[$model->type];
+                    return  Html::tag('span', MessageHistory::$types[$model->type], [
+                        'class' => 'label label-info'
+                    ]);
                 },
+                'filter' => MessageHistory::$types,
                 'options' => [
-                    'width' => 80
+                    'width' => 110
                 ]
             ],
             [

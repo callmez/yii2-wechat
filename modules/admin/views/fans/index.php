@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use callmez\wechat\models\Fans;
 
 /* @var $this yii\web\View */
 /* @var $searchModel callmez\wechat\modules\admin\models\FansSearch */
@@ -34,8 +35,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'status',
                 'format' => 'html',
                 'value' => function($model) {
-                    return $model->status;
-                }
+                    return Html::tag('span', Fans::$statuses[$model->status], [
+                        'class' => 'label label-' . ($model->status == Fans::STATUS_SUBSCRIBED ? 'success' : 'info')
+                    ]);
+                },
+                'filter' => Fans::$statuses,
+                'options' => [
+                    'width' => 120
+                ]
             ],
             [
                 'attribute' => 'created_at',

@@ -42,6 +42,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?= $form->field($model, 'description')->textarea() ?>
 
+        <?= $form->field($model, 'musicUrl', [
+            'class' => 'callmez\wechat\widgets\ActiveField'
+        ])->fileApiInput() ?>
+
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-6">
                 <?= Html::submitButton('发送', ['class' => 'btn btn-block btn-primary']) ?>

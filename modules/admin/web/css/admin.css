@@ -2,28 +2,3 @@
 .list-group-item.active a {
     color: #fff;
 }
-
-/* 上传控件 */
-.file-input {
-    position: relative;
-    overflow: hidden;
-}
-.file-input input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    opacity: 0;
-    -ms-filter: 'alpha(opacity=0)';
-    font-size: 200px;
-    direction: ltr;
-    cursor: pointer;
-}
-/* Fixes for IE < 8 */
-@media screen\9 {
-    .file-input input[type=file] {
-        filter: alpha(opacity=0);
-        font-size: 100%;
-        height: 100%;
-    }
-}

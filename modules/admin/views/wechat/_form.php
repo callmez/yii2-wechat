@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use callmez\wechat\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
 use callmez\wechat\models\Wechat;
 ?>
 

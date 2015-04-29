@@ -88,4 +88,6 @@ class CustomMessage extends Model
             'content' => '消息内容',
         ];
     }
+
+
 }

@@ -47,7 +47,39 @@ class Module extends \yii\base\Module
                 [
                     'label' => '<span class="fa fa-reply"></span> 回复规则',
                     'url' => ['/wechat/admin/rule/index'],
-                ]
+                ],
+                [
+                    'label' => '<span class="fa fa-font"></span> 文本回复(待开发)',
+                    'url' => ['/wechat/admin/reply/text'],
+                ],
+                [
+                    'label' => '<span class="fa fa-newspaper-o"></span> 图文回复(待开发)',
+                    'url' => ['/wechat/admin/reply/news'],
+                ],
+                [
+                    'label' => '<span class="fa fa-music"></span> 音乐回复(待开发)',
+                    'url' => ['/wechat/admin/reply/music'],
+                ],
+                [
+                    'label' => '<span class="fa fa-image"></span> 图片回复(待开发)',
+                    'url' => ['/wechat/admin/reply/photo'],
+                ],
+                [
+                    'label' => '<span class="fa fa-volume-up"></span> 语音回复(待开发)',
+                    'url' => ['/wechat/admin/reply/voice'],
+                ],
+                [
+                    'label' => '<span class="fa fa-video-camera"></span> 视频回复(待开发)',
+                    'url' => ['/wechat/admin/reply/vedio'],
+                ],
+                [
+                    'label' => '<span class="fa fa-cloud"></span> 远程回复(待开发)',
+                    'url' => ['/wechat/admin/reply/remote'],
+                ],
+                [
+                    'label' => '<span class="fa fa-crop"></span> 素材管理(待开发)',
+                    'url' => ['/wechat/admin/media/index'],
+                ],
             ]
         ],
         'advanced' => [
@@ -56,6 +88,18 @@ class Module extends \yii\base\Module
                 [
                     'label' => '<span class="fa fa-bars"></span> 自定义菜单管理',
                     'url' => ['/wechat/admin/menu/index'],
+                ],
+                [
+                    'label' => '<span class="fa fa-qrcode"></span> 二维码管理(待开发)',
+                    'url' => ['/wechat/admin/qrcode/index'],
+                ],
+                [
+                    'label' => '<span class="fa fa-mastercard"></span> 卡卷功能(待开发)',
+                    'url' => ['/wechat/admin/card/index'],
+                ],
+                [
+                    'label' => '<span class="fa fa-user-plus"></span> 多客服接入(待开发)',
+                    'url' => ['/wechat/admin/message/customer'],
                 ]
             ]
         ],
@@ -67,7 +111,7 @@ class Module extends \yii\base\Module
                     'url' => ['/wechat/admin/fans/index'],
                 ],
                 [
-                    'label' => '<span class="fa fa-users"></span> 粉丝分组(待开发)',
+                    'label' => '<span class="fa fa-group"></span> 粉丝分组(待开发)',
                     'url' => ['/wechat/admin/fans/group'],
                 ]
             ]
@@ -80,12 +124,21 @@ class Module extends \yii\base\Module
                     'url' => ['/wechat/admin/message/index'],
                 ],
                 [
-                    'label' => '<span class="fa fa-comment-o"></span> 客服消息',
+                    'label' => '<span class="fa fa-comment-o"></span> 客服消息 (待开发)',
                     'url' => ['/wechat/admin/message/cutom'],
                 ],
                 [
-                    'label' => '<span class="fa fa-wechat"></span> 微信群发',
+                    'label' => '<span class="fa fa-wechat"></span> 微信群发 (待开发)',
                     'url' => ['/wechat/admin/message/wechat'],
+                ]
+            ]
+        ],
+        'module' => [
+            'label' => '扩展模块',
+            'items' => [
+                [
+                    'label' => '<span class="fa fa-connectdevelop"></span> 模块管理(待开发)',
+                    'url' => ['/wechat/admin/module/index'],
                 ]
             ]
         ],

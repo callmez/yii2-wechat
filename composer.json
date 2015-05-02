@@ -19,7 +19,8 @@
         "yiisoft/yii2": "*",
         "yiisoft/yii2-bootstrap": "*",
 
-        "callmez/yii2-storage": "*",
+        "syfmony/yaml": "~2.0",
+
         "callmez/yii2-wechat-sdk" : "*",
 
         "bower-asset/font-awesome": "4.*",

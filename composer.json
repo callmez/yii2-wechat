@@ -19,7 +19,7 @@
         "yiisoft/yii2": "*",
         "yiisoft/yii2-bootstrap": "*",
 
-        "syfmony/yaml": "~2.0",
+        "syfmony/yaml": "~2.6",
 
         "callmez/yii2-wechat-sdk" : "*",
 

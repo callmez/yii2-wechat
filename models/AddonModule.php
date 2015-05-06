@@ -1,0 +1,224 @@
+<?php
+
+namespace callmez\wechat\models;
+
+use Yii;
+use yii\db\ActiveRecord;
+use yii\behaviors\TimestampBehavior;
+use Symfony\Component\Yaml\Yaml;
+use callmez\wechat\Module;
+
+
+/**
+ * This is the model class for table "{{%wechat_addon_module}}".
+ *
+ */
+class AddonModule extends \yii\db\ActiveRecord
+{
+    /**
+     * 核心模块
+     */
+    const TYPE_CORE = 'core';
+    /**
+     * 微信扩展模块
+     */
+    const TYPE_ADDON = 'addon';
+    /**
+     * @var array
+     */
+    public static $types = [
+        self::TYPE_CORE => '核心模块',
+        self::TYPE_ADDON => '扩展模块',
+    ];
+
+    public function behaviors()
+    {
+        return [
+            'timestamp' => [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return '{{%wechat_addon_module}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['id', 'name', 'version'], 'required'],
+
+            [['id'], 'string', 'max' => 20],
+            [['name', 'author'], 'string', 'max' => 50],
+            [['version'], 'string', 'max' => 10],
+            [['ability'], 'string', 'max' => 100],
+            [['site'], 'string', 'max' => 255],
+            [['description'], 'string'],
+
+            [['id'], 'unique', 'message' => '模块唯一ID标识已经被使用或者该模块已经安装.'],
+
+            [['description'], 'default', 'value' => ''],
+
+            [['type'], 'checkType', 'skipOnEmpty' => false],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => '模块ID',
+            'name' => '模块名称',
+            'type' => '模块类型',
+            'version' => '模块版本',
+            'ability' => '模块功能简述',
+            'description' => '模块详细描述',
+            'author' => '模块作者',
+            'site' => '模块详情地址',
+            'created_at' => '安装时间'
+        ];
+    }
+
+    public function beforeDelete()
+    {
+        return parent::beforeDelete() && $this->getCanUninstall(true);
+    }
+
+    /**
+     * 是否已安装的模块
+     * @return bool
+     */
+    public function getIsInstalled()
+    {
+        return !$this->getIsNewRecord();
+    }
+
+    /**
+     * 核心模块不能卸载
+     * @param bool $setError
+     * @return bool
+     */
+    public function getCanUninstall($setError = false)
+    {
+        if ($this->type == self::TYPE_CORE) {
+            $setError && $this->addError('type', '核心模块不能卸载');
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 安装模块
+     * @param bool $runValidation
+     * @return bool
+     */
+    public function install($runValidation = true)
+    {
+        return parent::save($runValidation);
+    }
+
+    /**
+     * 卸载模块
+     * @return false|int
+     */
+    public function uninstall()
+    {
+        return parent::delete();
+    }
+
+    /**
+     * 根据模块的存放路径判断模块的类型
+     */
+    public function checkType($attribute, $params)
+    {
+        if (file_exists(Yii::getAlias(Module::CORE_MODULE_PATH . $this->id . '/wechat.yml'))) {
+            $this->$attribute = self::TYPE_CORE;
+        } else {
+            $this->$attribute = self::TYPE_ADDON;
+        }
+    }
+
+    /**
+     * 获取扩展模块的类名
+     * 注意: 所有微信的扩展模块必须使用Module类名(文件名也为Module.php)为模块的启动文件
+     * @return string
+     */
+    public function getModuleClass()
+    {
+        $path = $this->type == self::TYPE_ADDON ? Module::ADDON_MODULE_PATH : Module::CORE_MODULE_PATH;
+        return str_replace('/', '\\', ltrim($path, '@')) . '\\' . $this->id . '\\Module';
+    }
+
+    /**
+     * 根据ID查找可用的模块
+     * @param $id
+     * @return null
+     */
+    public static function findAvailableModuleById($id)
+    {
+        $availableModels = static::findAvailableModules();
+        return array_key_exists($id, $availableModels) ? $availableModels[$id] : null;
+    }
+
+    /**
+     * 查找可用的插件模块
+     * @return mixed
+     */
+    public static function findAvailableModules()
+    {
+        return static::scanAvailableModules([
+            Module::ADDON_MODULE_PATH, // 扩展模块
+            Module::CORE_MODULE_PATH// 核心模块
+        ]);
+    }
+
+    /**
+     * 扫描可用的插件模块
+     *
+     * 该方法是严格按照Yii的模块路径规则(比如@app/modules, @app/mdoules/example/modules)来查找模块
+     * 如果您的模块有特殊路径需求. 可能正确安装不了, 建议按照规则设计扩展模块
+     *
+     * @param array|string $paths
+     * @return array
+     */
+    protected static function scanAvailableModules($paths)
+    {
+        if (!is_array($paths)) {
+            $paths = [$paths];
+        }
+        $modules = [];
+        foreach ($paths as $path) {
+            $path = Yii::getAlias($path);
+            if (is_dir($path) && (($handle = opendir($path)) !== false)) {
+                while (($file = readdir($handle)) !== false) {
+                    if (in_array($file, ['.', '..']) || !is_dir($currentPath = $path . DIRECTORY_SEPARATOR . $file)) {
+                        continue;
+                    }
+                    // 是否有wechat.yml安装配置文件
+                    $settingFile = $currentPath . DIRECTORY_SEPARATOR . 'wechat.yml';
+                    if (file_exists($settingFile)) {
+                        $model = new static;
+                        $model->setAttributes(Yaml::parse(file_get_contents($settingFile)));
+                        if ($model->id == $file && $model->validate()) { // 模块名必须等于目录名并且验证模块正确性
+                            $modules[$model->id] = $model;
+                        }
+                    }
+                }
+            }
+        }
+        return $modules;
+    }
+}

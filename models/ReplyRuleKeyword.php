@@ -6,7 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "{{%wechat_rule_keyword}}".
+ * This is the model class for table "{{%wechat_reply_rule_keyword}}".
  *
  * @property integer $id
  * @property integer $rid
@@ -16,7 +16,7 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class RuleKeyword extends \yii\db\ActiveRecord
+class ReplyRuleKeyword extends \yii\db\ActiveRecord
 {
     const TYPE_MATCH = 0;
     const TYPE_INCLUDE = 1;
@@ -39,7 +39,7 @@ class RuleKeyword extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%wechat_rule_keyword}}';
+        return '{{%wechat_reply_rule_keyword}}';
     }
 
     /**
@@ -71,7 +71,7 @@ class RuleKeyword extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getRule()
+    public function getReplyRule()
     {
         return $this->hasOne(Rule::className(), ['id' => 'rid']);
     }
@@ -84,7 +84,7 @@ class RuleKeyword extends \yii\db\ActiveRecord
      */
     public static function findAllByKeyword($keyword, $wid = null)
     {
-        $query = RuleKeyword::find();
+        $query = ReplyRuleKeyword::find();
         $query->andWhere($conditons = [
                 'or',
                 ['and', '{{type}}=:typeMatch', '{{keyword}}=:keyword'], // 直接匹配关键字
@@ -93,13 +93,13 @@ class RuleKeyword extends \yii\db\ActiveRecord
             ])
             ->addParams([
                 ':keyword' => $keyword,
-                ':typeMatch' => RuleKeyword::TYPE_MATCH,
-                ':typeInclude' => RuleKeyword::TYPE_INCLUDE,
-                ':typeRegular' => RuleKeyword::TYPE_REGULAR
+                ':typeMatch' => ReplyRuleKeyword::TYPE_MATCH,
+                ':typeInclude' => ReplyRuleKeyword::TYPE_INCLUDE,
+                ':typeRegular' => ReplyRuleKeyword::TYPE_REGULAR
             ]);
         if ($wid !== null) {
             $query->joinWith([
-                'rule' => function($query) use ($wid) {
+                'replyRule' => function($query) use ($wid) {
                     $query->andWhere(['wid' => $wid]);
                 }
             ]);

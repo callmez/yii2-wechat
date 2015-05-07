@@ -3,11 +3,15 @@
 namespace callmez\wechat\models;
 
 use Yii;
+use yii\caching\Cache;
 use yii\db\ActiveRecord;
+use yii\caching\TagDependency;
+use yii\base\NotSupportedException;
+use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
 use Symfony\Component\Yaml\Yaml;
 use callmez\wechat\Module;
-
+use callmez\wechat\behaviors\EventBehavior;
 
 /**
  * This is the model class for table "{{%wechat_addon_module}}".
@@ -24,6 +28,18 @@ class AddonModule extends \yii\db\ActiveRecord
      */
     const TYPE_ADDON = 'addon';
     /**
+     * 迁移安装
+     */
+    const MIGRATION_INSTALL = 'install';
+    /**
+     * 迁移卸载
+     */
+    const MIGRATION_UNINSTALL = 'uninstall';
+    /**
+     * 迁移升级
+     */
+    const MIGRATION_UPGRADE = 'upgrade';
+    /**
      * @var array
      */
     public static $types = [
@@ -38,6 +54,27 @@ class AddonModule extends \yii\db\ActiveRecord
                 'class' => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => 'created_at'
+                ]
+            ],
+            'event' => [
+                'class' => EventBehavior::className(),
+                'events' => [
+                    ActiveRecord::EVENT_BEFORE_DELETE => function($event) { // 是否能删除
+                        $event->isValid = $this->getCanUninstall(true);
+                    },
+                    // 数据库变动必须更新缓存, 并执行相关迁移脚本
+                    ActiveRecord::EVENT_AFTER_INSERT => function($event) {
+                        $this->updateCache();
+                        $this->migration(self::MIGRATION_INSTALL);
+                    },
+                    ActiveRecord::EVENT_AFTER_DELETE => function($event) {
+                        $this->updateCache();
+                        $this->migration(self::MIGRATION_UNINSTALL);
+                    },
+                    ActiveRecord::EVENT_AFTER_UPDATE => function() {
+                        $this->updateCache();
+                        $this->migration(self::MIGRATION_UPGRADE);
+                    },
                 ]
             ]
         ];
@@ -64,13 +101,14 @@ class AddonModule extends \yii\db\ActiveRecord
             [['version'], 'string', 'max' => 10],
             [['ability'], 'string', 'max' => 100],
             [['site'], 'string', 'max' => 255],
-            [['description'], 'string'],
 
             [['id'], 'unique', 'message' => '模块唯一ID标识已经被使用或者该模块已经安装.'],
-
-            [['description'], 'default', 'value' => ''],
+            [['migration'], 'boolean'],
 
             [['type'], 'checkType', 'skipOnEmpty' => false],
+
+            [['description'], 'string'],
+            [['description'], 'default', 'value' => ''],
         ];
     }
 
@@ -88,13 +126,39 @@ class AddonModule extends \yii\db\ActiveRecord
             'description' => '模块详细描述',
             'author' => '模块作者',
             'site' => '模块详情地址',
+            'migration' => '是否有迁移数据',
             'created_at' => '安装时间'
         ];
     }
 
-    public function beforeDelete()
+    /**
+     * 更新列表数据缓存(模块调用已安装模块缓存)
+     * @see callmez\wechat\Module::addonModules()
+     * @param $cacheKey
+     */
+    protected function updateCache($cacheKey = Module::ADDON_MODULE_LIST_CACHE_NAME)
     {
-        return parent::beforeDelete() && $this->getCanUninstall(true);
+        $cache = Yii::$app->get(static::getDb()->queryCache, false);
+        if ($cache instanceof Cache) {
+            TagDependency::invalidate($cache, $cacheKey);
+        }
+    }
+
+    /**
+     * 执行迁脚本
+     * @param $type
+     */
+    protected function migration($type)
+    {
+        // TODO 模块迁移功能完善
+        switch ($type) {
+            case self::MIGRATION_INSTALL:
+            case self::MIGRATION_UNINSTALL:
+            case self::MIGRATION_UPGRADE:
+                return;
+            default:
+                throw new InvalidParamException("Migration type '{$type}' does not support.");
+        }
     }
 
     /**
@@ -144,7 +208,7 @@ class AddonModule extends \yii\db\ActiveRecord
      */
     public function checkType($attribute, $params)
     {
-        if (file_exists(Yii::getAlias(Module::CORE_MODULE_PATH . $this->id . '/wechat.yml'))) {
+        if (file_exists(Yii::getAlias(Module::CORE_MODULE_PATH . '/' . $this->id . '/wechat.yml'))) {
             $this->$attribute = self::TYPE_CORE;
         } else {
             $this->$attribute = self::TYPE_ADDON;
@@ -179,10 +243,7 @@ class AddonModule extends \yii\db\ActiveRecord
      */
     public static function findAvailableModules()
     {
-        return static::scanAvailableModules([
-            Module::ADDON_MODULE_PATH, // 扩展模块
-            Module::CORE_MODULE_PATH// 核心模块
-        ]);
+        return static::scanAvailableModules([Module::ADDON_MODULE_PATH, Module::CORE_MODULE_PATH]);
     }
 
     /**

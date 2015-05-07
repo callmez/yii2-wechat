@@ -5,6 +5,8 @@
     <?= $form->field($generator, 'moduleID') ?>
     <?= $form->field($generator, 'moduleClass')->textInput(['maxlength' => true, 'readonly' => true]) ?>
     <?= $form->field($generator, 'version') ?>
+    <?= $form->field($generator, 'author')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($generator, 'site')->textInput(['maxlength' => true]) ?>
     <?= $form->field($generator, 'migration')->checkbox() ?>
     <?= $form->field($generator, 'adminController')->checkbox() ?>
 </div>

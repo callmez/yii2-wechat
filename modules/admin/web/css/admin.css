@@ -1,3 +1,7 @@
+/* Reset */
+.panel-body .table {
+    margin-bottom: 0;
+}
 /* 后台菜单 */
 .list-group-item.active a {
     color: #fff;

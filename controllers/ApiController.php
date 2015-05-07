@@ -6,7 +6,7 @@ use yii\web\Response;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
-use callmez\wechat\models\RuleKeyword;
+use callmez\wechat\models\ReplyRuleKeyword;
 use callmez\wechat\components\ProcessEvent;
 use callmez\wechat\components\BaseController;
 
@@ -317,10 +317,10 @@ class ApiController extends BaseController
     protected function matchText()
     {
         $params = [];
-        $models = RuleKeyword::findAllByKeyword($this->message['Content'], $this->getWechat()->id);
+        $models = ReplyRuleKeyword::findAllByKeyword($this->message['Content'], $this->getWechat()->id);
         foreach ($models as $model) {
             $params[] = [
-                'module' => $model->rule->module,
+                'module' => $model->replyRule->module,
                 'priority' => $model->priority,
                 'keyword' => $model
             ];

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use callmez\wechat\models\MessageHistory;
+use callmez\wechat\modules\admin\widgets\AdminPanel;
 
 /* @var $this yii\web\View */
 /* @var $model callmez\wechat\models\MessageHistory */
@@ -11,12 +12,7 @@ $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Message Histories', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="message-history-view">
-
-    <div class="page-header">
-        <h3><?= Html::encode($this->title) ?></h3>
-    </div>
-
+<?php AdminPanel::begin(['options' => ['class' => 'message-history-view']]) ?>
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -41,5 +37,4 @@ $this->params['breadcrumbs'][] = $this->title;
             'created_at:datetime',
         ],
     ]) ?>
-
-</div>
+<?php AdminPanel::end() ?>

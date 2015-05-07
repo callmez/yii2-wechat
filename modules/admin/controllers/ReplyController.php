@@ -1,9 +1,7 @@
 <?php
-
 namespace callmez\wechat\modules\admin\controllers;
 
 use Yii;
-use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\ReplyRule;
@@ -12,9 +10,10 @@ use callmez\wechat\modules\admin\models\RuleSearch;
 use callmez\wechat\modules\admin\components\Controller;
 
 /**
- * RuleController implements the CRUD actions for Rule model.
+ * 消息回复
+ * @package callmez\wechat\modules\admin\controllers
  */
-class RuleController extends Controller
+class ReplyController extends Controller
 {
     /**
      * Lists all Rule models.
@@ -24,7 +23,9 @@ class RuleController extends Controller
     {
         $searchModel = new RuleSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->query->andWhere(['wid' => $this->getWechat()->id]);
+        $dataProvider->query->andWhere([
+            'wid' => $this->getWechat()->id,
+        ]);
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -76,7 +77,7 @@ class RuleController extends Controller
     {
         $model = $this->findModel($id);
         $keyword = new ReplyRuleKeyword();
-        $keywords = $model->keywords;
+        $keywords = $model->replyKeywords;
         if ($model->load(Yii::$app->request->post())) {
             $model->wid = $this->getWechat()->id;
             if ($this->saveReplyRuleKeyword($model, $keyword, $keywords) && $model->save()) {
@@ -109,7 +110,7 @@ class RuleController extends Controller
             ]));
             $valid = $valid && $_keyword->save();
         }
-        !empty($_keywords) && RuleReplyKeyword::deleteAll(['id' => array_keys($_keywords)]); // 无更新的则删除
+        !empty($_keywords) && ReplyRuleKeyword::deleteAll(['id' => array_keys($_keywords)]); // 无更新的则删除
         return $valid;
     }
 

@@ -55,6 +55,33 @@ class MessageController extends Controller
     }
 
     /**
+     * 粉丝发送消息
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
+    public function actionSend($id)
+    {
+        $fans = $this->findModel($id);
+        $searchModel = new MessageHistorySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = [
+            'defaultOrder' => ['created_at' => SORT_DESC]
+        ];
+        $dataProvider->query->andWhere([
+            'open_id' => $fans->open_id,
+            'wid' => $this->getWechat()->id,
+        ]);
+        $model = new CustomMessage();
+        return $this->render('message', [
+            'fans' => $fans,
+            'model' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    /**
      * Finds the MessageHistory model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id

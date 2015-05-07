@@ -3,17 +3,38 @@
 use yii\db\Schema;
 use yii\db\Migration;
 use callmez\wechat\models\Fans;
-use callmez\wechat\models\Rule;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\Module;
-use callmez\wechat\models\RuleKeyword;
+use callmez\wechat\models\ReplyRule;
+use callmez\wechat\models\AddonModule;
 use callmez\wechat\models\MessageHistory;
+use callmez\wechat\models\ReplyRuleKeyword;
 
 class m150217_131752_initWechat extends Migration
 {
     public function safeUp()
     {
-        //微信公众号表
+        $this->initWechatTable();
+        $this->initAddonModuleTable();
+        $this->initReplyRuleTable();
+        $this->initFansTable();
+        $this->initMessageHistoryTable();
+    }
+
+    public function safeDown()
+    {
+        $this->dropTable(Wechat::tableName());
+        $this->dropTable(ReplyRule::tableName());
+        $this->dropTable(ReplyRuleKeyword::tableName());
+        $this->dropTable(Fans::tableName());
+        $this->dropTable(MessageHistory::tableName());
+    }
+
+    /**
+     * 公众号表
+     */
+    public function initWechatTable()
+    {
         $tableName = Wechat::tableName();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
@@ -33,30 +54,56 @@ class m150217_131752_initWechat extends Migration
             'address' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '所在地址'",
             'description' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '公众号简介'",
             'username' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '微信官网登录名'",
-            'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态'",
+            'status' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '状态'",
             'password' => Schema::TYPE_STRING . "(32) NOT NULL DEFAULT '' COMMENT '微信官网登录密码'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('hash', $tableName, 'hash', true);
         $this->createIndex('app_id', $tableName, 'app_id');
+    }
 
-        // 规则表
-        $tableName = Rule::tablename();
+    /**
+     * 插件模块表
+     */
+    public function initAddonModuleTable()
+    {
+        $tableName = AddonModule::tableName();
+        $this->createTable($tableName, [
+            'id' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块ID'",
+            'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '模块名称'",
+            'type' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块类型'",
+            'version' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '模块版本'",
+            'ability' => Schema::TYPE_STRING . "(100) NOT NULL DEFAULT '' COMMENT '模块功能简述'",
+            'description' => Schema::TYPE_TEXT . " NOT NULL COMMENT '模块详细描述'",
+            'author' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '模块作者'",
+            'site' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '模块详情地址'",
+            'migration' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否有迁移数据'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
+        ]);
+        $this->addPrimaryKey('id', $tableName, 'id');
+    }
+
+    /**
+     * 回复规则表
+     */
+    public function initReplyRuleTable()
+    {
+        $tableName = ReplyRule::tablename();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
             'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '规则名称'",
-            'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '处理模块'",
-            'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '状态'",
+            'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '处理的插件模块'",
+            'status' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '状态'",
             'priority' => Schema::TYPE_BOOLEAN . "(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优先级'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('wid', $tableName, 'wid');
 
-        // 规则关键字表
-        $tableName = RuleKeyword::tablename();
+        // 回复规则关键字表
+        $tableName = ReplyRuleKeyword::tablename();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属规则ID'",
@@ -68,19 +115,31 @@ class m150217_131752_initWechat extends Migration
         ]);
         $this->createIndex('keyword', $tableName, 'keyword');
         $this->createIndex('rid', $tableName, 'rid');
+    }
 
+    /**
+     * 粉丝表
+     */
+    public function initFansTable()
+    {
         $tableName = Fans::tableName();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
             'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '微信ID'",
-            'status' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注状态'",
+            'status' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '关注状态'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('wid', $tableName, 'wid');
         $this->createIndex('open_id', $tableName, 'open_id');
+    }
 
+    /**
+     * 消息记录表
+     */
+    public function initMessageHistoryTable()
+    {
         $tableName = MessageHistory::tableName();
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
@@ -96,14 +155,5 @@ class m150217_131752_initWechat extends Migration
         $this->createIndex('wid', $tableName, 'wid');
         $this->createIndex('open_id', $tableName, 'open_id');
         $this->createIndex('module', $tableName, 'module');
-    }
-
-    public function safeDown()
-    {
-        $this->dropTable(Wechat::tableName());
-        $this->dropTable(Rule::tableName());
-        $this->dropTable(RuleKeyword::tableName());
-        $this->dropTable(Fans::tableName());
-        $this->dropTable(MessageHistory::tableName());
     }
 }

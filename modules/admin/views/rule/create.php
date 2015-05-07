@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use callmez\wechat\modules\admin\widgets\AdminPanel;
 
 
 /* @var $this yii\web\View */
@@ -10,15 +11,9 @@ $this->title = '创建回复规则';
 $this->params['breadcrumbs'][] = ['label' => '回复规则列表', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="rule-create">
-
-    <div class="page-header">
-        <h3><?= Html::encode($this->title) ?></h3>
-    </div>
-
+<?php AdminPanel::begin(['options' => ['class' => 'rule-create']]) ?>
     <?= $this->render('_form', [
         'model' => $model,
         'keyword' => $keyword
     ]) ?>
-
-</div>
+<?php AdminPanel::end() ?>

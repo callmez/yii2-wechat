@@ -5,12 +5,12 @@ namespace callmez\wechat\modules\admin\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use callmez\wechat\models\Rule;
+use callmez\wechat\models\ReplyRule;
 
 /**
  * RuleSearch represents the model behind the search form about `callmez\wechat\models\Rule`.
  */
-class RuleSearch extends Rule
+class RuleSearch extends ReplyRule
 {
     /**
      * @inheritdoc
@@ -41,7 +41,7 @@ class RuleSearch extends Rule
      */
     public function search($params)
     {
-        $query = Rule::find();
+        $query = ReplyRule::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

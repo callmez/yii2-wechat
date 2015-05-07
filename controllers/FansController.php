@@ -5,8 +5,8 @@ use yii\web\Controller;
 use yii\base\Application;
 use yii\helpers\ArrayHelper;
 use callmez\wechat\models\Fans;
-use callmez\wechat\models\RuleKeyword;
 use callmez\wechat\models\MessageHistory;
+use callmez\wechat\models\ReplyRuleKeyword;
 use callmez\wechat\components\ProcessController;
 
 class FansController extends ProcessController
@@ -17,7 +17,7 @@ class FansController extends ProcessController
     public function actionRecord()
     {
         $this->api->on(ApiController::EVENT_AFTER_PROCESS, [$this, 'recordProcess']);
-        ArrayHelper::remove($this->message, 'event') == 'unsubscribe' ? $this->recordUnsubscribe() : $this->recordSubscribe();
+        ArrayHelper::remove($this->message, 'Event') == 'unsubscribe' ? $this->recordUnsubscribe() : $this->recordSubscribe();
     }
 
     /**
@@ -36,7 +36,7 @@ class FansController extends ProcessController
         // 记录微信请求内容
         $_history = clone $history;
         $keyword = ArrayHelper::getValue($this->api->lastProcessParams, 'keyword');
-        if ($keyword instanceof RuleKeyword) {
+        if ($keyword instanceof ReplyRuleKeyword) {
             $attributes['rid'] = $keyword->rid;
             $attributes['kid'] = $keyword->id;
         }

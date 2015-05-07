@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use callmez\wechat\models\MessageHistory;
+use callmez\wechat\modules\admin\widgets\AdminPanel;
 
 /* @var $this yii\web\View */
 /* @var $searchModel callmez\wechat\modules\admin\models\MessageHistorySearch */
@@ -12,14 +13,11 @@ use callmez\wechat\models\MessageHistory;
 $this->title = '通信记录';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="message-history-index">
-
-    <div class="page-header">
-        <h3><?= Html::encode($this->title) ?></h3>
-    </div>
+<?php AdminPanel::begin(['options' => ['class' => 'message-history-index']]) ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
+        'tableOptions' => ['class' => 'table table-hover'],
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -74,5 +72,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-
-</div>
+<?php AdminPanel::end() ?>

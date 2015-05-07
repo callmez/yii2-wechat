@@ -18,6 +18,8 @@ class Generator extends \yii\gii\Generator
     public $version = '1.0.0';
     public $migration;
     public $adminController = true;
+    public $author;
+    public $site;
 
     /**
      * @inheritdoc
@@ -46,7 +48,10 @@ class Generator extends \yii\gii\Generator
             [['moduleID'], 'match', 'pattern' => '/^[\w\\-]+$/', 'message' => '{attribute}只能包含字母,数字和-_符号.'],
             [['moduleClass'], 'validateModuleClass'],
             [['version'], 'match', 'pattern' => '/^\d+[.\d]+\d+$/', 'message' => '{attribute}只能包含数字和.符号并符合版本命名规则, 例如<code>1.0.0</code>'],
-            [['migration', 'adminController'], 'boolean']
+            [['migration', 'adminController'], 'boolean'],
+
+            [['author'], 'string', 'max' => 50],
+            [['site'], 'string', 'max' => 255],
         ]);
     }
 
@@ -61,7 +66,9 @@ class Generator extends \yii\gii\Generator
             'moduleClass' => '模块类名',
             'version' => '模块版本',
             'migration' => '是否需要迁移数据',
-            'adminController' => '是否需要后台管理界面'
+            'adminController' => '是否需要后台管理界面',
+            'author' => '作者',
+            'site' => '模块详情地址'
         ];
     }
 
@@ -75,7 +82,9 @@ class Generator extends \yii\gii\Generator
             'moduleName' => '模块名称是模块的一个简称',
             'moduleClass' => '根据模块名生成模块类, 不能修改. 比如:<code>app\modules\example\Module</code>',
             'migration' => '模块安装, 升级和卸载需要创建的表或生成的数据. <br>如果勾选, 会在模块目录下生成Migration迁移类文件,您可以在里面书写数据迁移代码. <br>比如<code>app\modules\example\Migration</code>',
-            'adminController' => '模式是否需要后台管理界面. 如果勾选将生成默认后台管理处理类'
+            'adminController' => '模式是否需要后台管理界面. 如果勾选将生成默认后台管理处理类',
+            'author' => '请留下您的大名吧!!!!',
+            'site' => '模块的详细介绍地址'
         ];
     }
 
@@ -144,7 +153,9 @@ EOD;
                     'id' => $this->moduleID,
                     'name' => $this->moduleName,
                     'version' => $this->version,
-                    'migration' => (bool) $this->migration
+                    'author' => $this->author,
+                    'site' => $this->site,
+                    'migration' => (bool) $this->migration,
                 ])
             ])
         );

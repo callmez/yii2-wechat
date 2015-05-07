@@ -1,8 +1,9 @@
 <?php
 
 use yii\helpers\Html;
-use callmez\wechat\models\Rule;
+use callmez\wechat\models\ReplyRule;
 use yii\grid\GridView;
+use callmez\wechat\modules\admin\widgets\AdminPanel;
 
 /* @var $this yii\web\View */
 /* @var $searchModel callmez\wechat\modules\admin\models\RuleSearch */
@@ -11,12 +12,7 @@ use yii\grid\GridView;
 $this->title = '回复规则列表';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="rule-index">
-
-    <div class="page-header">
-        <h3><?= Html::encode($this->title) ?></h3>
-    </div>
-
+<?php AdminPanel::begin(['options' => ['class' => 'rule-index']]) ?>
     <?//= $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
@@ -24,6 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?= GridView::widget([
+        'tableOptions' => ['class' => 'table table-hover'],
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -39,11 +36,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'status',
                 'format' => 'html',
                 'value' => function($model) {
-                    return Html::tag('span', Rule::$statuses[$model->status], [
-                        'class' => 'label label-' . ($model->status == Rule::STATUS_ACTIVE ? 'success' : 'info')
+                    return Html::tag('span', ReplyRule::$statuses[$model->status], [
+                        'class' => 'label label-' . ($model->status == ReplyRule::STATUS_ACTIVE ? 'success' : 'info')
                     ]);
                 },
-                'filter' => Rule::$statuses,
+                'filter' => ReplyRule::$statuses,
                 'options' => [
                     'width' => 80
                 ]
@@ -72,5 +69,4 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
-
-</div>
+<?php AdminPanel::end() ?>

@@ -6,7 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "{{%wechat_rule}}".
+ * This is the model class for table "{{%wechat_reply_rule}}".
  *
  * @property integer $id
  * @property integer $wid
@@ -17,7 +17,7 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class Rule extends \yii\db\ActiveRecord
+class ReplyRule extends \yii\db\ActiveRecord
 {
     /**
      * 激活状态
@@ -44,7 +44,7 @@ class Rule extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%wechat_rule}}';
+        return '{{%wechat_reply_rule}}';
     }
 
     /**
@@ -78,9 +78,9 @@ class Rule extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getKeywords()
+    public function getReplyKeywords()
     {
-        return $this->hasMany(RuleKeyword::className(), ['rid' => 'id'])
+        return $this->hasMany(ReplyRuleKeyword::className(), ['rid' => 'id'])
             ->inverseOf('rule');
     }
 }

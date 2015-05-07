@@ -3,23 +3,17 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use callmez\wechat\models\Wechat;
+use callmez\wechat\modules\admin\widgets\AdminPanel;
 
 $this->title = '公众号管理';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="wechat-index">
-
-    <div class="page-header">
-        <h3><?= Html::encode($this->title) ?></h3>
-    </div>
-
-    <?//= $this->render('_search', ['model' => $searchModel]); ?>
-
+<?php AdminPanel::begin(['options' => ['class' => 'wechat-index']]) ?>
     <p>
         <?= Html::a('添加公众号', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-
     <?= GridView::widget([
+        'tableOptions' => ['class' => 'table table-hover'],
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -94,8 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ]
         ],
     ]); ?>
-</div>
-
+<?php AdminPanel::end() ?>
 <?php
 $this->registerJs(<<<EOF
     $('[data-toggle="tooltip"]').tooltip();

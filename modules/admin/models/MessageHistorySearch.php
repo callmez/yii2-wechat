@@ -2,6 +2,7 @@
 
 namespace callmez\wechat\modules\admin\models;
 
+use callmez\wechat\models\Fans;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -69,5 +70,10 @@ class MessageHistorySearch extends MessageHistory
             ->andFilterWhere(['like', 'type', $this->type]);
 
         return $dataProvider;
+    }
+
+    public function searchByFans(Fans $fans)
+    {
+        
     }
 }

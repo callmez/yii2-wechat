@@ -21,7 +21,13 @@ class ModuleController extends Controller
     {
         $models = $this->findInstalledModules();
         $dataProvider = new ArrayDataProvider([
-            'models' => array_merge(AddonModule::findAvailableModules(), $models)
+            'allModels' => array_merge(AddonModule::findAvailableModules(), $models),
+            'sort' => [
+                'attributes' => ['type'],
+                'defaultOrder' => [
+                    'type' => SORT_DESC,
+                ]
+            ]
         ]);
 
         return $this->render('index', [

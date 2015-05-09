@@ -3,6 +3,10 @@
 namespace callmez\wechat\modules\admin;
 
 use Yii;
+use yii\helpers\ArrayHelper;
+use yii\caching\TagDependency;
+use callmez\wechat\models\AdminMenu;
+use callmez\wechat\models\AddonModule;
 
 /**
  * 微信模块后台管理子模块
@@ -10,6 +14,10 @@ use Yii;
  */
 class Module extends \yii\base\Module
 {
+    /**
+     * 后台菜单按钮缓存
+     */
+    const CACHE_ADMIN_MENUS_KEY = 'wechat_admin_menus_cache';
     /**
      * 模块控制器命名空间
      * @var string
@@ -26,6 +34,11 @@ class Module extends \yii\base\Module
      * @var string
      */
     public $siteAdminLayout = '@app/views/layouts/main.php';
+    /**
+     * 后台菜单类
+     * @var string
+     */
+    public $adminMenuClass = 'callmez\wechat\models\AdminMenu';
 
     private $_menus;
 
@@ -35,7 +48,7 @@ class Module extends \yii\base\Module
     public function getMenus()
     {
         if ($this->_menus === null) {
-            $this->setMenus(array_merge($this->defaultMenus(), $this->addonModuleMenus()));
+            $this->setMenus($this->generateMenus());
         }
         return $this->_menus;
     }
@@ -56,135 +69,207 @@ class Module extends \yii\base\Module
      */
     public function addonModuleMenus()
     {
-        return [];
     }
 
     /**
-     * 默认菜单
-     * @return array
+     * 初始默认菜单
+     * @var array
      */
-    public function defaultMenus()
-    {
-        return [
-            'system' => [
-                'label' => '系统管理',
-                'items' => [
-                    [
-                        'label' => '<span class="fa fa-cog"></span> 公众号管理',
-                        'url' => ['/wechat/admin/wechat/index'],
-                    ],
-                ]
-            ],
-            'basic' => [
-                'label' => '基本功能',
-                'items' => [
+    public $defaultMenus = [
+        'system' => [
+            'label' => '系统管理',
+            'items' => [
+                [
+                    'label' => '公众号管理',
+                    'url' => ['/wechat/admin/wechat/index'],
+                ],
+            ]
+        ],
+        'basic' => [
+            'label' => '基本功能',
+            'items' => [
 //                [
-//                    'label' => '<span class="fa fa-reply"></span> 消息回复',
+//                    'label' => '消息回复',
 //                    'url' => ['/wechat/admin/reply/index'],
 //                ],
-                    [
-                        'label' => '<span class="fa fa-font"></span> 文本回复(待开发)',
-                        'url' => ['/wechat/admin/reply/text'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-newspaper-o"></span> 图文回复(待开发)',
-                        'url' => ['/wechat/admin/reply/news'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-music"></span> 音乐回复(待开发)',
-                        'url' => ['/wechat/admin/reply/music'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-image"></span> 图片回复(待开发)',
-                        'url' => ['/wechat/admin/reply/photo'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-volume-up"></span> 语音回复(待开发)',
-                        'url' => ['/wechat/admin/reply/voice'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-video-camera"></span> 视频回复(待开发)',
-                        'url' => ['/wechat/admin/reply/vedio'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-cloud"></span> 远程回复(待开发)',
-                        'url' => ['/wechat/admin/reply/remote'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-crop"></span> 素材管理(待开发)',
-                        'url' => ['/wechat/admin/media/index'],
-                    ],
+                [
+                    'label' => '文本回复(待开发)',
+                    'url' => ['/wechat/admin/reply/text'],
+                ],
+                [
+                    'label' => '图文回复(待开发)',
+                    'url' => ['/wechat/admin/reply/news'],
+                ],
+                [
+                    'label' => '音乐回复(待开发)',
+                    'url' => ['/wechat/admin/reply/music'],
+                ],
+                [
+                    'label' => '图片回复(待开发)',
+                    'url' => ['/wechat/admin/reply/photo'],
+                ],
+                [
+                    'label' => '语音回复(待开发)',
+                    'url' => ['/wechat/admin/reply/voice'],
+                ],
+                [
+                    'label' => '视频回复(待开发)',
+                    'url' => ['/wechat/admin/reply/vedio'],
+                ],
+                [
+                    'label' => '远程回复(待开发)',
+                    'url' => ['/wechat/admin/reply/remote'],
+                ],
+                [
+                    'label' => '素材管理(待开发)',
+                    'url' => ['/wechat/admin/media/index'],
+                ],
+            ]
+        ],
+        'advanced' => [
+            'label' => '高级功能',
+            'items' => [
+                [
+                    'label' => '自定义菜单管理',
+                    'url' => ['/wechat/admin/menu/index'],
+                ],
+                [
+                    'label' => '二维码管理(待开发)',
+                    'url' => ['/wechat/admin/qrcode/index'],
+                ],
+                [
+                    'label' => '卡卷功能(待开发)',
+                    'url' => ['/wechat/admin/card/index'],
+                ],
+                [
+                    'label' => '多客服接入(待开发)',
+                    'url' => ['/wechat/admin/message/customer'],
                 ]
-            ],
-            'advanced' => [
-                'label' => '高级功能',
-                'items' => [
-                    [
-                        'label' => '<span class="fa fa-bars"></span> 自定义菜单管理',
-                        'url' => ['/wechat/admin/menu/index'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-qrcode"></span> 二维码管理(待开发)',
-                        'url' => ['/wechat/admin/qrcode/index'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-mastercard"></span> 卡卷功能(待开发)',
-                        'url' => ['/wechat/admin/card/index'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-user-plus"></span> 多客服接入(待开发)',
-                        'url' => ['/wechat/admin/message/customer'],
-                    ]
+            ]
+        ],
+        'fans' => [
+            'label' => '粉丝营销',
+            'items' => [
+                [
+                    'label' => '粉丝管理',
+                    'url' => ['/wechat/admin/fans/index'],
+                ],
+                [
+                    'label' => '粉丝分组(待开发)',
+                    'url' => ['/wechat/admin/fans/group'],
                 ]
-            ],
-            'fans' => [
-                'label' => '粉丝营销',
-                'items' => [
-                    [
-                        'label' => '<span class="fa fa-user"></span> 粉丝管理',
-                        'url' => ['/wechat/admin/fans/index'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-group"></span> 粉丝分组(待开发)',
-                        'url' => ['/wechat/admin/fans/group'],
-                    ]
+            ]
+        ],
+        'message' => [
+            'label' => '通知中心',
+            'items' => [
+                [
+                    'label' => '通信记录',
+                    'url' => ['/wechat/admin/message/index'],
+                ],
+                [
+                    'label' => '客服消息 (待开发)',
+                    'url' => ['/wechat/admin/message/cutom'],
+                ],
+                [
+                    'label' => '微信群发 (待开发)',
+                    'url' => ['/wechat/admin/message/wechat'],
                 ]
-            ],
-            'message' => [
-                'label' => '通知中心',
-                'items' => [
-                    [
-                        'label' => '<span class="fa fa-history"></span> 通信记录',
-                        'url' => ['/wechat/admin/message/index'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-comment-o"></span> 客服消息 (待开发)',
-                        'url' => ['/wechat/admin/message/cutom'],
-                    ],
-                    [
-                        'label' => '<span class="fa fa-wechat"></span> 微信群发 (待开发)',
-                        'url' => ['/wechat/admin/message/wechat'],
-                    ]
+            ]
+        ],
+        'business' => [
+            'label' => '主要业务',
+            'items' => []
+        ],
+        'activity' => [
+            'label' => '营销活动',
+            'items' => []
+        ],
+        'activity' => [
+            'label' => '客户关系',
+            'items' => []
+        ],
+        'service' => [
+            'label' => '常用服务',
+            'items' => []
+        ],
+        'module' => [
+            'label' => '扩展模块',
+            'items' => [
+                [
+                    'label' => '模块管理',
+                    'url' => ['/wechat/admin/module/index'],
                 ]
-            ],
-            'module' => [
-                'label' => '扩展模块',
-                'items' => [
-                    [
-                        'label' => '<span class="fa fa-connectdevelop"></span> 模块管理',
-                        'url' => ['/wechat/admin/module/index'],
-                    ]
+            ]
+        ],
+        'test' => [
+            'label' => '功能测试',
+            'items' => [
+                [
+                    'label' => '微信模拟器',
+                    'url' => ['/wechat/admin/simulator/index'],
                 ]
-            ],
-            'test' => [
-                'label' => '功能测试',
-                'items' => [
-                    [
-                        'label' => '<span class="fa fa-bug"></span> 微信模拟器',
-                        'url' => ['/wechat/admin/simulator/index'],
-                    ]
-                ]
-            ],
-        ];
+            ]
+        ],
+        'other' => [
+            'label' => '其他',
+            'items' => []
+        ],
+    ];
+
+    /**
+     * 菜单生成
+     * @return array
+     */
+    protected function generateMenus()
+    {
+        $cache = Yii::$app->cache;
+        if (($menus = $cache->get(self::CACHE_ADMIN_MENUS_KEY)) === false) {
+            $menus = $this->defaultMenus;
+
+            $categories = $this->getCategories();
+
+            $class = $this->module->addonModuleClass;
+            foreach ($class::findAll(['admin' => 1]) as $model) { // 安装的扩展模块(开启开启后台功能)
+                $key = isset($categories[$model->category]) ? $model->category : $categories['module'];
+                $menus[$key]['items'][] = [
+                    'label' => $model->name,
+                    'url' => ['/wechat/' . $model->id]
+                ];
+            }
+
+            $class = $this->adminMenuClass;
+            foreach ($class::find()->all() as $model) { // 注册的后台菜单
+                if (!isset($categories[$model->category])) {
+                    continue;
+                }
+                $menus[$model->category]['items'][] = [
+                    'label' => $model->title,
+                    'url' => $model->router
+                ];
+            }
+
+            $cache->set(self::CACHE_ADMIN_MENUS_KEY, $menus, null, new TagDependency([
+                'tags' => [AddonModule::CACHE_DATA_DEPENDENCY_TAG, AdminMenu::CACHE_DATA_DEPENDENCY_TAG]
+            ]));
+        }
+        return $menus;
+    }
+
+    private $_categories;
+
+    /**
+     * 根据默认菜单获取分类
+     * @return array
+     */
+    public function getCategories()
+    {
+        if ($this->_categories === null) {
+            foreach ($this->defaultMenus as $key => $menus) {
+                $this->_categories[$key] = isset($menus['label']) ? $menus['label'] : $key;
+            }
+        }
+
+        return $this->_categories;
     }
 }

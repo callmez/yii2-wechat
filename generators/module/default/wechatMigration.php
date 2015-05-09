@@ -10,6 +10,9 @@ echo "<?php\n";
 ?>
 namespace app\modules\wechat\modules\<?= $generator->moduleID ?>\migrations;
 
+use yii\db\Schema;
+use callmez\wechat\components\AddonModuleMigration;
+
 /**
  * 模块数据迁移来.处理模块安装,卸载,升级时的数据操作
  */
@@ -20,6 +23,15 @@ class WechatMigration extends AddonModuleMigration
      */
 //    public function install()
 //    {
+//        // 创建表
+//        $this->createTable(ExampleModel::tableName(), [
+//            'id' => Schema::TYPE_PK,
+//            ...
+//        ]);
+//        // 创建数据
+//        $model = new ExampleModel();
+//        $model->setAttributes([...]);
+//        $model->save();
 //    }
 
     /**
@@ -27,12 +39,14 @@ class WechatMigration extends AddonModuleMigration
      */
 //    public function uninstall()
 //    {
+//        // 删除表
+//        $this->dropTable(ExampleModel::tableName());
 //    }
 
     /**
      * 该函数用于模块在升级时执行模块必须数据操作.例如删除模块数据表,模块原始数据
      */
-//    public function ungrade($version)
+//    public function ungrade($frommVersion, $toVersion)
 //    {
 //    }
 }

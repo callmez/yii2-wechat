@@ -1,6 +1,7 @@
 <?php
 namespace callmez\wechat\components;
 
+use Yii;
 use yii\db\Migration;
 
 /**
@@ -10,14 +11,74 @@ use yii\db\Migration;
  */
 class AddonModuleMigration extends Migration
 {
-    final public function safeUp()
+    /**
+     * @var callmez\wechat\models\AddonModule
+     */
+    public $model;
+
+    final public function up()
     {
-        return $this->install();
+        $transaction = $this->db->beginTransaction();
+        try {
+            if ($this->install() === false) {
+                $transaction->rollBack();
+
+                return false;
+            }
+            $transaction->commit();
+        } catch (\Exception $e) {
+            Yii::warning("Exception: " . $e->getMessage() . ' (' . $e->getFile() . ':' . $e->getLine() . ")", __METHOD__);
+
+            $transaction->rollBack();
+
+            return false;
+        }
+
+        return null;
     }
 
     final public function safeDown()
     {
-        return $this->uninstall();
+        $transaction = $this->db->beginTransaction();
+        try {
+            if ($this->uninstall() === false) {
+                $transaction->rollBack();
+
+                return false;
+            }
+            $transaction->commit();
+        } catch (\Exception $e) {
+            Yii::warning("Exception: " . $e->getMessage() . ' (' . $e->getFile() . ':' . $e->getLine() . ")", __METHOD__);
+
+            $transaction->rollBack();
+
+            return false;
+        }
+
+        return null;
+    }
+
+    /**
+     * 升级到指定版本
+     */
+    final public function to($fromVersion, $toVersion)
+    {
+        $transaction = $this->db->beginTransaction();
+        try {
+            if ($this->upgrade($fromVersion, $toVersion) === false) {
+                $transaction->rollBack();
+
+                return false;
+            }
+            $transaction->commit();
+        } catch (\Exception $e) {
+            Yii::warning("Exception: " . $e->getMessage() . ' (' . $e->getFile() . ':' . $e->getLine() . ")", __METHOD__);
+            $transaction->rollBack();
+
+            return false;
+        }
+
+        return null;
     }
 
     /**
@@ -38,10 +99,9 @@ class AddonModuleMigration extends Migration
 
     /**
      * 扩展模块被升级时会执行此函数
-     * @param $version
      * @return mixed
      */
-    public function ungrade($version)
+    public function ungrade($fromVersion, $toVersion)
     {
     }
 }

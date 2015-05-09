@@ -20,6 +20,10 @@ use callmez\wechat\behaviors\EventBehavior;
 class AddonModule extends \yii\db\ActiveRecord
 {
     /**
+     * 微信扩展模块数据缓存
+     */
+    const CACHE_DATA_DEPENDENCY_TAG = 'wechat_addon_module_data_cache';
+    /**
      * 核心模块
      */
     const TYPE_CORE = 'core';
@@ -103,9 +107,10 @@ class AddonModule extends \yii\db\ActiveRecord
             [['site'], 'string', 'max' => 255],
 
             [['id'], 'unique', 'message' => '模块唯一ID标识已经被使用或者该模块已经安装.'],
-            [['migration'], 'boolean'],
+            [['admin', 'migration'], 'boolean'],
 
             [['type'], 'checkType', 'skipOnEmpty' => false],
+            [['category'], 'in', 'range' => array_keys(Yii::$app->getModule('wechat/admin')->getCategories()), 'skipOnEmpty' => false],
 
             [['description'], 'string'],
             [['description'], 'default', 'value' => ''],
@@ -122,10 +127,11 @@ class AddonModule extends \yii\db\ActiveRecord
             'name' => '模块名称',
             'type' => '模块类型',
             'version' => '模块版本',
-            'ability' => '模块功能简述',
-            'description' => '模块详细描述',
+            'ability' => '功能简述',
+            'description' => '详细描述',
             'author' => '模块作者',
             'site' => '模块详情地址',
+            'admin' => '是否有后台界面',
             'migration' => '是否有迁移数据',
             'created_at' => '安装时间'
         ];
@@ -136,7 +142,7 @@ class AddonModule extends \yii\db\ActiveRecord
      * @see callmez\wechat\Module::addonModules()
      * @param $cacheKey
      */
-    protected function updateCache($cacheKey = Module::ADDON_MODULE_LIST_CACHE_NAME)
+    protected function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
     {
         $cache = Yii::$app->get(static::getDb()->queryCache, false);
         if ($cache instanceof Cache) {
@@ -145,17 +151,27 @@ class AddonModule extends \yii\db\ActiveRecord
     }
 
     /**
-     * 执行迁脚本
+     * 执行迁移脚本
      * @param $type
+     * @return bool
      */
     protected function migration($type)
     {
-        // TODO 模块迁移功能完善
+        $class = $this->getModuleNamespace() . '\\migrations\WechatMigration';
+        if (!class_exists($class)) {
+            return false;
+        }
+        $migration = Yii::createObject([
+            'class' => $class,
+            'model' => $this
+        ]);
         switch ($type) {
             case self::MIGRATION_INSTALL:
+                return $migration->up();
             case self::MIGRATION_UNINSTALL:
+                return $migration->down();
             case self::MIGRATION_UPGRADE:
-                return;
+                return $migration->to($this->getOldAttribute('version'), $this->getAttribute('version'));
             default:
                 throw new InvalidParamException("Migration type '{$type}' does not support.");
         }
@@ -220,10 +236,10 @@ class AddonModule extends \yii\db\ActiveRecord
      * 注意: 所有微信的扩展模块必须使用Module类名(文件名也为Module.php)为模块的启动文件
      * @return string
      */
-    public function getModuleClass()
+    public function getModuleNamespace()
     {
         $path = $this->type == self::TYPE_ADDON ? Module::ADDON_MODULE_PATH : Module::CORE_MODULE_PATH;
-        return str_replace('/', '\\', ltrim($path, '@')) . '\\' . $this->id . '\\Module';
+        return str_replace('/', '\\', ltrim($path, '@')) . '\\' . $this->id;
     }
 
     /**
@@ -271,7 +287,7 @@ class AddonModule extends \yii\db\ActiveRecord
                     // 是否有wechat.yml安装配置文件
                     $settingFile = $currentPath . DIRECTORY_SEPARATOR . 'wechat.yml';
                     if (file_exists($settingFile)) {
-                        $model = new static;
+                        $model = Yii::createObject(['class' => static::className()]);
                         $model->setAttributes(Yaml::parse(file_get_contents($settingFile)));
                         if ($model->id == $file && $model->validate()) { // 模块名必须等于目录名并且验证模块正确性
                             $modules[$model->id] = $model;

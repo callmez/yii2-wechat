@@ -6,6 +6,7 @@ use callmez\wechat\models\Fans;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\Module;
 use callmez\wechat\models\ReplyRule;
+use callmez\wechat\models\AdminMenu;
 use callmez\wechat\models\AddonModule;
 use callmez\wechat\models\MessageHistory;
 use callmez\wechat\models\ReplyRuleKeyword;
@@ -16,6 +17,7 @@ class m150217_131752_initWechat extends Migration
     {
         $this->initWechatTable();
         $this->initAddonModuleTable();
+        $this->initAdminMenuTable();
         $this->initReplyRuleTable();
         $this->initFansTable();
         $this->initMessageHistoryTable();
@@ -73,15 +75,33 @@ class m150217_131752_initWechat extends Migration
             'id' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块ID'",
             'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '模块名称'",
             'type' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块类型'",
+            'category' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '模块类型'",
             'version' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '模块版本'",
             'ability' => Schema::TYPE_STRING . "(100) NOT NULL DEFAULT '' COMMENT '模块功能简述'",
             'description' => Schema::TYPE_TEXT . " NOT NULL COMMENT '模块详细描述'",
             'author' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '模块作者'",
             'site' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '模块详情地址'",
+            'admin' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否有后台界面'",
             'migration' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否有迁移数据'",
+            'replyRule' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否启用回复规则'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
         ]);
         $this->addPrimaryKey('id', $tableName, 'id');
+    }
+
+    /**
+     * 后台菜单
+     */
+    public function initAdminMenuTable()
+    {
+        $tableName = AdminMenu::tableName();
+        $this->createTable($tableName, [
+            'id' => Schema::TYPE_PK,
+            'mid' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '所属模块ID'",
+            'title' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '菜单名'",
+            'route' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '访问路由'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
+        ]);
     }
 
     /**

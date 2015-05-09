@@ -28,9 +28,9 @@ class Module extends \yii\base\Module
      */
     const ADDON_MODULE_PATH = '@app/modules/wechat/modules';
     /**
-     * 微信扩展模块数据缓存
+     * 扩展模块缓存
      */
-    const ADDON_MODULE_LIST_CACHE_NAME = 'wechat_addon_module_list_cache';
+    const CACHE_ADDON_MODULES_KEY = 'wechat_addon_modules_cache';
     /**
      * 模块的名称
      * @var string
@@ -75,16 +75,17 @@ class Module extends \yii\base\Module
      */
     public function addonModules()
     {
-        $class = $this->addonModuleClass;
-        $models = $class::getDb()->cache(function ($db) use($class) {
-            return $class::find()
-                ->andWhere(['type' => [AddonModule::TYPE_CORE, AddonModule::TYPE_ADDON]])
-                ->indexBy('id')
-                ->all();
-        }, null, new TagDependency(['tags' => [self::ADDON_MODULE_LIST_CACHE_NAME]]));
-        return array_map(function($model) {
-            return ['class' => $model->getModuleClass()];
-        }, $models);
+        $cache = Yii::$app->cache;
+        if (($modules = $cache->get(self::CACHE_ADDON_MODULES_KEY)) === false) {
+            $class = $this->addonModuleClass;
+            $modules = array_map(function($model) {
+                return ['class' => $model->getModuleNamespace() . '\Module'];
+            }, $class::find()->indexBy('id')->all());
+            $cache->set(self::CACHE_ADDON_MODULES_KEY, $modules, null, new TagDependency([
+                'tags' => [AddonModule::CACHE_DATA_DEPENDENCY_TAG]
+            ]));
+        }
+        return $modules;
     }
 
     /**

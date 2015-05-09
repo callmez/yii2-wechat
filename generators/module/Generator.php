@@ -1,11 +1,11 @@
 <?php
 namespace callmez\wechat\generators\module;
 
-use Symfony\Component\Yaml\Yaml;
-use yii\gii\CodeFile;
-use yii\helpers\Html;
 use Yii;
+use yii\helpers\Html;
+use yii\gii\CodeFile;
 use yii\helpers\StringHelper;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * 微信模块生成器
@@ -17,9 +17,11 @@ class Generator extends \yii\gii\Generator
     public $moduleClass;
     public $version = '1.0.0';
     public $migration;
-    public $adminController = true;
+    public $admin = true;
+    public $replyRule = true;
     public $author;
     public $site;
+    public $category;
 
     /**
      * @inheritdoc
@@ -48,10 +50,11 @@ class Generator extends \yii\gii\Generator
             [['moduleID'], 'match', 'pattern' => '/^[\w\\-]+$/', 'message' => '{attribute}只能包含字母,数字和-_符号.'],
             [['moduleClass'], 'validateModuleClass'],
             [['version'], 'match', 'pattern' => '/^\d+[.\d]+\d+$/', 'message' => '{attribute}只能包含数字和.符号并符合版本命名规则, 例如<code>1.0.0</code>'],
-            [['migration', 'adminController'], 'boolean'],
+            [['migration', 'admin', 'replyRule'], 'boolean'],
 
             [['author'], 'string', 'max' => 50],
             [['site'], 'string', 'max' => 255],
+            [['category'], 'in', 'range' => array_keys($this->getCategories()), 'skipOnEmpty' => false],
         ]);
     }
 
@@ -66,9 +69,11 @@ class Generator extends \yii\gii\Generator
             'moduleClass' => '模块类名',
             'version' => '模块版本',
             'migration' => '是否需要迁移数据',
-            'adminController' => '是否需要后台管理界面',
+            'admin' => '是否需要后台管理界面',
+            'replyRule' => '是否启用回复规则功能',
             'author' => '作者',
-            'site' => '模块详情地址'
+            'site' => '模块详情地址',
+            'category' => '模块所属分类'
         ];
     }
 
@@ -82,9 +87,11 @@ class Generator extends \yii\gii\Generator
             'moduleName' => '模块名称是模块的一个简称',
             'moduleClass' => '根据模块名生成模块类, 不能修改. 比如:<code>app\modules\example\Module</code>',
             'migration' => '模块安装, 升级和卸载需要创建的表或生成的数据. <br>如果勾选, 会在模块目录下生成Migration迁移类文件,您可以在里面书写数据迁移代码. <br>比如<code>app\modules\example\Migration</code>',
-            'adminController' => '模式是否需要后台管理界面. 如果勾选将生成默认后台管理处理类',
+            'admin' => '模式是否需要后台管理界面. 如果勾选将生成默认后台管理处理类',
+            'replyRule' => '是否启用回复规则路由功能, 如果勾选将会在后台管理中显示模块的回复规则菜单. <br><code>该功能需勾选后台管理界面</code>',
             'author' => '请留下您的大名吧!!!!',
-            'site' => '模块的详细介绍地址'
+            'site' => '模块的详细介绍地址, 需带上<code>http(s):://</code>',
+            'category' => '模块所属分类, 该分类将会确定该模块所在的菜单位置'
         ];
     }
 
@@ -140,7 +147,7 @@ EOD;
                 $this->render("adminView.php")
             );
         }
-        if ($this->adminController) {
+        if ($this->admin) {
             $files[] = new CodeFile(
                 $modulePath . '/controllers/AdminController.php',
                 $this->render("adminController.php")
@@ -155,7 +162,10 @@ EOD;
                     'version' => $this->version,
                     'author' => $this->author,
                     'site' => $this->site,
+                    'category' => $this->category,
+                    'admin' => (bool) $this->admin,
                     'migration' => (bool) $this->migration,
+                    'replyRule' => (bool) $this->replyRule
                 ])
             ])
         );
@@ -188,5 +198,14 @@ EOD;
     public function getControllerNamespace()
     {
         return substr($this->moduleClass, 0, strrpos($this->moduleClass, '\\')) . '\controllers';
+    }
+
+    /**
+     * 获取菜单可选
+     * @return mixed
+     */
+    public function getCategories()
+    {
+        return Yii::$app->getModule('wechat/admin')->getCategories();
     }
 }

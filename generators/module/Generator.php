@@ -6,6 +6,8 @@ use yii\helpers\Html;
 use yii\gii\CodeFile;
 use yii\helpers\StringHelper;
 use Symfony\Component\Yaml\Yaml;
+use callmez\wechat\Module as WechatModule;
+use callmez\wechat\models\Module;
 
 /**
  * 微信模块生成器
@@ -15,6 +17,7 @@ class Generator extends \yii\gii\Generator
     public $moduleID;
     public $moduleName;
     public $moduleClass;
+    public $type = Module::TYPE_ADDON;
     public $version = '1.0.0';
     public $migration;
     public $admin = true;
@@ -23,6 +26,7 @@ class Generator extends \yii\gii\Generator
     public $site;
     public $category;
 
+    public static $types = [Module::TYPE_ADDON, Module::TYPE_CORE];
     /**
      * @inheritdoc
      */
@@ -45,6 +49,8 @@ class Generator extends \yii\gii\Generator
     public function rules()
     {
         return array_merge(parent::rules(), [
+            [['type'] , 'in', 'range' => static::$types, 'skipOnEmpty' => false],
+
             [['moduleID', 'moduleClass', 'moduleName'], 'filter', 'filter' => 'trim'],
             [['moduleID', 'moduleName', 'moduleClass', 'version'], 'required'],
             [['moduleID'], 'match', 'pattern' => '/^[\w\\-]+$/', 'message' => '{attribute}只能包含字母,数字和-_符号.'],
@@ -114,10 +120,7 @@ EOD;
     {
         return [
             'module.php',
-            'processController.php',
-            'adminController.php',
-            'adminView.php',
-            'wechatMigration.php',
+            'controllers/processController.php',
             'wechat.yml'
         ];
     }
@@ -135,22 +138,22 @@ EOD;
         );
         $files[] = new CodeFile(
             $modulePath . '/controllers/ProcessController.php',
-            $this->render("processController.php")
+            $this->render("controllers/processController.php")
         );
-        if ($this->migration) {
-            $files[] = new CodeFile(
-                $modulePath . '/migrations/WechatMigration.php',
-                $this->render("wechatMigration.php")
-            );
-            $files[] = new CodeFile(
-                $modulePath . '/views/admin/index.php',
-                $this->render("adminView.php")
-            );
-        }
         if ($this->admin) {
             $files[] = new CodeFile(
                 $modulePath . '/controllers/AdminController.php',
-                $this->render("adminController.php")
+                $this->render("controllers/adminController.php")
+            );
+        }
+        if ($this->migration) {
+            $files[] = new CodeFile(
+                $modulePath . '/migrations/WechatMigration.php',
+                $this->render("migrations/wechatMigration.php")
+            );
+            $files[] = new CodeFile(
+                $modulePath . '/views/admin/index.php',
+                $this->render("views/admin/view.php")
             );
         }
         $files[] = new CodeFile(
@@ -159,6 +162,7 @@ EOD;
                 'content' => Yaml::dump([
                     'id' => $this->moduleID,
                     'name' => $this->moduleName,
+                    'type' => $this->type,
                     'version' => $this->version,
                     'author' => $this->author,
                     'site' => $this->site,
@@ -178,9 +182,29 @@ EOD;
      */
     public function validateModuleClass()
     {
-        $class = 'app\modules\wechat\modules\\' . $this->moduleID . '\Module';
+        $class = $this->getModuleBaseNamespace() . '\\' . $this->moduleID . '\Module';
         if ($this->moduleClass != $class) {
             $this->addError('moduleClass', '模块类名必须为 ' . $class);
+        }
+    }
+
+    /**
+     * 获取模块基本命名空间
+     * @param string $type
+     * @return bool|mixed
+     */
+    public function getModuleBaseNamespace($type = null)
+    {
+        if ($type === null) {
+            $type = $this->type;
+        }
+        switch ($type) {
+            case Module::TYPE_ADDON:
+                return str_replace('/', '\\', ltrim(WechatModule::ADDON_MODULE_PATH, '@'));
+            case Module::TYPE_CORE:
+                return str_replace('/', '\\', ltrim(WechatModule::CORE_MODULE_PATH, '@'));
+            default:
+                return false;
         }
     }
 

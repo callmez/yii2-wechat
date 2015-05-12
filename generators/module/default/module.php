@@ -14,8 +14,15 @@ namespace <?= $ns ?>;
 
 /**
  * <?= $generator->moduleName ?>
-<?= $generator->author ? ' * @author ' . $generator->author : '' ?>
-<?= $generator->site ? ' * @link ' . $generator->site : '' ?>
+
+<?php if ($generator->author): ?>
+ * @author <?= $generator->author ?>
+<?php endif ?>
+
+<?php if ($generator->site): ?>
+ * @link <?= $generator->site ?>
+<?php endif ?>
+
  */
 class <?= $className ?> extends \yii\base\Module
 {
@@ -33,7 +40,9 @@ class <?= $className ?> extends \yii\base\Module
      */
     public $controllerMap = [
         // 回复规则控制器
-        'reply' => '<?= Yii::$app->getModule('wechat/admin')->controllerNamespace . '\\ReplyController' ?>'
+        'reply' => [
+            'class' => '<?= Yii::$app->getModule('wechat/admin')->controllerNamespace . '\\ReplyController' ?>'
+        ]
     ];
 <?php endif ?>
 }

@@ -14,7 +14,7 @@ class AdminPanel extends Widget
     public function init()
     {
         if ($this->title === null && ($this->title = $this->getView()->title) === null) {
-            throw new InvalidConfigException('The "title" property must be set.');
+            throw new InvalidConfigException('The page "title" property must be set.');
         }
         echo Html::beginTag('div', $this->options);
         echo Html::beginTag('div', [

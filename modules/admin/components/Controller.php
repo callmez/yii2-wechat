@@ -13,6 +13,11 @@ use callmez\wechat\components\BaseController;
 class Controller extends BaseController
 {
     /**
+     * 默认后台main视图
+     * @var string
+     */
+    public $layout = '@callmez/wechat/modules/admin/views/layouts/main';
+    /**
      * 存储管理微信的session前缀
      */
     const SESSION_WECHAT = 'admin_wechat';

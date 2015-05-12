@@ -10,19 +10,19 @@ use yii\base\NotSupportedException;
 use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
 use Symfony\Component\Yaml\Yaml;
-use callmez\wechat\Module;
+use callmez\wechat\Module as WechatModule;
 use callmez\wechat\behaviors\EventBehavior;
 
 /**
- * This is the model class for table "{{%wechat_addon_module}}".
+ * This is the model class for table "{{%wechat_module}}".
  *
  */
-class AddonModule extends \yii\db\ActiveRecord
+class Module extends \yii\db\ActiveRecord
 {
     /**
      * 微信扩展模块数据缓存
      */
-    const CACHE_DATA_DEPENDENCY_TAG = 'wechat_addon_module_data_cache';
+    const CACHE_DATA_DEPENDENCY_TAG = 'wechat_module_data_cache';
     /**
      * 核心模块
      */
@@ -54,12 +54,7 @@ class AddonModule extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            'timestamp' => [
-                'class' => TimestampBehavior::className(),
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'created_at'
-                ]
-            ],
+            'timestamp' => TimestampBehavior::className(),
             'event' => [
                 'class' => EventBehavior::className(),
                 'events' => [
@@ -98,7 +93,7 @@ class AddonModule extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'name', 'version'], 'required'],
+            [['id', 'type', 'name', 'version'], 'required'],
 
             [['id'], 'string', 'max' => 20],
             [['name', 'author'], 'string', 'max' => 50],
@@ -138,11 +133,11 @@ class AddonModule extends \yii\db\ActiveRecord
     }
 
     /**
-     * 更新列表数据缓存(模块调用已安装模块缓存)
+     * 更新列表数据缓存
      * @see callmez\wechat\Module::addonModules()
      * @param $cacheKey
      */
-    protected function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
+    public function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
     {
         $cache = Yii::$app->get(static::getDb()->queryCache, false);
         if ($cache instanceof Cache) {
@@ -224,10 +219,14 @@ class AddonModule extends \yii\db\ActiveRecord
      */
     public function checkType($attribute, $params)
     {
-        if (file_exists(Yii::getAlias(Module::CORE_MODULE_PATH . '/' . $this->id . '/wechat.yml'))) {
-            $this->$attribute = self::TYPE_CORE;
+        // 核心模块的优先级最高
+        if (file_exists(Yii::getAlias(WechatModule::CORE_MODULE_PATH . '/' . $this->id . '/wechat.yml'))) {
+            $type = self::TYPE_CORE;
         } else {
-            $this->$attribute = self::TYPE_ADDON;
+            $type = self::TYPE_ADDON;
+        }
+        if ($this->$attribute != $type) {
+            return $this->addError($attribute, '模块类型匹配错误');
         }
     }
 
@@ -238,7 +237,7 @@ class AddonModule extends \yii\db\ActiveRecord
      */
     public function getModuleNamespace()
     {
-        $path = $this->type == self::TYPE_ADDON ? Module::ADDON_MODULE_PATH : Module::CORE_MODULE_PATH;
+        $path = $this->type == self::TYPE_ADDON ? WechatModule::ADDON_MODULE_PATH : WechatModule::CORE_MODULE_PATH;
         return str_replace('/', '\\', ltrim($path, '@')) . '\\' . $this->id;
     }
 
@@ -259,7 +258,7 @@ class AddonModule extends \yii\db\ActiveRecord
      */
     public static function findAvailableModules()
     {
-        return static::scanAvailableModules([Module::ADDON_MODULE_PATH, Module::CORE_MODULE_PATH]);
+        return static::scanAvailableModules([WechatModule::ADDON_MODULE_PATH, WechatModule::CORE_MODULE_PATH]);
     }
 
     /**

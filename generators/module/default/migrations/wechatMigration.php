@@ -11,12 +11,12 @@ echo "<?php\n";
 namespace app\modules\wechat\modules\<?= $generator->moduleID ?>\migrations;
 
 use yii\db\Schema;
-use callmez\wechat\components\AddonModuleMigration;
+use callmez\wechat\components\ModuleMigration;
 
 /**
  * 模块数据迁移来.处理模块安装,卸载,升级时的数据操作
  */
-class WechatMigration extends AddonModuleMigration
+class WechatMigration extends ModuleMigration
 {
     /**
      * 该函数用于模块在安装时执行模块必须数据操作.例如创建数据表,原始数据

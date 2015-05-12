@@ -1,6 +1,9 @@
 <?php
+use yii\helpers\Html;
+use callmez\wechat\models\Module;
 ?>
 <div class="addon-module-form">
+    <?= Html::activeHiddenInput($generator, 'type') ?>
     <?= $form->field($generator, 'moduleName') ?>
     <?= $form->field($generator, 'moduleID') ?>
     <?= $form->field($generator, 'moduleClass')->textInput(['maxlength' => true, 'readonly' => true]) ?>
@@ -13,12 +16,17 @@
     <?= $form->field($generator, 'category')->dropDownList(array_merge(['' => '请选择分类'], $generator->getCategories())) ?>
 </div>
 <?php
+$namespaces = json_encode([
+    Module::TYPE_ADDON => $generator->getModuleBaseNamespace(Module::TYPE_ADDON),
+    Module::TYPE_CORE => $generator->getModuleBaseNamespace(Module::TYPE_CORE),
+]);
 $this->registerJs(<<<EOF
     var form = $('.addon-module-form').closest('form');
+    var namespaces = $namespaces;
     form
         .on('change', '#generator-moduleid', function() {
             form.find('#generator-moduleclass')
-                .val('app\\\modules\\\wechat\\\modules\\\' + $(this).val() + '\\\Module');
+                .val(namespaces[form.find('#generator-type').val()] + '\\\' + $(this).val() + '\\\Module');
         });
 EOF
 );

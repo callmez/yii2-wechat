@@ -6,13 +6,13 @@ use yii\db\Migration;
 
 /**
  * 微信扩展模块迁移基类
- * Class AddonModuleMigration
+ * Class ModuleMigration
  * @package callmez\wechat\components
  */
-class AddonModuleMigration extends Migration
+class ModuleMigration extends Migration
 {
     /**
-     * @var callmez\wechat\models\AddonModule
+     * @var callmez\wechat\models\Module
      */
     public $model;
 

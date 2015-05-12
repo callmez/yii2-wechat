@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
-use callmez\wechat\models\AddonModule;
+use callmez\wechat\models\Module;
 use callmez\wechat\modules\admin\widgets\AdminPanel;
 
 $this->title = '模块管理';
@@ -11,7 +11,7 @@ $wechat = Yii::$app->getModule('wechat');
 ?>
 <?php AdminPanel::begin(['options' => ['class' => 'addon-module-index']]) ?>
     <p class="text-right">
-        <?php if ($wechat->canDesignAddonModule()) : ?>
+        <?php if ($wechat->canGenerateModule()) : ?>
             <?= Html::a('我要设计新模块', ["/{$wechat->giiModuleName}/{$wechat->giiGeneratorName}", ['class' => 'btn bt']]) ?>
         <?php else: ?>
             <?= Html::a('想设计新模块?', 'http://github.com/callmez/yii2-wechat') ?>
@@ -26,7 +26,7 @@ $wechat = Yii::$app->getModule('wechat');
             [
                 'attribute' => 'type',
                 'value' => function ($model) {
-                    return AddonModule::$types[$model->type];
+                    return Module::$types[$model->type];
                 }
             ],
             'version',

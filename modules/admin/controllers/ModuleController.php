@@ -5,7 +5,7 @@ namespace callmez\wechat\modules\admin\controllers;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\web\NotFoundHttpException;
-use callmez\wechat\models\AddonModule;
+use callmez\wechat\models\Module;
 use callmez\wechat\modules\admin\components\Controller;
 
 /**
@@ -21,13 +21,14 @@ class ModuleController extends Controller
     {
         $models = $this->findInstalledModules();
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_merge(AddonModule::findAvailableModules(), $models),
-            'sort' => [
-                'attributes' => ['type'],
-                'defaultOrder' => [
-                    'type' => SORT_DESC,
-                ]
-            ]
+            'allModels' => array_merge(Module::findAvailableModules(), $models),
+            // TODO 多model排序字段相同的话,会报错 @see https://github.com/yiisoft/yii2/issues/8348
+//            'sort' => [
+//                'attributes' => ['type'],
+//                'defaultOrder' => [
+//                    'type' => SORT_DESC
+//                ]
+//            ]
         ]);
 
         return $this->render('index', [
@@ -84,7 +85,7 @@ class ModuleController extends Controller
      */
     public function findAvailableModule($id)
     {
-        if (($model = AddonModule::findAvailableModuleById($id)) !== null) {
+        if (($model = Module::findAvailableModuleById($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
@@ -99,7 +100,7 @@ class ModuleController extends Controller
      */
     public function findInstalledModule($id)
     {
-        if (($model = AddonModule::findOne($id)) !== null) {
+        if (($model = Module::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
@@ -112,6 +113,6 @@ class ModuleController extends Controller
      */
     public function findInstalledModules()
     {
-        return AddonModule::find()->indexBy('id')->all();
+        return Module::find()->indexBy('id')->all();
     }
 }

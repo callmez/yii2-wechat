@@ -3,9 +3,8 @@
 namespace callmez\wechat;
 
 use Yii;
-use Symfony\Component\Yaml\Yaml;
-use callmez\wechat\models\AddonModule;
 use yii\caching\TagDependency;
+use Symfony\Component\Yaml\Yaml;
 
 // 定义毫秒时间戳
 defined('TIMESTAMP') or define('TIMESTAMP', (int) YII_BEGIN_TIME);
@@ -37,10 +36,10 @@ class Module extends \yii\base\Module
      */
     public $name = '微信';
     /**
-     * 扩展模块存放路径
+     * 扩展模块存储类, 必须继承callmez\wechat\models\Module
      * @var string
      */
-    public $addonModuleClass = 'callmez\wechat\models\AddonModule';
+    public $addonModuleClass = 'callmez\wechat\models\Module';
     /**
      * 模块控制器的命名空间
      * @var string
@@ -53,27 +52,24 @@ class Module extends \yii\base\Module
     public function __construct($id, $parent = null, $config = [])
     {
         $config = array_merge([
-            'modules' => array_merge($this->addonModules(), $this->coreModules())
+            'modules' => array_merge($this->modules(), $this->defaultModules)
         ], $config);
         parent::__construct($id, $parent, $config);
     }
 
     /**
      * 核心模块
-     * @return array
+     * @var array
      */
-    public function coreModules()
-    {
-        return [
-            'admin' => ['class' => 'callmez\wechat\modules\admin\Module'], // 后台管理
-        ];
-    }
+    public $defaultModules = [
+        'admin' => ['class' => 'callmez\wechat\modules\admin\Module'], // 后台管理
+    ];
 
     /**
      * 微信扩展模块
      * @return array
      */
-    public function addonModules()
+    public function modules()
     {
         $cache = Yii::$app->cache;
         if (($modules = $cache->get(self::CACHE_ADDON_MODULES_KEY)) === false) {
@@ -82,7 +78,7 @@ class Module extends \yii\base\Module
                 return ['class' => $model->getModuleNamespace() . '\Module'];
             }, $class::find()->indexBy('id')->all());
             $cache->set(self::CACHE_ADDON_MODULES_KEY, $modules, null, new TagDependency([
-                'tags' => [AddonModule::CACHE_DATA_DEPENDENCY_TAG]
+                'tags' => [$class::CACHE_DATA_DEPENDENCY_TAG]
             ]));
         }
         return $modules;
@@ -115,7 +111,7 @@ class Module extends \yii\base\Module
      * 模块设计器是否可用
      * @return bool
      */
-    public function canDesignAddonModule()
+    public function canDesignModule()
     {
         $gii = Yii::$app->getModule($this->giiModuleName);
         return $gii !== null && isset($gii->generators[$this->giiGeneratorName]);

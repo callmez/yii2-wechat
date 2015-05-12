@@ -5,8 +5,7 @@ namespace callmez\wechat\modules\admin;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\caching\TagDependency;
-use callmez\wechat\models\AdminMenu;
-use callmez\wechat\models\AddonModule;
+use callmez\wechat\models\Menu;
 
 /**
  * 微信模块后台管理子模块
@@ -35,10 +34,10 @@ class Module extends \yii\base\Module
      */
     public $siteAdminLayout = '@app/views/layouts/main.php';
     /**
-     * 后台菜单类
+     * 菜单类, 必须继承callmez\wechat\models\Menu
      * @var string
      */
-    public $adminMenuClass = 'callmez\wechat\models\AdminMenu';
+    public $menuClass = 'callmez\wechat\models\Menu';
 
     private $_menus;
 
@@ -48,7 +47,7 @@ class Module extends \yii\base\Module
     public function getMenus()
     {
         if ($this->_menus === null) {
-            $this->setMenus($this->generateMenus());
+            $this->setMenus($this->menus());
         }
         return $this->_menus;
     }
@@ -61,14 +60,6 @@ class Module extends \yii\base\Module
     public function setMenus($menus)
     {
         return $this->_menus = $menus;
-    }
-
-    /**
-     * 扩展模块菜单
-     * @return array
-     */
-    public function addonModuleMenus()
-    {
     }
 
     /**
@@ -221,7 +212,7 @@ class Module extends \yii\base\Module
      * 菜单生成
      * @return array
      */
-    protected function generateMenus()
+    protected function menus()
     {
         $cache = Yii::$app->cache;
         if (($menus = $cache->get(self::CACHE_ADMIN_MENUS_KEY)) === false) {
@@ -229,17 +220,17 @@ class Module extends \yii\base\Module
 
             $categories = $this->getCategories();
 
-            $class = $this->module->addonModuleClass;
+            $class = $this->module->moduleClass;
             foreach ($class::findAll(['admin' => 1]) as $model) { // 安装的扩展模块(开启开启后台功能)
                 $key = isset($categories[$model->category]) ? $model->category : $categories['module'];
                 $menus[$key]['items'][] = [
                     'label' => $model->name,
-                    'url' => ['/wechat/' . $model->id]
+                    'url' => ['/wechat/' . $model->id . '/admin/index'], // 取AdminController::actionIndex()为模块默认后台首页
                 ];
             }
 
-            $class = $this->adminMenuClass;
-            foreach ($class::find()->all() as $model) { // 注册的后台菜单
+            $class = $this->menuClass;
+            foreach ($class::find()->andWhere(['type' => Menu::TYPE_ADMIN])->all() as $model) { // 注册的后台菜单
                 if (!isset($categories[$model->category])) {
                     continue;
                 }
@@ -250,10 +241,15 @@ class Module extends \yii\base\Module
             }
 
             $cache->set(self::CACHE_ADMIN_MENUS_KEY, $menus, null, new TagDependency([
-                'tags' => [AddonModule::CACHE_DATA_DEPENDENCY_TAG, AdminMenu::CACHE_DATA_DEPENDENCY_TAG]
+                'tags' => [$class::CACHE_DATA_DEPENDENCY_TAG, Menu::CACHE_DATA_DEPENDENCY_TAG]
             ]));
         }
         return $menus;
+    }
+
+    public function getModuleMenus()
+    {
+        return [];
     }
 
     private $_categories;

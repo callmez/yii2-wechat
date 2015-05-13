@@ -217,11 +217,11 @@ EOD;
     }
 
     /**
-     * @return string the controller namespace of the module.
+     * @return string the module base namespace .
      */
-    public function getControllerNamespace()
+    public function getModuleNamespace()
     {
-        return substr($this->moduleClass, 0, strrpos($this->moduleClass, '\\')) . '\controllers';
+        return substr($this->moduleClass, 0, strrpos($this->moduleClass, '\\'));
     }
 
     /**

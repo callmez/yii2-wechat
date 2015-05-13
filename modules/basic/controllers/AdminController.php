@@ -1,10 +1,5 @@
 <?php
-/* @var $this yii\web\View */
-/* @var $generator callmez\wechat\generators\module\Generator */
-
-echo "<?php\n";
-?>
-namespace <?= $generator->getModuleNamespace() ?>\controllers;
+namespace callmez\wechat\modules\basic\controllers;
 
 use callmez\wechat\modules\admin\components\Controller;
 

@@ -5,6 +5,7 @@ namespace callmez\wechat\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use callmez\wechat\behaviors\EventBehavior;
 
 /**
  * 微信通信历史记录
@@ -19,7 +20,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $type
  * @property integer $created_at
  */
-class MessageHistory extends \yii\db\ActiveRecord
+class MessageHistory extends ActiveRecord
 {
     /**
      * 微信请求信息
@@ -45,6 +46,20 @@ class MessageHistory extends \yii\db\ActiveRecord
                 'class' => TimestampBehavior::className(),
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at']
+                ]
+            ],
+            'event' => [
+                'class' => EventBehavior::className(),
+                'events' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => function ($event) {
+                        $this->message = serialize($this->message);
+                    },
+                    ActiveRecord::EVENT_BEFORE_UPDATE => function ($event) {
+                        $this->message = serialize($this->message);
+                    },
+                    ActiveRecord::EVENT_AFTER_FIND => function ($event) {
+                        $this->message = unserialize($this->message);
+                    }
                 ]
             ]
         ];
@@ -87,19 +102,5 @@ class MessageHistory extends \yii\db\ActiveRecord
             'type' => '发送类型',
             'created_at' => '关注时间',
         ];
-    }
-
-    public function beforeSave($insert)
-    {
-        if (is_array($this->message)) {
-            $this->message = serialize($this->message);
-        }
-        return parent::beforeSave($insert);
-    }
-
-    public function afterFind()
-    {
-        $this->message = unserialize($this->message);
-        parent::afterFind();
     }
 }

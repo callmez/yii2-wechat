@@ -11,7 +11,7 @@ $wechat = Yii::$app->getModule('wechat');
 ?>
 <?php AdminPanel::begin(['options' => ['class' => 'addon-module-index']]) ?>
     <p class="text-right">
-        <?php if ($wechat->canGenerateModule()) : ?>
+        <?php if ($wechat->canCreateModule()) : ?>
             <?= Html::a('我要设计新模块', ["/{$wechat->giiModuleName}/{$wechat->giiGeneratorName}", ['class' => 'btn bt']]) ?>
         <?php else: ?>
             <?= Html::a('想设计新模块?', 'http://github.com/callmez/yii2-wechat') ?>
@@ -27,7 +27,13 @@ $wechat = Yii::$app->getModule('wechat');
                 'attribute' => 'type',
                 'value' => function ($model) {
                     return Module::$types[$model->type];
-                }
+                },
+                'format' => 'html',
+                'value' => function ($model) use ($models) {
+                    return Html::tag('span', Module::$types[$model->type], [
+                        'class' => 'label label-' . ($model->type == Module::TYPE_CORE ? 'danger' : 'info')
+                    ]);
+                },
             ],
             'version',
             [
@@ -59,9 +65,7 @@ $wechat = Yii::$app->getModule('wechat');
                 'buttons' => [
                     'install' => function ($url, $model, $key) use ($models) {
                         if ($model->getIsInstalled()) {
-                            if ($model->getCanUninstall()) {
-                                return Html::a('卸载模块', ['uninstall', 'id' => $model->id], ['data-confirm' => '确定要卸载此模块?']);
-                            }
+                            return Html::a('卸载模块', ['uninstall', 'id' => $model->id], ['data-confirm' => '确定要卸载此模块?']);
                         } else {
                             return Html::a('安装模块', ['install', 'id' => $model->id]);
                         }

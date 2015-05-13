@@ -14,7 +14,7 @@ class ModuleMigration extends Migration
     /**
      * @var callmez\wechat\models\Module
      */
-    public $model;
+    public $module;
 
     final public function up()
     {

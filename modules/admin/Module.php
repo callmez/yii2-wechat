@@ -6,6 +6,7 @@ use Yii;
 use yii\helpers\ArrayHelper;
 use yii\caching\TagDependency;
 use callmez\wechat\models\Menu;
+use callmez\wechat\models\Module as ModuleModel;
 
 /**
  * 微信模块后台管理子模块
@@ -37,7 +38,7 @@ class Module extends \yii\base\Module
      * 菜单类, 必须继承callmez\wechat\models\Menu
      * @var string
      */
-    public $menuClass = 'callmez\wechat\models\Menu';
+    public $menuModelClass = 'callmez\wechat\models\Menu';
 
     private $_menus;
 
@@ -78,44 +79,7 @@ class Module extends \yii\base\Module
         ],
         'basic' => [
             'label' => '基本功能',
-            'items' => [
-//                [
-//                    'label' => '消息回复',
-//                    'url' => ['/wechat/admin/reply/index'],
-//                ],
-                [
-                    'label' => '文本回复(待开发)',
-                    'url' => ['/wechat/admin/reply/text'],
-                ],
-                [
-                    'label' => '图文回复(待开发)',
-                    'url' => ['/wechat/admin/reply/news'],
-                ],
-                [
-                    'label' => '音乐回复(待开发)',
-                    'url' => ['/wechat/admin/reply/music'],
-                ],
-                [
-                    'label' => '图片回复(待开发)',
-                    'url' => ['/wechat/admin/reply/photo'],
-                ],
-                [
-                    'label' => '语音回复(待开发)',
-                    'url' => ['/wechat/admin/reply/voice'],
-                ],
-                [
-                    'label' => '视频回复(待开发)',
-                    'url' => ['/wechat/admin/reply/vedio'],
-                ],
-                [
-                    'label' => '远程回复(待开发)',
-                    'url' => ['/wechat/admin/reply/remote'],
-                ],
-                [
-                    'label' => '素材管理(待开发)',
-                    'url' => ['/wechat/admin/media/index'],
-                ],
-            ]
+            'items' => []
         ],
         'advanced' => [
             'label' => '高级功能',
@@ -220,7 +184,7 @@ class Module extends \yii\base\Module
 
             $categories = $this->getCategories();
 
-            $class = $this->module->moduleClass;
+            $class = $this->module->moduleModelClass;
             foreach ($class::findAll(['admin' => 1]) as $model) { // 安装的扩展模块(开启开启后台功能)
                 $key = isset($categories[$model->category]) ? $model->category : $categories['module'];
                 $menus[$key]['items'][] = [
@@ -229,24 +193,28 @@ class Module extends \yii\base\Module
                 ];
             }
 
-            $class = $this->menuClass;
+            $class = $this->menuModelClass;
             foreach ($class::find()->andWhere(['type' => Menu::TYPE_ADMIN])->all() as $model) { // 注册的后台菜单
                 if (!isset($categories[$model->category])) {
                     continue;
                 }
                 $menus[$model->category]['items'][] = [
                     'label' => $model->title,
-                    'url' => $model->router
+                    'url' => $model->route
                 ];
             }
 
             $cache->set(self::CACHE_ADMIN_MENUS_KEY, $menus, null, new TagDependency([
-                'tags' => [$class::CACHE_DATA_DEPENDENCY_TAG, Menu::CACHE_DATA_DEPENDENCY_TAG]
+                'tags' => [ModuleModel::CACHE_DATA_DEPENDENCY_TAG, Menu::CACHE_DATA_DEPENDENCY_TAG]
             ]));
         }
         return $menus;
     }
 
+    /**
+     * 获取扩展的菜单
+     * @return array
+     */
     public function getModuleMenus()
     {
         return [];

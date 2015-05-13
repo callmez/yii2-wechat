@@ -5,6 +5,7 @@ namespace callmez\wechat;
 use Yii;
 use yii\caching\TagDependency;
 use Symfony\Component\Yaml\Yaml;
+use callmez\wechat\models\Module as ModuleModel;
 
 // 定义毫秒时间戳
 defined('TIMESTAMP') or define('TIMESTAMP', (int) YII_BEGIN_TIME);
@@ -39,7 +40,7 @@ class Module extends \yii\base\Module
      * 扩展模块存储类, 必须继承callmez\wechat\models\Module
      * @var string
      */
-    public $addonModuleClass = 'callmez\wechat\models\Module';
+    public $moduleModelClass = 'callmez\wechat\models\Module';
     /**
      * 模块控制器的命名空间
      * @var string
@@ -73,12 +74,12 @@ class Module extends \yii\base\Module
     {
         $cache = Yii::$app->cache;
         if (($modules = $cache->get(self::CACHE_ADDON_MODULES_KEY)) === false) {
-            $class = $this->addonModuleClass;
+            $class = $this->moduleModelClass;
             $modules = array_map(function($model) {
                 return ['class' => $model->getModuleNamespace() . '\Module'];
             }, $class::find()->indexBy('id')->all());
             $cache->set(self::CACHE_ADDON_MODULES_KEY, $modules, null, new TagDependency([
-                'tags' => [$class::CACHE_DATA_DEPENDENCY_TAG]
+                'tags' => [ModuleModel::CACHE_DATA_DEPENDENCY_TAG]
             ]));
         }
         return $modules;
@@ -111,7 +112,7 @@ class Module extends \yii\base\Module
      * 模块设计器是否可用
      * @return bool
      */
-    public function canDesignModule()
+    public function canCreateModule()
     {
         $gii = Yii::$app->getModule($this->giiModuleName);
         return $gii !== null && isset($gii->generators[$this->giiGeneratorName]);

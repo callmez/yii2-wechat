@@ -49,8 +49,12 @@ class ModuleController extends Controller
         if (!$model->validate()) {
             return $this->message('模块的设置错误: ' . array_values($model->firstErrors)[0]);
         }
-        if (!empty($_POST) && $model->install(false)) {
-            return $this->flash('模块安装成功!', 'success', ['index']);
+        if (!empty($_POST)) {
+            if ($model->install(false)) {
+                return $this->flash('模块安装成功!', 'success', ['index']);
+            } elseif (!$model->hasErrors()) {
+                return $this->flash('模块安装失败!', 'error');
+            }
         }
         return $this->render('install', [
             'model' => $model
@@ -66,11 +70,12 @@ class ModuleController extends Controller
     public function actionUninstall($id)
     {
         $model = $this->findInstalledModule($id);
-        if (!$model->getCanUninstall()) {
-            return $this->message(array_values($model->firstErrors)[0]);
-        }
-        if (!empty($_POST) && $model->uninstall()) {
-            return $this->flash('模块卸载成功!', 'success', ['index']);
+        if (!empty($_POST)) {
+            if ($model->uninstall()) {
+                return $this->flash('模块卸载成功!', 'success', ['index']);
+            } else {
+                return $this->flash('模块卸载失败!', 'error');
+            }
         }
         return $this->render('uninstall', [
             'model' => $model

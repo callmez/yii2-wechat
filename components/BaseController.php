@@ -28,15 +28,16 @@ abstract class BaseController extends Controller
      */
     public function message($message, $type = 'error', $redirect = null, $resultType = null)
     {
+        $request = Yii::$app->getRequest();
         if ($resultType === null) {
-            $resultType = Yii::$app->getRequest()->getIsAjax() ? 'json' : 'html';
+            $resultType = $request->getIsAjax() ? 'json' : 'html';
         } elseif ($resultType === 'flash') {
             $resultType = Yii::$app->getRequest()->getIsAjax() ? 'json' : $resultType;
         }
         $data = [
             'type' => $type,
             'message' => $message,
-            'redirect' => Url::to($redirect)
+            'redirect' => $redirect === null ? null : Url::to($redirect)
         ];
         switch ($resultType) {
             case 'html':
@@ -46,11 +47,9 @@ abstract class BaseController extends Controller
                 return $data;
             case 'flash':
                 Yii::$app->session->setFlash($type, $message);
-                if ($redirect !== null)  {
-                    Yii::$app->end(0, $this->redirect($data['redirect']));
-                }
+                $data['redirect'] == null && $data['redirect'] = $request->getReferrer();
+                Yii::$app->end(0, $this->redirect($data['redirect']));
                 return true;
-
             default:
                 return $message;
         }

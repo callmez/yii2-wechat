@@ -33,7 +33,7 @@ class <?= $className ?> extends \yii\base\Module
     /**
      * 扩展模块控制器Namespace
      */
-    public $controllerNamespace = '<?= $generator->getControllerNamespace() ?>';
+    public $controllerNamespace = '<?= $generator->getModuleNamespace() ?>\controllers';
 <?php if ($generator->replyRule): ?>
     /**
      * 控制器处理类
@@ -41,7 +41,7 @@ class <?= $className ?> extends \yii\base\Module
     public $controllerMap = [
         // 回复规则控制器
         'reply' => [
-            'class' => '<?= Yii::$app->getModule('wechat/admin')->controllerNamespace . '\\ReplyController' ?>'
+            'class' => '<?= Yii::$app->getModule('wechat/admin')->controllerNamespace ?>\ReplyController'
         ]
     ];
 <?php endif ?>

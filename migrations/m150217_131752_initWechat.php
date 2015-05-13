@@ -102,6 +102,7 @@ class m150217_131752_initWechat extends Migration
             'title' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '菜单名'",
             'route' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '访问路由'",
             'type' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '菜单类型'",
+            'category' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '后台菜单类型时所属分类'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);

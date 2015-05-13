@@ -6,18 +6,18 @@ use Yii;
 use yii\caching\Cache;
 use yii\db\ActiveRecord;
 use yii\caching\TagDependency;
+use yii\base\InvalidCallException;
 use yii\base\NotSupportedException;
 use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
 use Symfony\Component\Yaml\Yaml;
 use callmez\wechat\Module as WechatModule;
-use callmez\wechat\behaviors\EventBehavior;
 
 /**
- * This is the model class for table "{{%wechat_module}}".
- *
+ * 微信扩展模块类
+ * @package callmez\wechat\models
  */
-class Module extends \yii\db\ActiveRecord
+class Module extends ActiveRecord
 {
     /**
      * 微信扩展模块数据缓存
@@ -54,29 +54,81 @@ class Module extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            'timestamp' => TimestampBehavior::className(),
-            'event' => [
-                'class' => EventBehavior::className(),
-                'events' => [
-                    ActiveRecord::EVENT_BEFORE_DELETE => function($event) { // 是否能删除
-                        $event->isValid = $this->getCanUninstall(true);
-                    },
-                    // 数据库变动必须更新缓存, 并执行相关迁移脚本
-                    ActiveRecord::EVENT_AFTER_INSERT => function($event) {
-                        $this->updateCache();
-                        $this->migration(self::MIGRATION_INSTALL);
-                    },
-                    ActiveRecord::EVENT_AFTER_DELETE => function($event) {
-                        $this->updateCache();
-                        $this->migration(self::MIGRATION_UNINSTALL);
-                    },
-                    ActiveRecord::EVENT_AFTER_UPDATE => function() {
-                        $this->updateCache();
-                        $this->migration(self::MIGRATION_UPGRADE);
-                    },
-                ]
-            ]
+            'timestamp' => TimestampBehavior::className()
         ];
+    }
+
+    /**
+     * 禁用事务(便于执行migration)
+     * @return array
+     */
+    final public function transactions()
+    {
+        return parent::transactions();
+    }
+
+    /**
+     * 加入安装和升级migration操作, 使用事务(self::transactions()禁止默认事务)来控制数据一致性
+     * 并更新数据缓存
+     * @inheritdoc
+     */
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+
+            if ($this->getIsNewRecord()) {
+                $migrationType = self::MIGRATION_INSTALL;
+                $result = $this->insert($runValidation, $attributeNames);
+            } else {
+                $migrationType = self::MIGRATION_UPGRADE;
+                $result = $this->update($runValidation, $attributeNames) !== false;
+            }
+            if ($result !== false) {
+                $result = $this->migration($migrationType);
+            }
+
+            if ($result === false) {
+                $transaction->rollBack();
+            } else {
+                $transaction->commit();
+
+                static::updateCache();
+            }
+            return $result;
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * 加入卸载migration操作, 使用事务(self::transactions()禁止默认事务)来控制数据一致性
+     * 并更新数据缓存
+     * @inheritdoc
+     */
+    public function delete()
+    {
+        $transaction = static::getDb()->beginTransaction();
+        try {
+            $result = $this->deleteInternal();
+
+            if ($result !== false) {
+                $result = $this->migration(self::MIGRATION_UNINSTALL);
+            }
+
+            if ($result === false) {
+                $transaction->rollBack();
+            } else {
+                $transaction->commit();
+
+                static::updateCache();
+            }
+            return $result;
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 
     /**
@@ -84,7 +136,7 @@ class Module extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%wechat_addon_module}}';
+        return '{{%wechat_module}}';
     }
 
     /**
@@ -137,7 +189,7 @@ class Module extends \yii\db\ActiveRecord
      * @see callmez\wechat\Module::addonModules()
      * @param $cacheKey
      */
-    public function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
+    public static function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
     {
         $cache = Yii::$app->get(static::getDb()->queryCache, false);
         if ($cache instanceof Cache) {
@@ -146,7 +198,7 @@ class Module extends \yii\db\ActiveRecord
     }
 
     /**
-     * 执行迁移脚本
+     * 执行模块迁移(安装,升级,卸载)脚本
      * @param $type
      * @return bool
      */
@@ -158,18 +210,22 @@ class Module extends \yii\db\ActiveRecord
         }
         $migration = Yii::createObject([
             'class' => $class,
-            'model' => $this
+            'module' => $this
         ]);
         switch ($type) {
             case self::MIGRATION_INSTALL:
-                return $migration->up();
+                $result = $migration->up();
+                break;
             case self::MIGRATION_UNINSTALL:
-                return $migration->down();
+                $result = $migration->down();
+                break;
             case self::MIGRATION_UPGRADE:
-                return $migration->to($this->getOldAttribute('version'), $this->getAttribute('version'));
+                $result = $migration->to($this->getOldAttribute('version'), $this->getAttribute('version'));
+                break;
             default:
-                throw new InvalidParamException("Migration type '{$type}' does not support.");
+                throw new InvalidParamException("Migration type does not support '{$type}'.");
         }
+        return $result !== false;
     }
 
     /**
@@ -182,27 +238,13 @@ class Module extends \yii\db\ActiveRecord
     }
 
     /**
-     * 核心模块不能卸载
-     * @param bool $setError
-     * @return bool
-     */
-    public function getCanUninstall($setError = false)
-    {
-        if ($this->type == self::TYPE_CORE) {
-            $setError && $this->addError('type', '核心模块不能卸载');
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * 安装模块
      * @param bool $runValidation
      * @return bool
      */
     public function install($runValidation = true)
     {
-        return parent::save($runValidation);
+        return $this->save($runValidation);
     }
 
     /**
@@ -211,7 +253,7 @@ class Module extends \yii\db\ActiveRecord
      */
     public function uninstall()
     {
-        return parent::delete();
+        return $this->delete();
     }
 
     /**

@@ -3,12 +3,16 @@
 namespace callmez\wechat\models;
 
 use Yii;
-use yii\behaviors\TimestampBehaviorl;
+use yii\caching\Cache;
+use yii\db\ActiveRecord;
+use yii\caching\TagDependency;
+use yii\behaviors\TimestampBehavior;
+use callmez\wechat\behaviors\EventBehavior;
 
 /**
  * 微信菜单数据表, 存储各类(后台主菜单, 模块菜单, 自定类型菜单)菜单数据
  */
-class Menu extends \yii\db\ActiveRecord
+class Menu extends ActiveRecord
 {
     /**
      * 后台菜单
@@ -30,13 +34,19 @@ class Menu extends \yii\db\ActiveRecord
             'event' => [
                 'class' => EventBehavior::className(),
                 'events' => [
-                    ActiveRecord::EVENT_BEFORE_DELETE => function($event) { // 是否能删除
-                        $event->isValid = $this->getCanUninstall(true);
-                    },
                     // 数据库变动必须更新缓存
                     ActiveRecord::EVENT_AFTER_INSERT => [$this, 'updateCache'],
                     ActiveRecord::EVENT_AFTER_DELETE => [$this, 'updateCache'],
                     ActiveRecord::EVENT_AFTER_UPDATE => [$this, 'updateCache'],
+                    ActiveRecord::EVENT_BEFORE_INSERT => function ($event) {
+                        $this->route = serialize($this->route);
+                    },
+                    ActiveRecord::EVENT_BEFORE_UPDATE => function ($event) {
+                        $this->route = serialize($this->route);
+                    },
+                    ActiveRecord::EVENT_AFTER_FIND => function ($event) {
+                        $this->route = unserialize($this->route);
+                    }
                 ]
             ]
         ];
@@ -57,8 +67,8 @@ class Menu extends \yii\db\ActiveRecord
     {
         return [
             [['parent', 'created_at', 'updated_at'], 'integer'],
-            [['mid', 'title', 'type'], 'string', 'max' => 20],
-            [['route'], 'string', 'max' => 255]
+            [['mid', 'title', 'type', 'category'], 'string', 'max' => 20],
+            [['route'], 'safe']
         ];
     }
 
@@ -83,7 +93,7 @@ class Menu extends \yii\db\ActiveRecord
      * 更新列表数据缓存
      * @param $cacheKey
      */
-    public function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
+    public static function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
     {
         $cache = Yii::$app->get(static::getDb()->queryCache, false);
         if ($cache instanceof Cache) {

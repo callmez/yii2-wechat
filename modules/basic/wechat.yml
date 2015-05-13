@@ -1,0 +1,10 @@
+id: basic
+name: 基本模块
+type: core
+version: 1.0.0
+author: CallMeZ
+site: 'https://github.com/callmez'
+category: basic
+admin: false
+migration: true
+replyRule: false

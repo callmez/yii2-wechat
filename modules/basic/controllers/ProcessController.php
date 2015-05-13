@@ -1,10 +1,5 @@
 <?php
-/* @var $this yii\web\View */
-/* @var $generator yii\gii\generators\module\Generator */
-
-echo "<?php\n";
-?>
-namespace <?= $generator->getModuleNamespace() ?>\controllers;
+namespace callmez\wechat\modules\basic\controllers;
 
 /**
  * 微信请求默认处理类.

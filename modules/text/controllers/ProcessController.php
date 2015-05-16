@@ -1,5 +1,5 @@
 <?php
-namespace callmez\wechat\modules\basic\controllers;
+namespace callmez\wechat\modules\text\controllers;
 
 /**
  * 微信请求默认处理类.

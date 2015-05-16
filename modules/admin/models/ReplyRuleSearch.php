@@ -8,9 +8,9 @@ use yii\data\ActiveDataProvider;
 use callmez\wechat\models\ReplyRule;
 
 /**
- * RuleSearch represents the model behind the search form about `callmez\wechat\models\Rule`.
+ * ReplyRuleSearch represents the model behind the search form about `callmez\wechat\models\ReplyRule`.
  */
-class RuleSearch extends ReplyRule
+class ReplyRuleSearch extends ReplyRule
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class RuleSearch extends ReplyRule
     public function rules()
     {
         return [
-            [['id', 'wid', 'status', 'priority'], 'integer'],
-            [['name', 'module'], 'safe'],
+            [['id', 'wid', 'status'], 'integer'],
+            [['name', 'mid'], 'safe'],
         ];
     }
 
@@ -50,7 +50,7 @@ class RuleSearch extends ReplyRule
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to any records when validation fails
+            // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
         }
@@ -65,7 +65,7 @@ class RuleSearch extends ReplyRule
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'module', $this->module]);
+            ->andFilterWhere(['like', 'mid', $this->mid]);
 
         return $dataProvider;
     }

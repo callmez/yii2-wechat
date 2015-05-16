@@ -67,7 +67,7 @@ class Menu extends ActiveRecord
     {
         return [
             [['parent', 'created_at', 'updated_at'], 'integer'],
-            [['mid', 'title', 'type', 'category'], 'string', 'max' => 20],
+            [['mid', 'title', 'type'], 'string', 'max' => 20],
             [['route'], 'safe']
         ];
     }

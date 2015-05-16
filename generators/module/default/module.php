@@ -12,6 +12,8 @@ echo "<?php\n";
 
 namespace <?= $ns ?>;
 
+use callmez\wechat\components\BaseModule;
+
 /**
  * <?= $generator->moduleName ?>
 
@@ -24,7 +26,7 @@ namespace <?= $ns ?>;
 <?php endif ?>
 
  */
-class <?= $className ?> extends \yii\base\Module
+class <?= $className ?> extends BaseModule
 {
     /**
      * 扩展模块名称
@@ -33,7 +35,7 @@ class <?= $className ?> extends \yii\base\Module
     /**
      * 扩展模块控制器Namespace
      */
-    public $controllerNamespace = '<?= $generator->getModuleNamespace() ?>\controllers';
+    public $controllerNamespace = '<?= $generator->getModuleBaseNamespace() ?>\controllers';
 <?php if ($generator->replyRule): ?>
     /**
      * 控制器处理类

@@ -104,4 +104,14 @@ class ModuleMigration extends Migration
     public function ungrade($fromVersion, $toVersion)
     {
     }
+
+    /**
+     * 判断表是否存在(预防表数据安装失败)
+     * @param $tableName
+     * @return bool
+     */
+    public function tableExists($tableName)
+    {
+        return $this->db->schema->getTableSchema($tableName, true) !== null;
+    }
 }

@@ -73,7 +73,7 @@ class ReplyRuleKeyword extends \yii\db\ActiveRecord
 
     public function getReplyRule()
     {
-        return $this->hasOne(Rule::className(), ['id' => 'rid']);
+        return $this->hasOne(ReplyRule::className(), ['id' => 'rid']);
     }
 
     /**

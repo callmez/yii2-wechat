@@ -4,7 +4,7 @@
 
 echo "<?php\n";
 ?>
-namespace <?= $generator->getModuleNamespace() ?>\controllers;
+namespace <?= $generator->getModuleBaseNamespace() ?>\controllers;
 
 use callmez\wechat\modules\admin\components\Controller;
 

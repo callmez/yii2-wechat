@@ -1,6 +1,13 @@
 /* Common */
+.mb20 {
+    margin-bottom: 20px;
+}
 .cursor-pointer {
     cursor: pointer;
+}
+div.required label:after {
+    content: " *";
+    color: red;
 }
 
 /* 微信模拟界面 */

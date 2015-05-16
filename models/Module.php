@@ -64,7 +64,7 @@ class Module extends ActiveRecord
      */
     final public function transactions()
     {
-        return parent::transactions();
+        return [];
     }
 
     /**
@@ -84,7 +84,7 @@ class Module extends ActiveRecord
                 $migrationType = self::MIGRATION_UPGRADE;
                 $result = $this->update($runValidation, $attributeNames) !== false;
             }
-            if ($result !== false) {
+            if ($result !== false && $this->migration) {
                 $result = $this->migration($migrationType);
             }
 
@@ -113,7 +113,7 @@ class Module extends ActiveRecord
         try {
             $result = $this->deleteInternal();
 
-            if ($result !== false) {
+            if ($result !== false && $this->migration) { // 有迁移执行迁移脚本
                 $result = $this->migration(self::MIGRATION_UNINSTALL);
             }
 
@@ -153,6 +153,7 @@ class Module extends ActiveRecord
             [['ability'], 'string', 'max' => 100],
             [['site'], 'string', 'max' => 255],
 
+            [['id'], 'match', 'pattern' => '/^[\w]+$/', 'message' => '模块唯一ID标识只能包含英文字母,数字和_符号'], // 模块ID哟福
             [['id'], 'unique', 'message' => '模块唯一ID标识已经被使用或者该模块已经安装.'],
             [['admin', 'migration'], 'boolean'],
 
@@ -204,8 +205,13 @@ class Module extends ActiveRecord
      */
     protected function migration($type)
     {
-        $class = $this->getModuleNamespace() . '\\migrations\WechatMigration';
+        $class = $this->getModuleBaseNamespace() . '\migrations\WechatMigration';
         if (!class_exists($class)) {
+            // 卸载如果迁移文件不存在也直接返回迁移成功(防止卸载失败)
+            if ($type == self::MIGRATION_UNINSTALL) {
+                return true;
+            }
+            $this->addError('migration', '模块迁移文件不存在');
             return false;
         }
         $migration = Yii::createObject([
@@ -225,7 +231,11 @@ class Module extends ActiveRecord
             default:
                 throw new InvalidParamException("Migration type does not support '{$type}'.");
         }
-        return $result !== false;
+        if ($result === false) {
+            $this->addError('migration', '模块迁移脚本执行失败');
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -273,11 +283,10 @@ class Module extends ActiveRecord
     }
 
     /**
-     * 获取扩展模块的类名
-     * 注意: 所有微信的扩展模块必须使用Module类名(文件名也为Module.php)为模块的启动文件
+     * 获取扩展模块的基础命名空间
      * @return string
      */
-    public function getModuleNamespace()
+    public function getModuleBaseNamespace()
     {
         $path = $this->type == self::TYPE_ADDON ? WechatModule::ADDON_MODULE_PATH : WechatModule::CORE_MODULE_PATH;
         return str_replace('/', '\\', ltrim($path, '@')) . '\\' . $this->id;

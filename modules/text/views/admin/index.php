@@ -5,14 +5,14 @@ use yii\grid\GridView;
 use callmez\wechat\models\ReplyRule;
 use callmez\wechat\modules\admin\widgets\AdminPanel;
 
-$this->title = '回复管理';
+$this->title = '文本回复';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<?php AdminPanel::begin(['options' => ['class' => 'reply-index']]) ?>
+<?php AdminPanel::begin(['options' => ['class' => 'reply-text-index']]) ?>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('添加回复规则', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('添加文本回复', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -28,11 +28,19 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'name',
             [
-                'attribute' => 'mid',
+                'attribute' => 'text',
+                'label' => '回复内容',
                 'value' => function($model) {
-                    $module = Yii::$app->getModule('wechat');
-                    return (($module = $module->getModule($model->mid)) ? $module->name: '') . '(' . $model->mid . ')';
+                    return $model->replyText ? $model->replyText->text : '';
                 }
+            ],
+            'created_at:datetime',
+            'updated_at:datetime',
+            [
+                'attribute' => 'priority',
+                'options' => [
+                    'width' => 60
+                ]
             ],
             [
                 'attribute' => 'status',
@@ -45,14 +53,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => ReplyRule::$statuses,
                 'options' => [
                     'width' => 80
-                ]
-            ],
-            'created_at:datetime',
-            'updated_at:datetime',
-            [
-                'attribute' => 'priority',
-                'options' => [
-                    'width' => 60
                 ]
             ],
             [

@@ -9,10 +9,11 @@ use yii\bootstrap\ActiveForm;
 ?>
 
 <div class="addon-module-form">
-
     <?php $form = ActiveForm::begin([
         'layout' => 'horizontal'
     ]); ?>
+
+    <?= $form->errorSummary($model) ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true, 'disabled' => true]) ?>
 

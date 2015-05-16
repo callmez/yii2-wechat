@@ -5,18 +5,6 @@ namespace callmez\wechat\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 
-/**
- * This is the model class for table "{{%wechat_reply_rule}}".
- *
- * @property integer $id
- * @property integer $wid
- * @property string $name
- * @property string $module
- * @property integer $status
- * @property integer $priority
- * @property integer $created_at
- * @property integer $updated_at
- */
 class ReplyRule extends \yii\db\ActiveRecord
 {
     /**
@@ -27,6 +15,7 @@ class ReplyRule extends \yii\db\ActiveRecord
      * 禁用状态
      */
     const STATUS_DISABLED = 0;
+    const PROCESSOR_DEFAULT = 'processor';
     public static $statuses = [
         self::STATUS_ACTIVE => '启用',
         self::STATUS_DISABLED => '禁用'
@@ -53,11 +42,12 @@ class ReplyRule extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['wid', 'name', 'module', 'status'], 'required'],
+            [['wid', 'name', 'mid', 'status'], 'required'],
             [['wid', 'status', 'priority'], 'integer'],
-            [['name'], 'string', 'max' => 50],
-            [['module'], 'string', 'max' => 20],
-            [['priority'], 'default', 'value' => 0]
+            [['name', 'processor'], 'string', 'max' => 40],
+            [['mid'], 'string', 'max' => 20],
+            [['priority'], 'default', 'value' => 0],
+            [['processor'], 'default', 'value' => self::PROCESSOR_DEFAULT]
         ];
     }
 
@@ -70,7 +60,8 @@ class ReplyRule extends \yii\db\ActiveRecord
             'id' => 'ID',
             'wid' => '所属微信公众号ID',
             'name' => '规则名称',
-            'module' => '处理模块',
+            'mid' => '处理模块',
+            'processor' => '请求处理类',
             'status' => '状态',
             'priority' => '优先级',
             'created_at' => '创建时间',
@@ -78,9 +69,9 @@ class ReplyRule extends \yii\db\ActiveRecord
         ];
     }
 
-    public function getReplyKeywords()
+    public function getReplyRuleKeywords()
     {
         return $this->hasMany(ReplyRuleKeyword::className(), ['rid' => 'id'])
-            ->inverseOf('rule');
+            ->inverseOf('replyRule');
     }
 }

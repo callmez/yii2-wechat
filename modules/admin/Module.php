@@ -5,14 +5,14 @@ namespace callmez\wechat\modules\admin;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\caching\TagDependency;
-use callmez\wechat\models\Menu;
+use callmez\wechat\components\BaseModule;
 use callmez\wechat\models\Module as ModuleModel;
 
 /**
  * 微信模块后台管理子模块
  * @package callmez\wechat\modules\admin
  */
-class Module extends \yii\base\Module
+class Module extends BaseModule
 {
     /**
      * 后台菜单按钮缓存
@@ -23,6 +23,11 @@ class Module extends \yii\base\Module
      * @var string
      */
     public $controllerNamespace = 'callmez\wechat\modules\admin\controllers';
+    /**
+     * 模块名称
+     * @var string
+     */
+    public $name = '微信后台';
     /**
      * 后台模块的基本视图
      * 该视图只是一个子视图, 做为站点后台视图和该模块视图的中间视图
@@ -40,34 +45,34 @@ class Module extends \yii\base\Module
      */
     public $menuModelClass = 'callmez\wechat\models\Menu';
 
-    private $_menus;
+    private $_categoryMenus;
 
     /*
-     * 获取后台菜单
+     * 获取后台分类菜单
      */
-    public function getMenus()
+    public function getCategoryMenus()
     {
-        if ($this->_menus === null) {
-            $this->setMenus($this->menus());
+        if ($this->_categoryMenus === null) {
+            $this->setCategoryMenus($this->categoryMenus());
         }
-        return $this->_menus;
+        return $this->_categoryMenus;
     }
 
     /**
-     * 设置后台菜单
+     * 设置后台分类菜单
      * @param $menus
      * @return mixed
      */
-    public function setMenus($menus)
+    public function setCategoryMenus($menus)
     {
-        return $this->_menus = $menus;
+        return $this->_categoryMenus = $menus;
     }
 
     /**
      * 初始默认菜单
      * @var array
      */
-    public $defaultMenus = [
+    public $defaultCategoryMenus = [
         'system' => [
             'label' => '系统管理',
             'items' => [
@@ -79,7 +84,12 @@ class Module extends \yii\base\Module
         ],
         'basic' => [
             'label' => '基本功能',
-            'items' => []
+            'items' => [
+                [
+                    'label' => '回复管理',
+                    'url' => ['/wechat/admin/reply/index'],
+                ]
+            ]
         ],
         'advanced' => [
             'label' => '高级功能',
@@ -176,48 +186,27 @@ class Module extends \yii\base\Module
      * 菜单生成
      * @return array
      */
-    protected function menus()
+    protected function categoryMenus()
     {
         $cache = Yii::$app->cache;
         if (($menus = $cache->get(self::CACHE_ADMIN_MENUS_KEY)) === false) {
-            $menus = $this->defaultMenus;
+            $menus = $this->defaultCategoryMenus;
 
             $categories = $this->getCategories();
-
             $class = $this->module->moduleModelClass;
             foreach ($class::findAll(['admin' => 1]) as $model) { // 安装的扩展模块(开启开启后台功能)
                 $key = isset($categories[$model->category]) ? $model->category : $categories['module'];
                 $menus[$key]['items'][] = [
                     'label' => $model->name,
-                    'url' => ['/wechat/' . $model->id . '/admin/index'], // 取AdminController::actionIndex()为模块默认后台首页
-                ];
-            }
-
-            $class = $this->menuModelClass;
-            foreach ($class::find()->andWhere(['type' => Menu::TYPE_ADMIN])->all() as $model) { // 注册的后台菜单
-                if (!isset($categories[$model->category])) {
-                    continue;
-                }
-                $menus[$model->category]['items'][] = [
-                    'label' => $model->title,
-                    'url' => $model->route
+                    'url' => Yii::$app->getModule('wechat/' . $model->id)->getAdminHomeUrl()
                 ];
             }
 
             $cache->set(self::CACHE_ADMIN_MENUS_KEY, $menus, null, new TagDependency([
-                'tags' => [ModuleModel::CACHE_DATA_DEPENDENCY_TAG, Menu::CACHE_DATA_DEPENDENCY_TAG]
+                'tags' => [ModuleModel::CACHE_DATA_DEPENDENCY_TAG]
             ]));
         }
         return $menus;
-    }
-
-    /**
-     * 获取扩展的菜单
-     * @return array
-     */
-    public function getModuleMenus()
-    {
-        return [];
     }
 
     private $_categories;
@@ -229,7 +218,7 @@ class Module extends \yii\base\Module
     public function getCategories()
     {
         if ($this->_categories === null) {
-            foreach ($this->defaultMenus as $key => $menus) {
+            foreach ($this->defaultCategoryMenus as $key => $menus) {
                 $this->_categories[$key] = isset($menus['label']) ? $menus['label'] : $key;
             }
         }

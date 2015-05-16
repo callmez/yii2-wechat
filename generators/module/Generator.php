@@ -53,7 +53,7 @@ class Generator extends \yii\gii\Generator
 
             [['moduleID', 'moduleClass', 'moduleName'], 'filter', 'filter' => 'trim'],
             [['moduleID', 'moduleName', 'moduleClass', 'version'], 'required'],
-            [['moduleID'], 'match', 'pattern' => '/^[\w\\-]+$/', 'message' => '{attribute}只能包含字母,数字和-_符号.'],
+            [['moduleID'], 'match', 'pattern' => '/^[\w]+$/', 'message' => '{attribute}只能包含字母,数字和_符号'],
             [['moduleClass'], 'validateModuleClass'],
             [['version'], 'match', 'pattern' => '/^\d+[.\d]+\d+$/', 'message' => '{attribute}只能包含数字和.符号并符合版本命名规则, 例如<code>1.0.0</code>'],
             [['migration', 'admin', 'replyRule'], 'boolean'],
@@ -145,15 +145,15 @@ EOD;
                 $modulePath . '/controllers/AdminController.php',
                 $this->render("controllers/adminController.php")
             );
+            $files[] = new CodeFile(
+                $modulePath . '/views/admin/index.php',
+                $this->render("views/admin/view.php")
+            );
         }
         if ($this->migration) {
             $files[] = new CodeFile(
                 $modulePath . '/migrations/WechatMigration.php',
                 $this->render("migrations/wechatMigration.php")
-            );
-            $files[] = new CodeFile(
-                $modulePath . '/views/admin/index.php',
-                $this->render("views/admin/view.php")
             );
         }
         $files[] = new CodeFile(
@@ -214,14 +214,6 @@ EOD;
     public function getModulePath()
     {
         return Yii::getAlias('@' . str_replace('\\', '/', substr($this->moduleClass, 0, strrpos($this->moduleClass, '\\'))));
-    }
-
-    /**
-     * @return string the module base namespace .
-     */
-    public function getModuleNamespace()
-    {
-        return substr($this->moduleClass, 0, strrpos($this->moduleClass, '\\'));
     }
 
     /**

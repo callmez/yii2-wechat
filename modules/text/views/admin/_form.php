@@ -14,15 +14,11 @@ use callmez\wechat\models\ReplyRule;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'mid')->dropDownList(['' => '选择处理模块'] + array_map(function($module) {
-            return ArrayHelper::getValue($module, 'name');
-        }, Yii::$app->getModule('wechat')->getModules())) ?>
-
-    <?= $form->field($model, 'processor')->textInput(['maxlength' => true, 'placeholder' => ReplyRule::PROCESSOR_DEFAULT]) ?>
-
     <?= $form->field($model, 'status')->dropDownList(ReplyRule::$statuses) ?>
 
     <?= $form->field($model, 'priority')->textInput() ?>
+
+    <?= $form->field($model->replyText, 'text')->textarea(['maxlength' => true]) ?>
 
     <div class="form-group">
         <label class="control-label col-sm-3">触发关键字</label>

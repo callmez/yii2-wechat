@@ -1,17 +1,9 @@
 <?php
-/**
- * 该文件是用来生成扩展模块的迁移类
- */
-
-/* @var $this yii\web\View */
-/* @var $generator callmez\wechat\generators\module\Generator */
-
-echo "<?php\n";
-?>
-namespace <?= $generator->getModuleBaseNamespace() ?>\migrations;
+namespace callmez\wechat\modules\text\migrations;
 
 use yii\db\Schema;
 use callmez\wechat\components\ModuleMigration;
+use callmez\wechat\modules\text\models\ReplyText;
 
 /**
  * 模块数据迁移来.处理模块安装,卸载,升级时的数据操作
@@ -21,22 +13,17 @@ class WechatMigration extends ModuleMigration
     /**
      * 该函数用于模块在安装时执行模块必须数据操作.例如创建数据表,原始数据
      */
-//    public function install()
-//    {
-//        // 创建表
-//        $tableName = ExampleModel::tableName();
-//        if (!$this->tableExists($tableName)) { // 判断表是否已创建
-//            $this->createTable($tableName, [
-//                'id' => Schema::TYPE_PK,
-//                ...
-//            ]);
-//        }
-//
-//        // 创建数据
-//        $model = new ExampleModel();
-//        $model->setAttributes([...]);
-//        $model->save();
-//    }
+    public function install()
+    {
+        $tableName = ReplyText::tableName();
+        if (!$this->tableExists($tableName)) {
+            $this->createTable($tableName, [
+                'id' => Schema::TYPE_PK,
+                'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '对应的回复规则表ID'",
+                'text' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '回复内容'",
+            ]);
+        }
+    }
 
     /**
      * 该函数用于模块在卸载时执行模块必须数据操作.例如删除模块数据表,模块原始数据

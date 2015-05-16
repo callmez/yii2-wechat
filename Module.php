@@ -42,6 +42,11 @@ class Module extends \yii\base\Module
      */
     public $moduleModelClass = 'callmez\wechat\models\Module';
     /**
+     * 菜单存储类, 必须继承class\wechat\models\Menu
+     * @var string
+     */
+    public $menuModelClass = 'class\wechat\models\Menu';
+    /**
      * 模块控制器的命名空间
      * @var string
      */
@@ -53,30 +58,36 @@ class Module extends \yii\base\Module
     public function __construct($id, $parent = null, $config = [])
     {
         $config = array_merge([
-            'modules' => array_merge($this->modules(), $this->defaultModules)
+            'modules' => array_merge($this->addonModules(), $this->defaultModules())
         ], $config);
         parent::__construct($id, $parent, $config);
     }
 
     /**
-     * 核心模块
+     * 默认模块
      * @var array
      */
-    public $defaultModules = [
-        'admin' => ['class' => 'callmez\wechat\modules\admin\Module'], // 后台管理
-    ];
+    public function defaultModules()
+    {
+        return [
+            'admin' => ['class' => 'callmez\wechat\modules\admin\Module'], // 后台管理
+        ];
+    }
 
     /**
      * 微信扩展模块
      * @return array
      */
-    public function modules()
+    public function addonModules()
     {
         $cache = Yii::$app->cache;
         if (($modules = $cache->get(self::CACHE_ADDON_MODULES_KEY)) === false) {
             $class = $this->moduleModelClass;
             $modules = array_map(function($model) {
-                return ['class' => $model->getModuleNamespace() . '\Module'];
+                return [
+                    'class' => $model->getModuleBaseNamespace() . '\Module',
+                    'name' => $model->name,
+                ];
             }, $class::find()->indexBy('id')->all());
             $cache->set(self::CACHE_ADDON_MODULES_KEY, $modules, null, new TagDependency([
                 'tags' => [ModuleModel::CACHE_DATA_DEPENDENCY_TAG]

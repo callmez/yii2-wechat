@@ -1,14 +1,16 @@
 <?php
 use \Yii;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
 use callmez\wechat\modules\admin\widgets\Alert;
 use callmez\wechat\models\AdminMenu as AdminMenuModel;
 use callmez\wechat\modules\admin\assets\AdminAsset;
 use callmez\wechat\modules\admin\widgets\AdminMenu;
-use callmez\wechat\modules\admin\widgets\ModuleMenu;
 
 AdminAsset::register($this);
 $wechat = Yii::$app->getModule('wechat');
 $admin = $wechat->getModule('admin');
+$module = $this->context->module;
 $this->params['breadcrumbs'] = array_merge([
     [
         'label' => $wechat->name,
@@ -22,14 +24,24 @@ $this->params['breadcrumbs'] = array_merge([
         <div class="col-sm-2 mb20">
             <?= AdminMenu::widget([
                 'encodeLabels' => false,
-                'items' => $admin->getMenus()
+                'items' => $admin->getCategoryMenus()
             ]) ?>
         </div>
         <div class="col-sm-10">
-            <?= ModuleMenu::widget([
-                'encodeLabels' => false,
-                'items' => $admin->getModuleMenus()
-            ])?>
+            <?php if ($module->hasAdminMenus()): ?>
+                <?php
+                    NavBar::begin([
+                        'brandLabel' => $module->name,
+                        'brandUrl' => $module->getAdminHomeUrl(),
+                        'renderInnerContainer' => false
+                    ]);
+                    echo Nav::widget([
+                        'options' => ['class' => 'navbar-nav'],
+                        'items' => $admin->getAdminMenus(),
+                    ]);
+                    NavBar::end();
+                ?>
+            <?php endif ?>
             <?= $content ?>
         </div>
     </div>

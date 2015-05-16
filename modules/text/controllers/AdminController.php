@@ -1,32 +1,36 @@
 <?php
 
-namespace callmez\wechat\modules\admin\controllers;
+namespace callmez\wechat\modules\text\controllers;
 
 use Yii;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
-use callmez\wechat\models\ReplyRule;
 use callmez\wechat\models\ReplyRuleKeyword;
+use callmez\wechat\modules\text\models\ReplyRule;
+use callmez\wechat\modules\text\models\ReplyText;
+use callmez\wechat\modules\text\models\ReplyRuleSearch;
 use callmez\wechat\modules\admin\components\Controller;
-use callmez\wechat\modules\admin\models\ReplyRuleSearch;
 
 /**
- * ReplyController implements the CRUD actions for ReplyRule model.
+ * 文本回复管理
  */
-class ReplyController extends Controller
+class AdminController extends Controller
 {
     /**
-     * Lists all ReplyRule models.
+     * 文本回复列表
      * @return mixed
      */
     public function actionIndex()
     {
         $searchModel = new ReplyRuleSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->query->andWhere([
-            'wid' => $this->getWechat()->id, // 公众号过滤
-        ]);
+        $dataProvider->query
+            ->with('replyText')
+            ->andWhere([
+                'wid' => $this->getWechat()->id, // 公众号过滤,
+                'mid' => $this->module->id
+            ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -42,10 +46,14 @@ class ReplyController extends Controller
     public function actionCreate()
     {
         $model = new ReplyRule();
+        $model->populateRelation('replyText', new ReplyText());
         $ruleKeyword = new ReplyRuleKeyword();
         $ruleKeywords = [];
         if ($model->load(Yii::$app->request->post())) {
-            $model->wid = $this->getWechat()->id;
+            $model->setAttributes([
+                'wid' => $this->getWechat()->id,
+                'mid' => $this->module->id
+            ]);
             if ($this->save($model, $ruleKeyword, $ruleKeywords)) {
                 return $this->flash('添加成功!', 'success', ['update', 'id' => $model->id]);
             }
@@ -69,7 +77,10 @@ class ReplyController extends Controller
         $ruleKeyword = new ReplyRuleKeyword();
         $ruleKeywords = $model->replyRuleKeywords;
         if ($model->load(Yii::$app->request->post())) {
-            $model->wid = $this->getWechat()->id;
+            $model->setAttributes([
+                'wid' => $this->getWechat()->id,
+                'mid' => $this->module->id
+            ]);
             if ($this->save($model, $ruleKeyword, $ruleKeywords)) {
                 return $this->flash('修改成功!', 'success', ['update', 'id' => $model->id]);
             }
@@ -103,7 +114,7 @@ class ReplyController extends Controller
      */
     protected function save($rule, $keyword, $keywords = [])
     {
-        if (!$rule->save()) {
+        if (!$rule->save() || !$rule->replyText->save()) {
             return false;
         }
         $_keywords = ArrayHelper::index($keywords, 'id');
@@ -136,7 +147,10 @@ class ReplyController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = ReplyRule::findOne($id)) !== null) {
+        $query = ReplyRule::find()
+            ->with('replyText')
+            ->andWhere(['id' => $id]);
+        if (($model = $query->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -102,7 +102,6 @@ class m150217_131752_initWechat extends Migration
             'title' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '菜单名'",
             'route' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '访问路由'",
             'type' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '菜单类型'",
-            'category' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '后台菜单类型时所属分类'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
@@ -117,14 +116,16 @@ class m150217_131752_initWechat extends Migration
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
-            'name' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '规则名称'",
-            'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '处理的插件模块'",
+            'name' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '规则名称'",
+            'mid' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '处理的插件模块'",
+            'processor' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '处理类'",
             'status' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '状态'",
             'priority' => Schema::TYPE_BOOLEAN . "(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优先级'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
         $this->createIndex('wid', $tableName, 'wid');
+        $this->createIndex('mid', $tableName, 'mid');
 
         // 回复规则关键字表
         $tableName = ReplyRuleKeyword::tablename();

@@ -25,9 +25,6 @@ $wechat = Yii::$app->getModule('wechat');
             'id',
             [
                 'attribute' => 'type',
-                'value' => function ($model) {
-                    return Module::$types[$model->type];
-                },
                 'format' => 'html',
                 'value' => function ($model) use ($models) {
                     return Html::tag('span', Module::$types[$model->type], [

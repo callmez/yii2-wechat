@@ -29,8 +29,7 @@
         "bower-asset/angular-drag-and-drop-lists": "1.*"
     },
     "autoload": {
-        "psr-4": {
-            "callmez\\wechat\\": ""
-        }
+        "psr-4": {"callmez\\wechat\\": ""},
+        "files": ["wechat.php"]
     }
 }

@@ -17,8 +17,8 @@ use callmez\wechat\models\Module;
 </div>
 <?php
 $namespaces = json_encode([
-    Module::TYPE_ADDON => $generator->getModuleBaseNamespace(Module::TYPE_ADDON),
-    Module::TYPE_CORE => $generator->getModuleBaseNamespace(Module::TYPE_CORE),
+    Module::TYPE_ADDON => $generator->getBaseNamespace(Module::TYPE_ADDON),
+    Module::TYPE_CORE => $generator->getBaseNamespace(Module::TYPE_CORE),
 ]);
 $this->registerJs(<<<EOF
     var form = $('.addon-module-form').closest('form');

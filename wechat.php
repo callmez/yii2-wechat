@@ -1,7 +1,8 @@
 <?php
 
 /**
- * 自动载入文件.加载一些常用设置
+ * 自动载入文件.
+ * 加载一些常用设置
  *
  * @author CallMeZ https://www.github.com/callmez
  */

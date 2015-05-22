@@ -16,10 +16,10 @@ class m150217_131752_initWechat extends Migration
     {
         $this->initWechatTable();
         $this->initModuleTable();
-        $this->initMenuTable();
+//        $this->initMenuTable();
         $this->initReplyRuleTable();
-        $this->initFansTable();
-        $this->initMessageHistoryTable();
+//        $this->initFansTable();
+//        $this->initMessageHistoryTable();
     }
 
     public function safeDown()
@@ -51,7 +51,7 @@ class m150217_131752_initWechat extends Migration
             'encoding_type' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '消息加密方式'",
             'encoding_aes_key' => Schema::TYPE_STRING . "(43) NOT NULL DEFAULT '' COMMENT '消息加密秘钥EncodingAesKey'",
             'avatar' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '头像地址'",
-            'qr_code' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '二维码地址'",
+            'qrcode' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '二维码地址'",
             'address' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '所在地址'",
             'description' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '公众号简介'",
             'username' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '微信官网登录名'",
@@ -82,7 +82,7 @@ class m150217_131752_initWechat extends Migration
             'site' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '模块详情地址'",
             'admin' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否有后台界面'",
             'migration' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否有迁移数据'",
-            'replyRule' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否启用回复规则'",
+            'reply_rule' => Schema::TYPE_BOOLEAN . " NOT NULL DEFAULT '0' COMMENT '是否启用回复规则'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
@@ -133,13 +133,18 @@ class m150217_131752_initWechat extends Migration
             'id' => Schema::TYPE_PK,
             'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属规则ID'",
             'keyword' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '规则关键字'",
-            'type' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关键字类型'",
+            'type' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '关键字类型'",
             'priority' => Schema::TYPE_BOOLEAN . "(3) UNSIGNED NOT NULL DEFAULT '0' COMMENT '优先级'",
+            'start_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '开始时间'",
+            'end_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '结束时间'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
-        $this->createIndex('keyword', $tableName, 'keyword');
         $this->createIndex('rid', $tableName, 'rid');
+        $this->createIndex('keyword', $tableName, 'keyword');
+        $this->createIndex('type', $tableName, 'type');
+        $this->createIndex('start_at', $tableName, 'start_at');
+        $this->createIndex('end_at', $tableName, 'end_at');
     }
 
     /**

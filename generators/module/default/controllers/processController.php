@@ -4,7 +4,7 @@
 
 echo "<?php\n";
 ?>
-namespace <?= $generator->getModuleBaseNamespace() ?>\controllers;
+namespace <?= $generator->getModuleNamespace() ?>\controllers;
 
 /**
  * 微信请求默认处理类.

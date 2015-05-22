@@ -4,13 +4,13 @@
 ?>
 <?= "<?php " ?>
 
-use callmez\wechat\modules\admin\widgets\AdminPanel;
+use callmez\wechat\widgets\PagePanel;
 
 $this->title = '<?= $generator->moduleName ?>';
 <?= "?> " ?>
 
-<?= "<?php " ?> AdminPanel::begin(['options' => ['class' => '<?= $generator->moduleID . '-admin-index' ?>']]) ?>
+<?= "<?php " ?> PagePanel::begin(['options' => ['class' => '<?= $generator->moduleID . '-admin-index' ?>']]) ?>
 
     在这里书写您的后台管理视图代码吧!
 
-<?= "<?php " ?> AdminPanel::end() ?>
+<?= "<?php " ?> PagePanel::end() ?>

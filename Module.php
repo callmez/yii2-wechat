@@ -1,16 +1,18 @@
 <?php
-
 namespace callmez\wechat;
 
 use Yii;
+use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
 use yii\caching\TagDependency;
-use Symfony\Component\Yaml\Yaml;
+use callmez\wechat\models\Wechat;
+use callmez\wechat\helpers\ModuleHelper;
+use callmez\wechat\components\BaseModule;
 use callmez\wechat\models\Module as ModuleModel;
 
-/**
- * 微信模块
- * @package callmez\wechat
- */
+// 加载默认设置文件
+require_once Yii::getAlias('@callmez/wechat/wechat.php');
+
 class Module extends \yii\base\Module
 {
     /**
@@ -22,29 +24,35 @@ class Module extends \yii\base\Module
      */
     const ADDON_MODULE_PATH = '@app/modules/wechat/modules';
     /**
-     * 扩展模块缓存
+     * 模块数据缓存
      */
-    const CACHE_ADDON_MODULES_KEY = 'wechat_addon_modules_cache';
+    const CACHE_MODULES_DATA = 'cache_wechat_modules_data';
     /**
-     * 模块的名称
+     * 模块名称
      * @var string
      */
     public $name = '微信';
     /**
-     * 扩展模块存储类, 必须继承callmez\wechat\models\Module
+     * @inheritdoc
+     */
+    public $controllerNamespace = 'callmez\wechat\controllers';
+    /**
+     * 站点后台视图
+     * 如果想让微信模块和站点的后台视图一致, 则修改此视图为站点的后台视图路径即可
+     * @var string
+     */
+    public $siteAdminLayout = '@app/views/layouts/main.php';
+    /**
+     * 默认的扩展模块存储Model
      * @var string
      */
     public $moduleModelClass = 'callmez\wechat\models\Module';
     /**
-     * 菜单存储类, 必须继承class\wechat\models\Menu
+     * 默认为微信请求接收路由
      * @var string
      */
-    public $menuModelClass = 'class\wechat\models\Menu';
-    /**
-     * 模块控制器的命名空间
-     * @var string
-     */
-    public $controllerNamespace = 'callmez\wechat\controllers';
+    public $defaultApiRoute = 'api';
+
 
     /**
      * @inheritdoc
@@ -52,42 +60,181 @@ class Module extends \yii\base\Module
     public function __construct($id, $parent = null, $config = [])
     {
         $config = array_merge([
-            'modules' => array_merge($this->addonModules(), $this->defaultModules())
+            'modules' => $this->modules()
         ], $config);
         parent::__construct($id, $parent, $config);
     }
 
     /**
-     * 默认模块
-     * @var array
+     * 获取扩展模块列表
+     * @return array|mixed
      */
-    public function defaultModules()
-    {
-        return [
-            'admin' => ['class' => 'callmez\wechat\modules\admin\Module'], // 后台管理
-        ];
-    }
-
-    /**
-     * 微信扩展模块
-     * @return array
-     */
-    public function addonModules()
+    public function modules()
     {
         $cache = Yii::$app->cache;
-        if (($modules = $cache->get(self::CACHE_ADDON_MODULES_KEY)) === false) {
-            $class = $this->moduleModelClass;
-            $modules = array_map(function($model) {
-                return [
-                    'class' => $model->getModuleBaseNamespace() . '\Module',
-                    'name' => $model->name,
+        if (($modules = $cache->get(self::CACHE_MODULES_DATA)) === false) {
+            $modules = [];
+
+            $model = $this->moduleModelClass;
+            foreach ($model::models() as $id => $model) {
+                $class = ModuleHelper::getBaseNamespace($model) . '\Module';
+                if (!ModuleHelper::isAddonModule($class)) { // 扩展模块必须继承BaseModule
+                    continue;
+                }
+                $modules[$id] = [
+                    'class' => $class,
+                    'name' => $model['name'],
                 ];
-            }, $class::find()->indexBy('id')->all());
-            $cache->set(self::CACHE_ADDON_MODULES_KEY, $modules, null, new TagDependency([
-                'tags' => [ModuleModel::CACHE_DATA_DEPENDENCY_TAG]
+            }
+
+            $cache->set(self::CACHE_MODULES_DATA, $modules, null, new TagDependency([
+                'tags' => [ModuleModel::CACHE_MODULES_DATA_DEPENDENCY_TAG]
             ]));
         }
         return $modules;
+    }
+
+    /**
+     * 获取扩展模块后台首页地址
+     * @param $module
+     * @return array|bool
+     */
+    public function getModuleAdminHomeUrl($id)
+    {
+        return $this->hasModule($id) ? ['/wecaht/' . $id . '/admin' ] : false;
+    }
+
+    /**
+     * 注: 该分类直接影响分类菜单设置, 如果分类菜单没有指定的分类,将不会显示, 请慎重修改
+     * @var array
+     */
+    private $_categories = [
+        'system' => '系统管理',
+        'basic' => '基本功能',
+        'advanced' => '高级功能',
+        'fans' => '粉丝营销',
+        'message' => '通知中心',
+        'business' => '主要业务',
+        'activity' => '营销活动',
+        'customer' => '客户关系',
+        'service' => '常用服务',
+        'module' => '扩展模块',
+        'test' => '功能测试',
+        'other' => '其他'
+    ];
+    /**
+     * 设置所有的模块分类
+     * @return mixed
+     */
+    public function getCategories()
+    {
+        return $this->_categories;
+    }
+
+    /**
+     * 设置所有的模块分类
+     * @param array $categories
+     */
+    public function setCategories($categories)
+    {
+        foreach ($categories as $key => $name) {
+            $this->_categories[$key] = $name;
+        }
+    }
+
+    /**
+     * 设置模块分类
+     * @param $key
+     * @param $name
+     */
+    public function setCategory($key, $name)
+    {
+        $this->_categories[$key] = $name;
+    }
+
+    /**
+     * 获取模块分类
+     * @param $key
+     * @return null
+     */
+    public function getCategory($key)
+    {
+        return array_key_exists($key, $this->_categories) ? $this->_categories[$key] : null;
+    }
+
+    /**
+     * @var array
+     */
+    private $_categoryMenus;
+
+    /**
+     * 获取分类菜单
+     * @return array|null
+     */
+    public function getCategoryMenus()
+    {
+        if ($this->_categoryMenus === null) {
+            $this->setCategoryMenus($this->categoryMenus());
+        }
+        return $this->_categoryMenus;
+    }
+
+    /**
+     * 设置后台分类菜单
+     * @param $menus
+     * @return mixed
+     */
+    public function setCategoryMenus($menus)
+    {
+        return $this->_categoryMenus = $menus;
+    }
+
+    /**
+     * 默认的分类菜单
+     * @var array
+     */
+    public $defaultCateMenus = [
+        'system' => [
+            ['label' => '公众号管理', 'url' => ['/wechat/wechat/index']]
+        ],
+        'module' => [
+            ['label' => '模块管理', 'url' => ['/wechat/module/index']]
+        ],
+        'test' => [
+            ['label' => '微信模拟器', 'url' => ['/wechat/simulator/index']]
+        ],
+        'advanced' => [
+            ['label' => '自定义菜单', 'url' => ['/wechat/menu/index']],
+        ]
+    ];
+
+    /**
+     * 生成分类菜单
+     * @return array
+     */
+    protected function categoryMenus()
+    {
+        $menus = [];
+        $categories = $this->getCategories();
+        foreach ($categories as $key => $label) {
+            $menus[$key] = [
+                'label' => $label,
+                'items' => array_key_exists($key, $this->defaultCateMenus) ? $this->defaultCateMenus[$key] : []
+            ];
+        }
+
+        $class = $this->moduleModelClass;
+        foreach ($class::models() as $model) { // 安装的扩展模块(开启后台功能)
+            if (!$model['admin'] || !array_key_exists($model['category'], $categories)) {
+                continue;
+            }
+            $menus[$model['category']]['items'][] = [
+                'label' => $model['name'],
+                'url' => ModuleHelper::getAdminHomeUrl($model['id'])
+            ];
+        }
+
+        return $menus;
     }
 
     /**

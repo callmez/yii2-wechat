@@ -69,10 +69,9 @@ class Wechat extends \callmez\wechat\sdk\Wechat
 
     /**
      * 返回错误信息(字符串形式)
-     * @param string $default
-     * @return bool
+     * @return array|string
      */
-    public function getLastErrorInfo($default = '未知错误')
+    public function getLastErrorInfo()
     {
         if (isset($this->lastErrorInfo['errcode']) && isset($this->errorCode[$this->lastErrorInfo['errcode']])) {
             return $this->lastErrorInfo['errcode'] . ':' . $this->errorCode[$this->lastErrorInfo['errcode']];

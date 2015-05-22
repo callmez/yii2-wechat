@@ -1,84 +1,99 @@
 <?php
 namespace callmez\wechat\components;
 
-use callmez\wechat\models\Module;
+use yii\base\Module;
+use callmez\wechat\models\Module as ModuleModel;
 
 /**
- * 扩展模块基类,所有扩展模块都必须继承该类
- * @package callmez\wechat\components\BaseModule
+ * 微信扩展模块基类
+ * 所有微信的扩展模块必须继承此类
+ *
+ * @package callmez\wechat\components
  */
-abstract class BaseModule extends \yii\base\Module
+class BaseModule extends Module
 {
-    /**
-     * 默认后台路由
-     * @var string
-     */
-    public $defaultAdminRoute = 'admin';
-
-    private $_adminHomeUrl;
 
     /**
-     * 获取后台首页Url
-     * @return null
+     * @var array
      */
-    public function getAdminHomeUrl()
-    {
-        if ($this->_adminHomeUrl === null) {
-            $this->setAdminHomeUrl(['/wechat/' . $this->id . '/' . $this->defaultAdminRoute]);
-        }
-        return $this->_adminHomeUrl;
-    }
-
-    /**
-     * 设置后台首页Url
-     * @param $url
-     */
-    public function setAdminHomeUrl($url)
-    {
-        $this->_adminHomeUrl = $url;
-    }
-
-    /**
-     * 是否有后台菜单
-     * @return bool
-     */
-    public function hasAdminMenus()
-    {
-        return $this->getAdminMenus() !== [];
-    }
-
-    private $_model = false;
-
-    /**
-     * 获取扩展模块Model
-     * @return Module
-     */
-    public function getModel()
-    {
-        if ($this->_model === false) {
-            $class = $this->module->moduleModelClass;
-            $this->setModel($class::findOne(['id' => $this->id]));
-        }
-        return $this->_model;
-    }
-
-    /**
-     * 设置扩展模块Model
-     * @param Module $model
-     */
-    public function setModel(Module $model)
-    {
-        $this->_model = $model;
-    }
+    private $_adminMenus;
 
     /**
      * 获取后台菜单
-     * @return array
+     * @return mixed|null
      */
     public function getAdminMenus()
     {
+        if ($this->_adminMenus === null) {
+            $this->setAdminMenus(array_merge($this->defaultAdminMenus(), $this->adminMenus()));
+        }
+        return $this->_adminMenus;
+    }
+
+    /**
+     * 设置后台菜单
+     * @param $menus
+     */
+    public function setAdminMenus($menus)
+    {
+        return $this->_adminMenus = $menus;
+    }
+
+    /**
+     * @var ModuleModel
+     */
+    private $_moduleModel;
+
+    /**
+     * 获取模块Model
+     * @return mixed|null
+     */
+    public function getModuleModel()
+    {
+        if ($this->_moduleModel === null) {
+            // 默认根据缓存的模块数据生成模块model
+            $class = $this->module->moduleModelClass;
+            $model = new $class;
+            $class::populateRecord($model, ModuleModel::models()[$this->id]);
+            $this->setModuleModel($model);
+        }
+        return $this->_moduleModel;
+    }
+
+    /**
+     * 设置模块模型
+     * @param $model
+     * @return mixed
+     */
+    public function setModuleModel($model)
+    {
+        return $this->_moduleModel = $model;
+    }
+
+    /**
+     * 后台默认菜单
+     * 返回一些模块预设定的菜单设置
+     * 你可以通过adminMenus()来覆盖修改该设置
+     * @return array
+     */
+    protected function defaultAdminMenus()
+    {
         $menus = [];
-        $class = $this->module->menuModuleClass;
+        if ($this->getModuleModel()->reply_rule) { // 开启回复规则
+            $menus['reply'] = [
+                'label' => '回复规则',
+                'url' => ['/wechat/reply', 'mid' => $this->id]
+            ];
+        }
         return $menus;
+    }
+
+    /**
+     * 后台菜单生成
+     * @return array
+     */
+    protected function adminMenus()
+    {
+        return [];
     }
 }

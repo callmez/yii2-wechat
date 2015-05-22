@@ -136,10 +136,12 @@ EOD;
             $modulePath . '/' . StringHelper::basename($this->moduleClass) . '.php',
             $this->render("module.php")
         );
-        $files[] = new CodeFile(
-            $modulePath . '/controllers/ProcessController.php',
-            $this->render("controllers/processController.php")
-        );
+        if ($this->replyRule) {
+            $files[] = new CodeFile(
+                $modulePath . '/controllers/ProcessController.php',
+                $this->render("controllers/processController.php")
+            );
+        }
         if ($this->admin) {
             $files[] = new CodeFile(
                 $modulePath . '/controllers/AdminController.php',
@@ -169,7 +171,7 @@ EOD;
                     'category' => $this->category,
                     'admin' => (bool) $this->admin,
                     'migration' => (bool) $this->migration,
-                    'replyRule' => (bool) $this->replyRule
+                    'reply_rule' => (bool) $this->replyRule
                 ])
             ])
         );
@@ -182,18 +184,27 @@ EOD;
      */
     public function validateModuleClass()
     {
-        $class = $this->getModuleBaseNamespace() . '\\' . $this->moduleID . '\Module';
+        $class = $this->getModuleNamespace() . '\Module';
         if ($this->moduleClass != $class) {
             $this->addError('moduleClass', '模块类名必须为 ' . $class);
         }
     }
 
     /**
-     * 获取模块基本命名空间
+     * 获取模块命名空间
+     * @return string
+     */
+    public function getModuleNamespace()
+    {
+        return $this->getBaseNamespace() . '\\' . $this->moduleID;
+    }
+
+    /**
+     * 获取基本命名空间
      * @param string $type
      * @return bool|mixed
      */
-    public function getModuleBaseNamespace($type = null)
+    public function getBaseNamespace($type = null)
     {
         if ($type === null) {
             $type = $this->type;
@@ -222,6 +233,6 @@ EOD;
      */
     public function getCategories()
     {
-        return Yii::$app->getModule('wechat/admin')->getCategories();
+        return Yii::$app->getModule('wechat')->getCategories();
     }
 }

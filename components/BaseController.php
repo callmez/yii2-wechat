@@ -3,12 +3,14 @@ namespace callmez\wechat\components;
 
 use Yii;
 use yii\helpers\Url;
+use yii\web\Response;
 use yii\web\Controller;
 use callmez\wechat\models\Wechat;
 
 /**
- * 微信控制器基类.
- * 所有微信功能类都必须基于此类派生功能
+ * 微信控制器基类
+ * 所有微信模块的控制器必须继承此类
+ *
  * @package callmez\wechat\components
  */
 abstract class BaseController extends Controller
@@ -67,36 +69,14 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * 获取API接口地址
-     * @param Wechat $wechat 公众号
-     * @param array $params 补充的参数
-     * @param bool $scheme 完整地址,或者其他协议完整地址
-     * @return string
-     */
-    public function getApiLink(Wechat $wechat, array $params = [], $scheme = false)
-    {
-        $token = $wechat->token;
-        $nonce = Yii::$app->security->generateRandomString(5);
-        $signArray = [$token, TIMESTAMP, $nonce];
-        sort($signArray, SORT_STRING);
-        $signature = sha1(implode($signArray));
-        return Url::to(array_merge([
-            '/wechat/api',
-            'timestamp' => TIMESTAMP,
-            'nonce' => $nonce,
-            'signature' => $signature
-        ], $params), $scheme);
-    }
-
-    /**
-     * 主公众号抽象函数
+     * 设置当前应用的公众号
      * @param Wechat $wechat
      * @return mixed
      */
     abstract public function setWechat(Wechat $wechat);
 
     /**
-     * 主公众号抽象, 通过该函数扩展公众号可以管理该公众号的相关功能
+     * 获取当前应用的公众号
      * @return mixed
      */
     abstract public function getWechat();

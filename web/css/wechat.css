@@ -1,13 +1,30 @@
 /* Common */
+.mb10 {
+    margin-bottom: 10px;
+}
 .mb20 {
     margin-bottom: 20px;
 }
 .cursor-pointer {
     cursor: pointer;
 }
-div.required label:after {
+div.required > label:after {
     content: " *";
     color: red;
+}
+.panel-body .table {
+    margin-bottom: 0;
+}
+.error-summary {
+    color: #a94442;
+    background: #fdf7f7;
+    border-left: 3px solid #eed3d7;
+    padding: 10px 20px;
+    margin: 0 0 15px 0;
+}
+/* 分类菜单 */
+.list-group-item.active a {
+    color: #fff;
 }
 
 /* 微信模拟界面 */

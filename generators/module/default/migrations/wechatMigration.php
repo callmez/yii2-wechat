@@ -8,7 +8,7 @@
 
 echo "<?php\n";
 ?>
-namespace <?= $generator->getModuleBaseNamespace() ?>\migrations;
+namespace <?= $generator->getModuleNamespace() ?>\migrations;
 
 use yii\db\Schema;
 use callmez\wechat\components\ModuleMigration;

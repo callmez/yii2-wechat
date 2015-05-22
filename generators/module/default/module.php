@@ -30,21 +30,24 @@ class <?= $className ?> extends BaseModule
 {
     /**
      * 扩展模块名称
+     * @var string
      */
     public $name = '<?= $generator->moduleName ?>';
     /**
      * 扩展模块控制器Namespace
+     * @var string
      */
-    public $controllerNamespace = '<?= $generator->getModuleBaseNamespace() ?>\controllers';
+    public $controllerNamespace = '<?= $generator->getModuleNamespace() ?>\controllers';
 <?php if ($generator->replyRule): ?>
-    /**
-     * 控制器处理类
-     */
-    public $controllerMap = [
-        // 回复规则控制器
-        'reply' => [
-            'class' => '<?= Yii::$app->getModule('wechat/admin')->controllerNamespace ?>\ReplyController'
-        ]
-    ];
 <?php endif ?>
+
+    /**
+     * 返回自定义的模块后台菜单
+     * 在这里输出你想要显示的后台菜单列表, 按照yii\widget\Menu需要的数组格式返回既可
+     * @return array
+     */
+//    protected function adminMenus()
+//    {
+//        return [];
+//    }
 }

@@ -1,17 +1,13 @@
 <?php
 namespace callmez\wechat\components;
 
-use Yii;
-use yii\web\Response;
-use yii\web\NotFoundHttpException;
-use yii\base\InvalidConfigException;
-use callmez\wechat\models\Fans;
-use callmez\wechat\components\BaseController;
-use callmez\wechat\controllers\ApiController;
+use callmez\wechat\models\Wechat;
+use callmez\wechat\components\Wechat as WechatSDK;
 
 /**
- * 微信请求处理基类
- * 所有微信服务请求过来的处理类必须继承该类
+ * 微信消息处理控制器基类
+ * 微信消息出来控制器必须继承此类
+ *
  * @package callmez\wechat\components
  */
 class ProcessController extends BaseController
@@ -22,37 +18,15 @@ class ProcessController extends BaseController
      */
     public $enableCsrfValidation = false;
     /**
-     * 微信请求消息
-     * @var Object
-     */
-    public $message;
-    /**
-     * API处理Controller
-     * @var Object
-     */
-    public $api;
-
-    public function init()
-    {
-        $this->api = Yii::$app->requestedAction->controller;
-        if (!($this->api instanceof ApiController)) { // 必须是从callmez\Wechat\controllers\ApiController引导
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-        $this->message = &$this->api->message;
-        $this->setWechat($this->api->getWechat());
-
-        parent::init();
-    }
-
-    /**
-     * @var \callmez\wechat\models\Wechat;
+     * @var Wechat;
      */
     private $_wechat;
+
     /**
-     * 正常的微信请求会通过callmez\wechat\controllers\ApiController实例并传入Wechat model
+     * 设置公众号
      * @param Wechat $wechat
      */
-    public function setWechat(\callmez\wechat\models\Wechat $wechat)
+    public function setWechat(Wechat $wechat)
     {
         $this->_wechat = $wechat;
     }
@@ -64,7 +38,7 @@ class ProcessController extends BaseController
     public function getWechat()
     {
         if ($this->_wechat === null) {
-            throw new InvalidConfigException('The wechat model property must be set.');
+            throw new InvalidConfigException('The "wechat" property must be set.');
         }
         return $this->_wechat;
     }

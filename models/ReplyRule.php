@@ -15,7 +15,7 @@ class ReplyRule extends \yii\db\ActiveRecord
      * 禁用状态
      */
     const STATUS_DISABLED = 0;
-    const PROCESSOR_DEFAULT = 'processor';
+    const PROCESSOR_DEFAULT = 'process';
     public static $statuses = [
         self::STATUS_ACTIVE => '启用',
         self::STATUS_DISABLED => '禁用'
@@ -66,12 +66,18 @@ class ReplyRule extends \yii\db\ActiveRecord
             'priority' => '优先级',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
+
+            'keywords' => '触发关键字'
         ];
     }
 
-    public function getReplyRuleKeywords()
+    /**
+     * 回复的关键字
+     * @return static
+     */
+    public function getKeywords()
     {
         return $this->hasMany(ReplyRuleKeyword::className(), ['rid' => 'id'])
-            ->inverseOf('replyRule');
+            ->inverseOf('rule');
     }
 }

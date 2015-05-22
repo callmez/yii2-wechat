@@ -7,32 +7,20 @@ use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\ReplyRuleKeyword;
-use callmez\wechat\components\ProcessEvent;
 use callmez\wechat\components\BaseController;
 
 class ApiController extends BaseController
 {
-    const EVENT_BEFORE_PROCESS = 'beforeProcess';
-    const EVENT_AFTER_PROCESS = 'afterProcess';
     /**
      * 微信请求关闭CSRF验证
      * @var bool
      */
     public $enableCsrfValidation = false;
     /**
-     * 处理相关请求的模块.
-     * 例:
-     * [
-     *     'subscribe' => 'fans' // 需模块存在 否则依然走默认模块
-     * ]
-     * @var array
-     */
-    public $moduleMap = [];
-    /**
+     * 微信请求消息
      * @var array
      */
     public $message;
-
     /**
      * 微信请求响应Action
      * 分析请求后分发给指定的处理流程
@@ -49,34 +37,27 @@ class ApiController extends BaseController
         }
         switch ($request->getMethod()) {
             case 'GET':
-                if ($wechat->status == Wechat::STATUS_INACTIVE) {
+                if ($wechat->status == Wechat::STATUS_INACTIVE) { // 激活公众号
                     $wechat->updateAttributes(['status' => Wechat::STATUS_ACTIVE]);
                 }
                 return $request->getQueryParam('echostr');
             case 'POST':
                 $this->setWechat($wechat);
                 $this->message = $this->parseRequest($request->getRawBody());
-                $result = null;
-                if($this->beforeProcess()) {
-                    $result = $this->resolveProcess(); // 处理请求
-                    if (is_array($result)) {
-                        $result = array_merge([
-                            'FromUserName' => $this->message['ToUserName'],
-                            'ToUserName' => $this->message['FromUserName']
-                        ], $result);
-                    }
-                    $result = $this->afterProcess($result);
-                }
-                return is_array($result) ? $this->generateResponse($result) : $result;
+                $result = $this->resolveProcess(); // 处理请求
+                return is_array($result) ? $this->createResponse($result) : $result;
             default:
                 throw new NotFoundHttpException('The requested page does not exist.');
-
         }
     }
 
+    /**
+     * @var Wechat
+     */
     private $_wechat;
 
     /**
+     * 设置当前公众号
      * @param Wechat $wechat
      */
     public function setWechat(Wechat $wechat)
@@ -112,24 +93,47 @@ class ApiController extends BaseController
     }
 
     /**
-     * 解析微信发送的请求内容
-     * @param $message
-     * @return \stdClass
+     * 解析微信请求内容
+     * @param $rawMessage
      * @throws NotFoundHttpException
      */
-    protected function parseRequest($message)
+    public function parseRequest($rawMessage)
     {
-        $xml = $this->getWechat()->getSdk()->parseRequestData($message);
+        $xml = $this->getWechat()->getSdk()->parseRequestData($rawMessage);
         if (empty($xml)) {
             Yii::$app->response->content = 'Request Failed!';
             Yii::$app->end();
         }
-        $return = [];
+        $message = [];
         foreach ($xml as $attribute => $value) {
-            $return[$attribute] = $value;
+            $message[$attribute] = is_array($value) ? $value : (string) $value;
         }
-        Yii::info($return, __METHOD__);
-        return $return;
+        Yii::info($message, __METHOD__);
+        return $message;
+    }
+
+    public function resolveProcess()
+    {
+        $result = null;
+        foreach ($this->match() as $model) {
+            $processor = $model->rule->processor;
+            $route = $processor[0] == '/' ? $processor : '/wechat/' . $model->rule->mid . '/' . $model->rule->processor;
+
+            // 转发路由请求 see Yii::$app->runAction()
+            $parts = Yii::$app->createController($route);
+            if (is_array($parts)) {
+                list($controller, $actionID) = $parts;
+                $oldController = Yii::$app->controller;
+                $result = $controller->runAction($actionID);
+                Yii::$app->controller = $oldController;
+            }
+
+            // 如果有数据则跳出循环直接输出. 否则只作为订阅内容处理继续循环
+            if ($result !== null) {
+                break;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -137,7 +141,7 @@ class ApiController extends BaseController
      * @param array $data
      * @return object
      */
-    public function generateResponse(array $data)
+    public function createResponse(array $data)
     {
         Yii::info($data, __METHOD__);
 
@@ -154,117 +158,96 @@ class ApiController extends BaseController
         return $response;
     }
 
-    /**
-     * 微信请求处理前出发事件
-     * @return bool
-     * @throws NotFoundHttpException
-     */
-    public function beforeProcess()
-    {
-        $event = new ProcessEvent($this->message, $this->getWechat());
-        $this->trigger(self::EVENT_BEFORE_PROCESS, $event);
-        return $event->isValid;
-    }
-
-    /**
-     * 微信请求处理完后触发事件
-     * @param $result
-     * @return mixed
-     * @throws NotFoundHttpException
-     */
-    public function afterProcess($result)
-    {
-        $event = new ProcessEvent($this->message, $this->getWechat());
-        $event->result = $result;
-        $this->trigger(self::EVENT_AFTER_PROCESS, $event);
-        return $event->result;
-    }
-
-    /**
-     * 默认处理路由
-     * @var string
-     */
-    public $defaultProcess = 'process';
-    /**
-     * 最后一个执行的处理类
-     * @var string
-     */
-    public $lastProcessController;
-    /**
-     * 最后执行的处理类的参数
-     * @var array
-     */
-    public $lastProcessParams = [];
-    /**
-     * 根据微信的请求信息分发到指定处理流程
-     * @return int|mixed|null
-     * @throws InvalidRouteException
-     */
-    public function resolveProcess()
-    {
-        $result = null;
-        foreach ($this->match() as $params) {
-            $this->lastProcessParams = $params;
-            $receive = ArrayHelper::remove($params, 'receive');
-            if ($receive || $process = ArrayHelper::remove($params, 'process', $this->defaultProcess)) {
-                $route = implode('/', [ArrayHelper::remove($params, 'module', $this->module->id), $receive ?: $process]);
-                // 转发路由请求 see Yii::$app->runAction()
-                $parts = Yii::$app->createController($route);
-                if (is_array($parts)) {
-                    list($controller, $actionID) = $parts;
-                    $oldController = Yii::$app->controller;
-                    $this->lastProcessController = Yii::$app->controller = $controller;
-                    $result = $controller->runAction($actionID, $params);
-                    Yii::$app->controller = $oldController;
-                }
-
-                // 订阅器则继续循环, 如果有数据则跳出循环直接输出.
-                if (!$receive && $result !== null) {
-                    break;
-                }
-            }
-        }
-        return $result;
-    }
-
-    public $defaultMatch = [
-        ['receive' => 'fans/record'] // 记录用户请求 注意:如果无特殊原因, 此条设置必须保留以完成整个请求的完整处理
-    ];
-
-    /**
-     * 微信请求类型处理
-     * 返回格式
-     * [
-     *     [
-     *         'module' => '处理模块' // 必须返回
-     *     ]
-     * ]
-     * @return array|mixed
-     */
     public function match()
     {
-        $params = $this->defaultMatch;
-        $method = 'match' . ($this->message['MsgType'] == 'event' ? 'Event' . $this->message['Event'] : $this->message['MsgType']);
-        if (method_exists($this, $method)) {
-            $params = array_merge($params, call_user_func([$this, $method]));
+        if ($this->message['MsgType'] == 'event') { // 事件
+            $method = 'matchEvent' . $this->message['Event'];
+        } else {
+            $method = 'match' . $this->message['MsgType'];
         }
-        ArrayHelper::multisort($params, [function ($item) {
-           return isset($item['receive']);
-        }, 'priority'], SORT_DESC);// 按订阅器(优先)和权重(次计算)倒序排序, 订阅器优先按权重处理
+        $params = [];
+        if (method_exists($this, $method)) {
+            $params = call_user_func([$this, $method]);
+        }
         return $params;
     }
 
     /**
-     * 点击事件处理
+     * 文本消息关键字触发
      * @return array
      */
-    protected function matchEventClick()
+    protected function matchText()
     {
-        // 触发作为关键字处理
-        if (array_key_exists($this->message, 'EventKey') && $this->message['Content'] = $this->message['EventKey']) {
-            return $this->matchText();
-        }
-        return [];
+        return ReplyRuleKeyword::find()
+            ->andFilterKeyword($this->message['Content'])
+            ->andFilterWid($this->getWechat()->id)
+            ->andFilterLimitTime(TIMESTAMP)
+            ->all();
+    }
+
+    /**
+     * 图片消息触发
+     * @return mixed
+     */
+    protected function matchImage()
+    {
+        return ReplyRuleKeyword::find()
+            ->andFilterWhere(['type' => ReplyRuleKeyword::TYPE_IMAGE])
+            ->andFilterWid($this->getWechat()->id)
+            ->andFilterLimitTime(TIMESTAMP)
+            ->all();
+    }
+
+    /**
+     * 音频消息触发
+     * @return mixed
+     */
+    protected function matchVoice()
+    {
+        return ReplyRuleKeyword::find()
+            ->andFilterWhere(['type' => ReplyRuleKeyword::TYPE_VOICE])
+            ->andFilterWid($this->getWechat()->id)
+            ->andFilterLimitTime(TIMESTAMP)
+            ->all();
+    }
+
+    /**
+     * 视频, 短视频消息触发
+     * @return mixed
+     */
+    protected function matchVideo()
+    {
+        return ReplyRuleKeyword::find()
+            ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_VIDEO, ReplyRuleKeyword::TYPE_SHORT_VIDEO]])
+            ->andFilterWid($this->getWechat()->id)
+            ->andFilterLimitTime(TIMESTAMP)
+            ->all();
+    }
+
+    /**
+     * 位置消息触发
+     * @return mixed
+     */
+    protected function matchLocation()
+    {
+        return ReplyRuleKeyword::find()
+            ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_LOCATION]])
+            ->andFilterWid($this->getWechat()->id)
+            ->andFilterLimitTime(TIMESTAMP)
+            ->all();
+    }
+
+    /**
+     * 链接消息触发
+     * @return mixed
+     */
+    protected function matchLink()
+    {
+        return ReplyRuleKeyword::find()
+            ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_LINK]])
+            ->andFilterWid($this->getWechat()->id)
+            ->andFilterLimitTime(TIMESTAMP)
+            ->all();
     }
 
     /**
@@ -273,83 +256,72 @@ class ApiController extends BaseController
      */
     protected function matchEventSubscribe()
     {
-        $params = [];
-        if (array_key_exists($this->message, 'Eventkey') && strexists($this->message['Eventkey'], 'qrscene')) { // 扫码关注
-            list(, $this->message['Eventkey']) = explode('_', $this->message['Eventkey']); // 取二维码的参数值
+        // 扫码关注
+        if (array_key_exists($this->message, 'Eventkey') && strexists($this->message['Eventkey'], 'qrscene')) {
+            $this->message['Eventkey'] = explode('_', $this->message['Eventkey'])[1]; // 取二维码的参数值
             return $this->matchEventScan();
-        } elseif (isset($this->moduleMap['Subscribe']) && Yii::$app->hasModule($this->moduleMap['Subscribe'])) {
-            $params[] = [ // 关注操作, 默认的操作已经由FansController::actionRecord自动处理. 这里只需处理关注记录完成后的相关处理
-                'module' => $this->moduleMap['Subscribe'],
-                'process' => 'subscribe'
-            ];
-        } else { // 默认由WecomeController类处理
-            $params[] = [
-                'module' => $this->module->id,
-                'process' => 'welcome'
-            ];
         }
-        return $params;
+        // TODO 关注操作
+        return [];
     }
 
     /**
      * 取消关注事件
-     * 注:取消关注时间已经合并到FansController::actionRecord中处理
      * @return array
      */
-    //protected function matchEventUnsubscribe()
-    //{}
-
-    protected function matchEventScan()
+    protected function matchEventUnsubscribe()
     {
-        
-    }
-
-    protected function matchEventLocation()
-    {
-
+        // TODO 取消关注操作
+        return [];
     }
 
     /**
-     * 关键字触发
+     * 用户已关注时的扫码事件触发
      * @return array
-     * @throws NotFoundHttpException
      */
-    protected function matchText()
+    protected function matchEventScan()
     {
-        $params = [];
-        $models = ReplyRuleKeyword::findAllByKeyword($this->message['Content'], $this->getWechat()->id);
-        foreach ($models as $model) {
-            $params[] = [
-                'module' => $model->replyRule->module,
-                'priority' => $model->priority,
-                'keyword' => $model
-            ];
+        if (array_key_exists($this->message, 'Eventkey')) {
+            $this->message['Content'] = $this->message['EventKey'];
+            return $this->matchText();
         }
-        return $params;
+        return [];
     }
 
-    protected function matchImage()
+    /**
+     * 上报地理位置事件触发
+     * @return mixed
+     */
+    protected function matchEventLocation()
     {
-        
+        return $this->matchLocation(); // 直接匹配位置消息
     }
 
-    protected function matchVoice()
+    /**
+     * 点击菜单拉取消息时的事件触发
+     * @return array
+     */
+    protected function matchEventClick()
     {
-        
+        // 触发作为关键字处理
+        if (array_key_exists($this->message, 'EventKey')) {
+            $this->message['Content'] = $this->message['EventKey']; // EventKey作为关键字Content
+            return $this->matchText();
+        }
+        return [];
     }
 
-    protected function matchVideo()
+    /**
+     * 点击菜单跳转链接时的事件触发
+     * @return array
+     */
+    protected function matchEventView()
     {
-
-    }
-
-    protected function matchLocation()
-    {
-        
-    }
-
-    protected function matchLink()
-    {
-        
+        // 链接内容作为关键字
+        if (array_key_exists($this->message, 'EventKey')) {
+            $this->message['Content'] = $this->message['EventKey']; // EventKey作为关键字Content
+            return $this->matchText();
+        }
+        return [];
     }
 }

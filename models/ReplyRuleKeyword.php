@@ -3,6 +3,7 @@
 namespace callmez\wechat\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
 /**
@@ -16,15 +17,56 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class ReplyRuleKeyword extends \yii\db\ActiveRecord
+class ReplyRuleKeyword extends ActiveRecord
 {
-    const TYPE_MATCH = 0;
-    const TYPE_INCLUDE = 1;
-    const TYPE_REGULAR = 2;
+    /**
+     * text类型请求 直接匹配关键字
+     */
+    const TYPE_TEXT_MATCH = 'match';
+    /**
+     * text类型请求 包含关键字
+     */
+    const TYPE_TEXT_INCLUDE = 'include';
+    /**
+     * text类型请求 正则表达式
+     */
+    const TYPE_TEXT_REGULAR = 'regular';
+    /**
+     * image类型请求
+     */
+    const TYPE_IMAGE = 'image';
+    /**
+     * 语音类型请求
+     */
+    const TYPE_VOICE = 'voice';
+    /**
+     * 视频类型请求
+     */
+    const TYPE_VIDEO = 'video';
+    /**
+     * 短视频类型请求
+     */
+    const TYPE_SHORT_VIDEO = 'short_video';
+    /**
+     * 位置类型请求
+     */
+    const TYPE_LOCATION = 'location';
+    /**
+     * 链接类型请求
+     */
+    const TYPE_LINK = 'link';
+
     public static $types = [
-        self::TYPE_MATCH => '直接匹配关键字',
-        self::TYPE_INCLUDE => '包含关键字',
-        self::TYPE_REGULAR => '正则匹配关键字'
+        self::TYPE_TEXT_MATCH => '文本请求(直接匹配关键字)',
+        self::TYPE_TEXT_REGULAR => '文本请求(正则匹配关键字)',
+        self::TYPE_TEXT_INCLUDE => '文本请求(包含关键字)',
+
+        self::TYPE_IMAGE => '图片请求',
+        self::TYPE_VOICE => '语音请求',
+        self::TYPE_VIDEO => '视频请求',
+        self::TYPE_SHORT_VIDEO => '段视频请求',
+        self::TYPE_LOCATION => '位置请求',
+        self::TYPE_LINK => '链接请求'
     ];
 
     public function behaviors()
@@ -49,9 +91,11 @@ class ReplyRuleKeyword extends \yii\db\ActiveRecord
     {
         return [
             [['rid', 'keyword', 'type'], 'required'],
-            [['rid', 'priority', 'type', 'created_at', 'updated_at'], 'integer'],
+            [['rid', 'priority', 'start_at', 'end_at'], 'integer'],
             [['keyword'], 'string', 'max' => 255],
-            [['priority'], 'default', 'value' => 0]
+            [['priority'], 'default', 'value' => 0],
+
+            [['type'], 'in', 'range' => array_keys(static::$types)]
         ];
     }
 
@@ -66,44 +110,27 @@ class ReplyRuleKeyword extends \yii\db\ActiveRecord
             'keyword' => '规则关键字',
             'type' => '关键字类型',
             'priority' => '优先级',
+            'start_at' => '开始时间',
+            'end_at' => '结束时间',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
         ];
     }
 
-    public function getReplyRule()
+    /**
+     * 关联的回复规则
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRule()
     {
         return $this->hasOne(ReplyRule::className(), ['id' => 'rid']);
     }
 
     /**
-     * 根据关键字查找匹配的规则
-     * @param $keyword
-     * @param null $wid
-     * @return array|\yii\db\ActiveRecord[]
+     * @inheritdoct
      */
-    public static function findAllByKeyword($keyword, $wid = null)
+    public static function find()
     {
-        $query = ReplyRuleKeyword::find();
-        $query->andWhere($conditons = [
-                'or',
-                ['and', '{{type}}=:typeMatch', '{{keyword}}=:keyword'], // 直接匹配关键字
-                ['and', '{{type}}=:typeInclude', 'INSTR(:keyword, {{keyword}})>0'], // 包含关键字
-                ['and', '{{type}}=:typeRegular', ':keyword REGEXP {{keyword}}'] // 正则匹配关键字
-            ])
-            ->addParams([
-                ':keyword' => $keyword,
-                ':typeMatch' => ReplyRuleKeyword::TYPE_MATCH,
-                ':typeInclude' => ReplyRuleKeyword::TYPE_INCLUDE,
-                ':typeRegular' => ReplyRuleKeyword::TYPE_REGULAR
-            ]);
-        if ($wid !== null) {
-            $query->joinWith([
-                'replyRule' => function($query) use ($wid) {
-                    $query->andWhere(['wid' => $wid]);
-                }
-            ]);
-        }
-        return $query->all();
+        return Yii::createObject(ReplyRuleKeywordQuery::className(), [get_called_class()]);
     }
 }

@@ -3,8 +3,9 @@
 namespace callmez\wechat\models;
 
 use Yii;
-use yii\web\UploadedFile;
+use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use callmez\wechat\behaviors\EventBehavior;
 use callmez\wechat\components\Wechat as WechatSDK;
 
 /**
@@ -23,7 +24,7 @@ use callmez\wechat\components\Wechat as WechatSDK;
  * @property integer $encoding_type
  * @property string $encoding_aes_key
  * @property string $avatar
- * @property string $qr_code
+ * @property string $qrcode
  * @property string $address
  * @property string $description
  * @property string $username
@@ -32,7 +33,7 @@ use callmez\wechat\components\Wechat as WechatSDK;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class Wechat extends \yii\db\ActiveRecord
+class Wechat extends ActiveRecord
 {
     /**
      * 未激活状态
@@ -86,7 +87,12 @@ class Wechat extends \yii\db\ActiveRecord
         self::TYPE_SUBSCRIBE => '订阅号',
         self::TYPE_SUBSCRIBE_VERIFY => '认证订阅号',
         self::TYPE_SERVICE_VERIFY => '认证服务号',
-        self::TYPE_ENTERPRISE => '认证企业号',
+//        self::TYPE_ENTERPRISE => '认证企业号',
+    ];
+    public static $statuses = [
+        self::STATUS_INACTIVE => '未接入',
+        self::STATUS_ACTIVE => '已接入',
+        self::STATUS_DELETED => '已删除'
     ];
     /**
      * 消息加密模式列表
@@ -101,7 +107,22 @@ class Wechat extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            'timestamp' => TimestampBehavior::className()
+            'timestamp' => TimestampBehavior::className(),
+            'event' => [
+                'class' => EventBehavior::className(),
+                'events' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => function ($event) {
+                        $this->hash = $this->generateUniqueHashValue(); // 生成唯一Hash
+                        $this->access_token = serialize($this->access_token);
+                    },
+                    ActiveRecord::EVENT_BEFORE_UPDATE => function ($event) {
+                        $this->access_token = serialize($this->access_token);
+                    },
+                    ActiveRecord::EVENT_AFTER_FIND => function ($event) {
+                        $this->access_token = unserialize($this->access_token);
+                    }
+                ]
+            ]
         ];
     }
 
@@ -119,14 +140,18 @@ class Wechat extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'account', 'original', 'type', 'token', 'encoding_type', 'app_id', 'app_secret', 'avatar', 'qr_code'], 'required'],
-            [['type', 'encoding_type', 'status'], 'integer'],
-            [['name', 'original', 'username'], 'string', 'max' => 40],
-            [['token', 'password'], 'string', 'max' => 32],
-            [['address', 'description', 'avatar', 'qr_code'], 'string', 'max' => 255],
-            [['account'], 'string', 'max' => 30],
-            [['app_id', 'app_secret'], 'string', 'max' => 50],
-            [['encoding_aes_key'], 'string', 'max' => 43],
+            [['name', 'account', 'original', 'type', 'token', 'encoding_type', 'app_id', 'app_secret', 'avatar', 'qrcode'], 'required', 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['type', 'encoding_type', 'status'], 'integer', 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['name', 'original', 'username'], 'string', 'max' => 40, 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['token', 'password'], 'string', 'max' => 32, 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['address', 'description', 'avatar', 'qrcode'], 'string', 'max' => 255, 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['account'], 'string', 'max' => 30, 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['app_id', 'app_secret'], 'string', 'max' => 50, 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['encoding_aes_key'], 'string', 'max' => 43, 'except' => ['avatarUpload', 'qrcodeUpload']],
+
+            [['avatar'], 'file', 'extensions' => 'gif, jpg', 'on' => 'avatarUpload'],
+            [['qrcode'], 'file', 'extensions' => 'gif, jpg', 'on' => 'qrcodeUpload']
+
         ];
     }
 
@@ -149,7 +174,7 @@ class Wechat extends \yii\db\ActiveRecord
             'encoding_type' => '消息加密方式',
             'encoding_aes_key' => '消息加密秘钥EncodingAesKey',
             'avatar' => '头像地址',
-            'qr_code' => '二维码地址',
+            'qrcode' => '二维码地址',
             'address' => '所在地址',
             'description' => '公众号简介',
             'username' => '微信官网登录名(邮箱)',
@@ -161,16 +186,8 @@ class Wechat extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inherit
+     * @var WechatSDK
      */
-    public function beforeSave($insert)
-    {
-        if ($insert) {
-            $this->hash = $this->generateUniqueHashValue();
-        }
-        return parent::beforeSave($insert);
-    }
-
     private $_sdk;
 
     /**
@@ -189,26 +206,8 @@ class Wechat extends \yii\db\ActiveRecord
     }
 
     /**
-     * 数组格式的access_token
-     * @return mixed
-     */
-    public function getAccessToken()
-    {
-        return unserialize($this->access_token, true);
-    }
-
-    /**
-     * 实例化保存access_token
-     * @param array $accessToken
-     * @return string
-     */
-    public function setAccessToken(array $accessToken)
-    {
-        $this->access_token = serialize($accessToken);
-    }
-
-    /**
      * 生成唯一的hash值
+     * @return string
      */
     protected function generateUniqueHashValue()
     {

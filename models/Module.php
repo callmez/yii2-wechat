@@ -11,6 +11,7 @@ use yii\base\NotSupportedException;
 use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
 use Symfony\Component\Yaml\Yaml;
+use callmez\wechat\helpers\ModuleHelper;
 use callmez\wechat\Module as WechatModule;
 
 /**
@@ -20,9 +21,13 @@ use callmez\wechat\Module as WechatModule;
 class Module extends ActiveRecord
 {
     /**
-     * 微信扩展模块数据缓存
+     * 模块数据缓存
      */
-    const CACHE_DATA_DEPENDENCY_TAG = 'wechat_module_data_cache';
+    const CACHE_MODULES_DATA = 'cache_wechat_model_moduels_data';
+    /**
+     * 模块数据缓存依赖标签
+     */
+    const CACHE_MODULES_DATA_DEPENDENCY_TAG = 'cache_wechat_model_moduels_data_tag';
     /**
      * 核心模块
      */
@@ -145,7 +150,7 @@ class Module extends ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'type', 'name', 'version'], 'required'],
+            [['id', 'type', 'name', 'category', 'version'], 'required'],
 
             [['id'], 'string', 'max' => 20],
             [['name', 'author'], 'string', 'max' => 50],
@@ -155,10 +160,10 @@ class Module extends ActiveRecord
 
             [['id'], 'match', 'pattern' => '/^[\w]+$/', 'message' => '模块唯一ID标识只能包含英文字母,数字和_符号'], // 模块ID哟福
             [['id'], 'unique', 'message' => '模块唯一ID标识已经被使用或者该模块已经安装.'],
-            [['admin', 'migration'], 'boolean'],
+            [['admin', 'migration', 'reply_rule'], 'boolean'],
 
             [['type'], 'checkType', 'skipOnEmpty' => false],
-            [['category'], 'in', 'range' => array_keys(Yii::$app->getModule('wechat/admin')->getCategories()), 'skipOnEmpty' => false],
+            [['category'], 'in', 'range' => array_keys(Yii::$app->getModule('wechat')->getCategories()), 'skipOnEmpty' => false],
 
             [['description'], 'string'],
             [['description'], 'default', 'value' => ''],
@@ -181,7 +186,9 @@ class Module extends ActiveRecord
             'site' => '模块详情地址',
             'admin' => '是否有后台界面',
             'migration' => '是否有迁移数据',
-            'created_at' => '安装时间'
+            'category' => '模块所属分类',
+            'created_at' => '安装时间',
+            'updated_at' => '升级时间'
         ];
     }
 
@@ -190,7 +197,7 @@ class Module extends ActiveRecord
      * @see callmez\wechat\Module::addonModules()
      * @param $cacheKey
      */
-    public static function updateCache($cacheKey = self::CACHE_DATA_DEPENDENCY_TAG)
+    public static function updateCache($cacheKey = self::CACHE_MODULES_DATA_DEPENDENCY_TAG)
     {
         $cache = Yii::$app->get(static::getDb()->queryCache, false);
         if ($cache instanceof Cache) {
@@ -205,7 +212,7 @@ class Module extends ActiveRecord
      */
     protected function migration($type)
     {
-        $class = $this->getModuleBaseNamespace() . '\migrations\WechatMigration';
+        $class = ModuleHelper::getBaseNamespace($this) . '\migrations\WechatMigration';
         if (!class_exists($class)) {
             // 卸载如果迁移文件不存在也直接返回迁移成功(防止卸载失败)
             if ($type == self::MIGRATION_UNINSTALL) {
@@ -283,68 +290,18 @@ class Module extends ActiveRecord
     }
 
     /**
-     * 获取扩展模块的基础命名空间
-     * @return string
+     * 模块数据列表缓存
+     * 该数据只会返回数组形态模块数据,用于频繁操作(提高效率)的逻辑处理部分
+     * @return array|mixed|\yii\db\ActiveRecord[]
      */
-    public function getModuleBaseNamespace()
+    public static function models()
     {
-        $path = $this->type == self::TYPE_ADDON ? WechatModule::ADDON_MODULE_PATH : WechatModule::CORE_MODULE_PATH;
-        return str_replace('/', '\\', ltrim($path, '@')) . '\\' . $this->id;
-    }
-
-    /**
-     * 根据ID查找可用的模块
-     * @param $id
-     * @return null
-     */
-    public static function findAvailableModuleById($id)
-    {
-        $availableModels = static::findAvailableModules();
-        return array_key_exists($id, $availableModels) ? $availableModels[$id] : null;
-    }
-
-    /**
-     * 查找可用的插件模块
-     * @return mixed
-     */
-    public static function findAvailableModules()
-    {
-        return static::scanAvailableModules([WechatModule::ADDON_MODULE_PATH, WechatModule::CORE_MODULE_PATH]);
-    }
-
-    /**
-     * 扫描可用的插件模块
-     *
-     * 该方法是严格按照Yii的模块路径规则(比如@app/modules, @app/mdoules/example/modules)来查找模块
-     * 如果您的模块有特殊路径需求. 可能正确安装不了, 建议按照规则设计扩展模块
-     *
-     * @param array|string $paths
-     * @return array
-     */
-    protected static function scanAvailableModules($paths)
-    {
-        if (!is_array($paths)) {
-            $paths = [$paths];
-        }
-        $modules = [];
-        foreach ($paths as $path) {
-            $path = Yii::getAlias($path);
-            if (is_dir($path) && (($handle = opendir($path)) !== false)) {
-                while (($file = readdir($handle)) !== false) {
-                    if (in_array($file, ['.', '..']) || !is_dir($currentPath = $path . DIRECTORY_SEPARATOR . $file)) {
-                        continue;
-                    }
-                    // 是否有wechat.yml安装配置文件
-                    $settingFile = $currentPath . DIRECTORY_SEPARATOR . 'wechat.yml';
-                    if (file_exists($settingFile)) {
-                        $model = Yii::createObject(['class' => static::className()]);
-                        $model->setAttributes(Yaml::parse(file_get_contents($settingFile)));
-                        if ($model->id == $file && $model->validate()) { // 模块名必须等于目录名并且验证模块正确性
-                            $modules[$model->id] = $model;
-                        }
-                    }
-                }
-            }
+        $cache = Yii::$app->cache;
+        if (($modules = $cache->get(self::CACHE_MODULES_DATA)) === false) {
+            $modules = static::find()->indexBy('id')->asArray()->all();
+            $cache->set(self::CACHE_MODULES_DATA, $modules, null, new TagDependency([
+                'tags' => [self::CACHE_MODULES_DATA_DEPENDENCY_TAG]
+            ]));
         }
         return $modules;
     }

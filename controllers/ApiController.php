@@ -112,14 +112,24 @@ class ApiController extends BaseController
         return $message;
     }
 
+    /**
+     * 解析到控制器
+     * @return null
+     */
     public function resolveProcess()
     {
         $result = null;
         foreach ($this->match() as $model) {
-            $processor = $model->rule->processor;
-            $route = $processor[0] == '/' ? $processor : '/wechat/' . $model->rule->mid . '/' . $model->rule->processor;
+            if ($model instanceof ReplyRuleKeyword) {
+                $processor = $model->rule->processor;
+                $route = $processor[0] == '/' ? $processor : '/wechat/' . $model->rule->mid . '/' . $model->rule->processor;
+            } elseif (isset($model['route'])) { // 直接返回处理route
+                $route = $model['route'];
+            } else {
+                continue;
+            }
 
-            // 转发路由请求 see Yii::$app->runAction()
+            // 转发路由请求 @see Yii::$app->runAction()
             $parts = Yii::$app->createController($route);
             if (is_array($parts)) {
                 list($controller, $actionID) = $parts;
@@ -128,7 +138,7 @@ class ApiController extends BaseController
                 Yii::$app->controller = $oldController;
             }
 
-            // 如果有数据则跳出循环直接输出. 否则只作为订阅内容处理继续循环
+            // 如果有数据则跳出循环直接输出. 否则只作为订阅类型继续循环处理
             if ($result !== null) {
                 break;
             }
@@ -169,11 +179,13 @@ class ApiController extends BaseController
         } else {
             $method = 'match' . $this->message['MsgType'];
         }
-        $params = [];
+        $matchs = [];
         if (method_exists($this, $method)) {
-            $params = call_user_func([$this, $method]);
+            $matchs = call_user_func([$this, $method]);
         }
-        return $params;
+        return array_merge([
+            ['route' => ['/wechat/process/subscribe']] // 默认所有请求都做一次关注请求处理
+        ], $matchs);
     }
 
     /**
@@ -265,8 +277,12 @@ class ApiController extends BaseController
             $this->message['Eventkey'] = explode('_', $this->message['Eventkey'])[1]; // 取二维码的参数值
             return $this->matchEventScan();
         }
-        // TODO 关注操作
-        return [];
+        // 订阅请求回复规则触发
+        return ReplyRuleKeyword::find()
+            ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_SUBSCRIBE]])
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
+            ->all();
     }
 
     /**
@@ -275,8 +291,14 @@ class ApiController extends BaseController
      */
     protected function matchEventUnsubscribe()
     {
-        // TODO 取消关注操作
-        return [];
+        $match = ReplyRuleKeyword::find()
+            ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_UNSUBSCRIBE]])
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
+            ->all();
+        return array_merge([ // 取消关注默认处理
+            ['route' => '/wechat/process/unsubscribe']
+        ], $match);
     }
 
     /**

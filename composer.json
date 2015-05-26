@@ -23,7 +23,6 @@
 
         "callmez/yii2-wechat-sdk" : "*",
 
-        "bower-asset/amazeui": "~2.0",
         "bower-asset/font-awesome": "4.*",
         "bower-asset/jquery.fileapi": "~0.4",
         "bower-asset/smalot-bootstrap-datetimepicker": "~2.0",

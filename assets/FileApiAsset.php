@@ -29,6 +29,7 @@ class FileApiAsset extends AssetBundle
     ];
 
     /**
+     * 注册FileAPI默认设置
      * @inheritdoc
      */
     public function registerAssetFiles($view)

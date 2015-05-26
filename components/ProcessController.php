@@ -1,6 +1,7 @@
 <?php
 namespace callmez\wechat\components;
 
+use yii\base\InvalidConfigException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\components\Wechat as WechatSDK;
 

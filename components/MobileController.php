@@ -80,7 +80,6 @@ class MobileController extends BaseController
             if (!$openId || ($fans = Fans::findByOpenId($openId)) === null) {
                 return false;
             }
-            Yii::$app->session->set($sessionKey, $fans['open_id']);
             $this->setFans($fans);
         }
         return $this->_fans;
@@ -92,6 +91,7 @@ class MobileController extends BaseController
      */
     public function setFans(Fans $fans)
     {
+        Yii::$app->session->set(self::SESSION_MOBILE_FANS_PREFIX . '_' . $fans->wid, $fans->open_id);
         return $this->_fans = $fans;
     }
 }

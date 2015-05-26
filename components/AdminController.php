@@ -60,6 +60,7 @@ class AdminController extends BaseController
      */
     public function setWechat(Wechat $wechat)
     {
+        Yii::$app->session->set(self::SESSION_MANAGE_WECHAT_KEY, $wechat->id);
         $this->_wechat = $wechat;
     }
 
@@ -75,7 +76,6 @@ class AdminController extends BaseController
             if (!$wid || ($wechat = Wechat::findOne($wid)) === null) {
                 return false;
             }
-            Yii::$app->session->set(self::SESSION_MANAGE_WECHAT_KEY, $wechat->id);
             $this->setWechat($wechat);
         }
         return $this->_wechat;

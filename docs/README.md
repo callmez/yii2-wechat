@@ -17,3 +17,5 @@ Yii2-wecaht开发文档
 
 开发
 ---
+
+* [扩展模块开发](addon-module.md)

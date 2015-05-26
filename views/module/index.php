@@ -11,7 +11,7 @@ $wechat = Yii::$app->getModule('wechat');
 if ($wechat->canCreateModule()) {
     $createModule = Html::a('我要设计新模块', ["/{$wechat->giiModuleName}/{$wechat->giiGeneratorName}"], ['class' => 'pull-right']);
 } else {
-    $createModule = Html::a('想设计新模块?', 'http://github.com/callmez/yii2-wechat', ['class' => 'pull-right']);
+    $createModule = Html::a('想设计新模块?', 'https://github.com/callmez/yii2-wechat/blob/master/docs/addon-module.md', ['class' => 'pull-right']);
 }
 ?>
 <?php PagePanel::begin([

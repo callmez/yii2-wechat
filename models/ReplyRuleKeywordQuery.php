@@ -10,7 +10,7 @@ class ReplyRuleKeywordQuery extends ActiveQuery
      * @param $keyword
      * @return $this
      */
-    public function andFilterKeyword($keyword)
+    public function keyword($keyword)
     {
         $this->andWhere([
             'or',
@@ -31,7 +31,7 @@ class ReplyRuleKeywordQuery extends ActiveQuery
      * 过滤公众号
      * @return $this
      */
-    public function andFilterWid($wid)
+    public function wechat($wid)
     {
         $this->joinWith([
             'rule' => function($query) use ($wid) {
@@ -46,7 +46,7 @@ class ReplyRuleKeywordQuery extends ActiveQuery
      * @param $time
      * @return $this
      */
-    public function andFilterLimitTime($time)
+    public function limitTime($time)
     {
         $this->andWhere([
             'and',

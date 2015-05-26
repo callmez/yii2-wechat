@@ -158,6 +158,10 @@ class ApiController extends BaseController
         return $response;
     }
 
+    /**
+     * 回复规则匹配
+     * @return array|mixed
+     */
     public function match()
     {
         if ($this->message['MsgType'] == 'event') { // 事件
@@ -179,9 +183,9 @@ class ApiController extends BaseController
     protected function matchText()
     {
         return ReplyRuleKeyword::find()
-            ->andFilterKeyword($this->message['Content'])
-            ->andFilterWid($this->getWechat()->id)
-            ->andFilterLimitTime(TIMESTAMP)
+            ->keyword($this->message['Content'])
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
             ->all();
     }
 
@@ -193,8 +197,8 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => ReplyRuleKeyword::TYPE_IMAGE])
-            ->andFilterWid($this->getWechat()->id)
-            ->andFilterLimitTime(TIMESTAMP)
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
             ->all();
     }
 
@@ -206,8 +210,8 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => ReplyRuleKeyword::TYPE_VOICE])
-            ->andFilterWid($this->getWechat()->id)
-            ->andFilterLimitTime(TIMESTAMP)
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
             ->all();
     }
 
@@ -219,8 +223,8 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_VIDEO, ReplyRuleKeyword::TYPE_SHORT_VIDEO]])
-            ->andFilterWid($this->getWechat()->id)
-            ->andFilterLimitTime(TIMESTAMP)
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
             ->all();
     }
 
@@ -232,8 +236,8 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_LOCATION]])
-            ->andFilterWid($this->getWechat()->id)
-            ->andFilterLimitTime(TIMESTAMP)
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
             ->all();
     }
 
@@ -245,8 +249,8 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_LINK]])
-            ->andFilterWid($this->getWechat()->id)
-            ->andFilterLimitTime(TIMESTAMP)
+            ->wechat($this->getWechat()->id)
+            ->limitTime(TIMESTAMP)
             ->all();
     }
 

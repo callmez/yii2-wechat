@@ -45,7 +45,7 @@ class Wechat extends \callmez\wechat\sdk\Wechat
     protected function requestAccessToken($grantType = 'client_credential')
     {
         if ($result = parent::requestAccessToken($grantType)) {
-            $this->model->accessToken = $result;
+            $this->model->access_token = $result;
             $this->model->save(false, ['access_token']);
         }
         return $result;
@@ -56,13 +56,13 @@ class Wechat extends \callmez\wechat\sdk\Wechat
      * @param string $state
      * @return mixed
      */
-    public function getAuthorizeUserInfo($state = 'authorize')
+    public function getAuthorizeUserInfo($state = 'authorize', $scope = 'snsapi_base')
     {
         $request = Yii::$app->request;
         if (($code = $request->getQueryParam('code')) && $request->getQueryParam('state') == $state) {
             return $this->getOauth2AccessToken($code);
         } else {
-            Yii::$app->getResponse()->redirect($this->getOauth2AuthorizeUrl($request->getAbsoluteUrl(), $state));
+            Yii::$app->getResponse()->redirect($this->getOauth2AuthorizeUrl($request->getAbsoluteUrl(), $state, $scope));
             Yii::$app->end();
         }
     }

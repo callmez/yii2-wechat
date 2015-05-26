@@ -186,6 +186,14 @@ class Wechat extends ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public static function find()
+    {
+        return Yii::createObject(WechatQuery::className(), [get_called_class()]);
+    }
+
+    /**
      * @var WechatSDK
      */
     private $_sdk;

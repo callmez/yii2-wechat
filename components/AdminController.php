@@ -14,9 +14,9 @@ use callmez\wechat\models\Wechat;
 class AdminController extends BaseController
 {
     /**
-     * 存储管理微信的session前缀
+     * 存储管理微信的session key
      */
-    const SESSION_MANAGE_WECHAT = 'session_manage_wechat';
+    const SESSION_MANAGE_WECHAT_KEY = 'session_manage_wechat';
     /**
      * 默认后台主视图
      * @var string
@@ -60,7 +60,6 @@ class AdminController extends BaseController
      */
     public function setWechat(Wechat $wechat)
     {
-        Yii::$app->session->set(self::SESSION_MANAGE_WECHAT, $wechat->id);
         $this->_wechat = $wechat;
     }
 
@@ -72,10 +71,11 @@ class AdminController extends BaseController
     public function getWechat()
     {
         if ($this->_wechat === null) {
-            $id = Yii::$app->session->get(self::SESSION_MANAGE_WECHAT);
-            if ($id === null || ($wechat = Wechat::findOne($id)) === null) {
+            $wid = Yii::$app->session->get(self::SESSION_MANAGE_WECHAT_KEY);
+            if (!$wid || ($wechat = Wechat::findOne($wid)) === null) {
                 return false;
             }
+            Yii::$app->session->set(self::SESSION_MANAGE_WECHAT_KEY, $wechat->id);
             $this->setWechat($wechat);
         }
         return $this->_wechat;

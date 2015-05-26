@@ -52,6 +52,12 @@ class Module extends \yii\base\Module
      * @var string
      */
     public $defaultApiRoute = 'api';
+    /**
+     * 移动页面公众号查询参数名
+     * @see \callmez\wechat\components\MobileController::getWechat();
+     * @var string
+     */
+    public $wechatUrlParam = 'wid';
 
 
     /**
@@ -196,6 +202,9 @@ class Module extends \yii\base\Module
     public $defaultCateMenus = [
         'system' => [
             ['label' => '公众号管理', 'url' => ['/wechat/wechat/index']]
+        ],
+        'fans' => [
+            ['label' => '粉丝列表', 'url' => ['/wechat/fans/index']]
         ],
         'module' => [
             ['label' => '模块管理', 'url' => ['/wechat/module/index']]

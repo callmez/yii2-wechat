@@ -18,7 +18,7 @@ class m150217_131752_initWechat extends Migration
         $this->initModuleTable();
 //        $this->initMenuTable();
         $this->initReplyRuleTable();
-//        $this->initFansTable();
+        $this->initFansTable();
 //        $this->initMessageHistoryTable();
     }
 

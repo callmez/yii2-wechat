@@ -57,7 +57,7 @@ Yii-wechat
     - [ ] 开发文档
   - [ ] 待定功能
 
-  `想提新功能? 提交[issues](https://github.com/callmez/yii2-wechat/issues)`
+  `想提新功能?` 提交[issue](https://github.com/callmez/yii2-wechat/issues)
 安装
 ---
 

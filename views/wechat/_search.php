@@ -15,15 +15,15 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <?//= $form->field($model, 'id') ?>
+    <?php // echo $form->field($model, 'id') ?>
 
     <?= $form->field($model, 'name') ?>
 
-    <?//= $form->field($model, 'hash') ?>
+    <?php // echo $form->field($model, 'hash') ?>
 
-    <?//= $form->field($model, 'token') ?>
+    <?php // echo $form->field($model, 'token') ?>
 
-    <?//= $form->field($model, 'access_token') ?>
+    <?php // echo $form->field($model, 'access_token') ?>
 
     <?php // echo $form->field($model, 'account') ?>
 

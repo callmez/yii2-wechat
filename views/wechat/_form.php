@@ -31,7 +31,7 @@ use callmez\wechat\widgets\FileApi;
 
         <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
-        <?//= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
+        <?php // echo $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
 
         <?= $form->field($model, 'app_id')->textInput(['maxlength' => true]) ?>
 

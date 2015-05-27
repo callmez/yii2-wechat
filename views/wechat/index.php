@@ -42,7 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 //            'app_id',
 //            'app_secret',
-//            'encoding_type',
 //            'encoding_aes_key',
 //            'avatar',
 //            'qrcode',

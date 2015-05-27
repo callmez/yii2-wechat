@@ -14,7 +14,7 @@ class WechatSearch extends Wechat
     public function rules()
     {
         return [
-            [['id', 'type', 'encoding_type', 'status'], 'integer'],
+            [['id', 'type', 'status'], 'integer'],
             [['name', 'hash', 'token', 'access_token', 'account', 'original', 'app_id', 'app_secret', 'encoding_aes_key', 'avatar', 'qrcode', 'address', 'description', 'username', 'password'], 'safe'],
         ];
     }
@@ -54,7 +54,6 @@ class WechatSearch extends Wechat
         $query->andFilterWhere([
             'id' => $this->id,
             'type' => $this->type,
-            'encoding_type' => $this->encoding_type,
             'status' => $this->status,
         ]);
 

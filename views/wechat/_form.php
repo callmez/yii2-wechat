@@ -21,6 +21,12 @@ use callmez\wechat\widgets\FileApi;
 
     <?php if (!$model->isNewRecord): ?>
 
+        <?= $form->field($model, 'apiUrl')->textInput(['disabled' => true]) ?>
+
+        <?= $form->field($model, 'token')->textInput(['maxlength' => true]) ?>
+
+        <?= $form->field($model, 'encoding_aes_key')->textInput(['maxlength' => true]) ?>
+
         <?= $form->field($model, 'account')->textInput(['maxlength' => true]) ?>
 
         <?= $form->field($model, 'original')->textInput(['maxlength' => true]) ?>
@@ -36,14 +42,6 @@ use callmez\wechat\widgets\FileApi;
         <?= $form->field($model, 'app_id')->textInput(['maxlength' => true]) ?>
 
         <?= $form->field($model, 'app_secret')->textInput(['maxlength' => true]) ?>
-
-        <?= $form->field($model, 'token')->textInput(['maxlength' => true]) ?>
-
-        <?= $form->field($model, 'encoding_type')->inline()->radioList(Wechat::$encodings) ?>
-
-        <?= $form->field($model, 'encoding_aes_key')->textInput(['maxlength' => true]) ?>
-
-        <?= $form->field($model, 'hash')->textInput(['disabled' => true]) ?>
 
         <?= $form->field($model, 'access_token')->textInput(['disabled' => true]) ?>
 

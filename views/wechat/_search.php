@@ -35,8 +35,6 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'app_secret') ?>
 
-    <?php // echo $form->field($model, 'encoding_type') ?>
-
     <?php // echo $form->field($model, 'encoding_aes_key') ?>
 
     <?php // echo $form->field($model, 'avatar') ?>

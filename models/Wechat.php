@@ -3,35 +3,15 @@
 namespace callmez\wechat\models;
 
 use Yii;
+use yii\helpers\Url;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use callmez\wechat\behaviors\EventBehavior;
 use callmez\wechat\components\Wechat as WechatSDK;
 
 /**
- * This is the model class for table "{{%wechat}}".
- *
- * @property integer $id
- * @property string $name
- * @property string $hash
- * @property string $token
- * @property string $access_token
- * @property string $account
- * @property string $original
- * @property integer $type
- * @property string $app_id
- * @property string $app_secret
- * @property integer $encoding_type
- * @property string $encoding_aes_key
- * @property string $avatar
- * @property string $qrcode
- * @property string $address
- * @property string $description
- * @property string $username
- * @property integer $status
- * @property string $password
- * @property integer $created_at
- * @property integer $updated_at
+ * 公众号数据
+ * @package callmez\wechat\models
  */
 class Wechat extends ActiveRecord
 {
@@ -64,22 +44,6 @@ class Wechat extends ActiveRecord
      */
     const TYPE_SERVICE_VERIFY = 3;
     /**
-     * 认证企业号
-     */
-    const TYPE_ENTERPRISE = 4;
-    /**
-     * 消息加密模式 普通模式
-     */
-    const ENCODING_NORMAL = 0;
-    /**
-     * 消息加密模式 兼容模式
-     */
-    const ENCODING_COMPATIBLE = 1;
-    /**
-     * 消息加密模式 安全模式
-     */
-    const ENCODING_SAFE = 2;
-    /**
      * 公众号类型列表
      * @var array
      */
@@ -87,21 +51,11 @@ class Wechat extends ActiveRecord
         self::TYPE_SUBSCRIBE => '订阅号',
         self::TYPE_SUBSCRIBE_VERIFY => '认证订阅号',
         self::TYPE_SERVICE_VERIFY => '认证服务号',
-//        self::TYPE_ENTERPRISE => '认证企业号',
     ];
     public static $statuses = [
         self::STATUS_INACTIVE => '未接入',
         self::STATUS_ACTIVE => '已接入',
         self::STATUS_DELETED => '已删除'
-    ];
-    /**
-     * 消息加密模式列表
-     * @var array
-     */
-    public static $encodings = [
-        self::ENCODING_NORMAL => '普通模式',
-        self::ENCODING_COMPATIBLE => '兼容模式',
-        self::ENCODING_SAFE => '安全模式'
     ];
 
     public function behaviors()
@@ -140,8 +94,8 @@ class Wechat extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'account', 'original', 'type', 'token', 'encoding_type', 'app_id', 'app_secret', 'avatar', 'qrcode'], 'required', 'except' => ['avatarUpload', 'qrcodeUpload']],
-            [['type', 'encoding_type', 'status'], 'integer', 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['name', 'account', 'original', 'type', 'token', 'app_id', 'app_secret', 'avatar', 'qrcode'], 'required', 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['type', 'status'], 'integer', 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['name', 'original', 'username'], 'string', 'max' => 40, 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['token', 'password'], 'string', 'max' => 32, 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['address', 'description', 'avatar', 'qrcode'], 'string', 'max' => 255, 'except' => ['avatarUpload', 'qrcodeUpload']],
@@ -163,7 +117,7 @@ class Wechat extends ActiveRecord
         return [
             'id' => '公众号ID',
             'name' => '公众号名称',
-            'hash' => '公众号名称',
+            'hash' => '公众号唯一HASH值',
             'token' => '微信服务Token(令牌)',
             'access_token' => '微信服务访问Token',
             'account' => '微信号',
@@ -171,7 +125,6 @@ class Wechat extends ActiveRecord
             'type' => '公众号类型',
             'app_id' => 'AppID(应用ID)',
             'app_secret' => 'AppSecret(应用密钥)',
-            'encoding_type' => '消息加密方式',
             'encoding_aes_key' => '消息加密秘钥EncodingAesKey',
             'avatar' => '头像地址',
             'qrcode' => '二维码地址',
@@ -182,6 +135,15 @@ class Wechat extends ActiveRecord
             'password' => '微信官网登录密码',
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
+
+            'apiUrl' => '微信接口链接'
+        ];
+    }
+
+    public function attributeHints()
+    {
+        return [
+            'apiUrl' => '请复制该内容填写到微信后台->开发者中心->服务器配置, 并确定Token和EncodingAesKey和微信后台的设置保持一致.'
         ];
     }
 
@@ -191,6 +153,19 @@ class Wechat extends ActiveRecord
     public static function find()
     {
         return Yii::createObject(WechatQuery::className(), [get_called_class()]);
+    }
+
+    /**
+     * 返回公众号微信接口链接
+     * @param boolean|string $scheme the URI scheme to use in the generated URL:
+     * @return string
+     */
+    public function getApiUrl($scheme = true)
+    {
+        return Url::toRoute([
+            '/wechat/' . Yii::$app->getModule('wechat')->apiRoute,
+            'hash' => $this->hash
+        ], $scheme);
     }
 
     /**

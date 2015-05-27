@@ -15,6 +15,8 @@ $prefix = isset($index) ? "[{$index}]" : '[]';
         <?= Html::activeHiddenInput($model, "{$prefix}id") ?>
         <?= $form->field($model, "{$prefix}type")->dropDownList($model::$types) ?>
         <?= $form->field($model, "{$prefix}keyword")->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, "{$prefix}start_at")->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, "{$prefix}end_at")->textInput(['maxlength' => true]) ?>
         <?= $form->field($model, "{$prefix}priority")->textInput(['maxlength' => true]) ?>
     </div>
 </div>

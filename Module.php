@@ -48,10 +48,10 @@ class Module extends \yii\base\Module
      */
     public $moduleModelClass = 'callmez\wechat\models\Module';
     /**
-     * 默认为微信请求接收路由
+     * 默认微信请求接收路由
      * @var string
      */
-    public $defaultApiRoute = 'api';
+    public $apiRoute = 'api';
     /**
      * 移动页面公众号查询参数名
      * @see \callmez\wechat\components\MobileController::getWechat();

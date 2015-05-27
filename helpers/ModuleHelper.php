@@ -28,7 +28,7 @@ class ModuleHelper
         sort($signArray, SORT_STRING);
         $signature = sha1(implode($signArray));
         return Url::to(array_merge([
-            '/wechat/' . Yii::$app->getModule('wechat')->defaultApiRoute,
+            '/wechat/' . Yii::$app->getModule('wechat')->apiRoute,
             'timestamp' => TIMESTAMP,
             'nonce' => $nonce,
             'signature' => $signature

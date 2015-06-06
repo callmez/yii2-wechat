@@ -1,9 +1,9 @@
 <?php
 
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\widgets\FileApi;
+use callmez\wechat\widgets\ActiveForm;
 ?>
 
 <div class="wechat-form">
@@ -39,9 +39,9 @@ use callmez\wechat\widgets\FileApi;
 
         <?php // echo $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'app_id')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'key')->textInput(['maxlength' => true]) ?>
 
-        <?= $form->field($model, 'app_secret')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'secret')->textInput(['maxlength' => true]) ?>
 
         <?= $form->field($model, 'access_token')->textInput(['disabled' => true]) ?>
 

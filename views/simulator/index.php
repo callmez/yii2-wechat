@@ -14,7 +14,7 @@ foreach (Wechat::find()->all() as $k => $wechat) {
         'name' => $wechat->name,
         'original' => $wechat->original,
         'api' => ModuleHelper::getApiUrl($wechat, [
-            'hash' => $wechat->hash,
+            'id' => $wechat->id,
             'token' => $wechat->token
         ])
     ];

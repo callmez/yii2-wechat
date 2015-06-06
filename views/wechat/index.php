@@ -24,7 +24,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ],
             'name',
-//            'hash',
 //            'token',
 //            'access_token',
 //            'account',
@@ -40,8 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => Wechat::$types,
 
             ],
-//            'app_id',
-//            'app_secret',
+//            'key',
+//            'secret',
 //            'encoding_aes_key',
 //            'avatar',
 //            'qrcode',

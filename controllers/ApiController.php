@@ -24,14 +24,22 @@ class ApiController extends BaseController
     /**
      * 微信请求响应Action
      * 分析请求后分发给指定的处理流程
-     * @param $hash
+     * @param $id
      * @return mixed|null
      * @throws NotFoundHttpException
      */
-    public function actionIndex($hash)
+    public function actionIndex($id)
     {
+        // TODO 群发事件推送群发处理
+        // TODO 模板消息事件推送处理
+        // TODO 用户上报地理位置事件推送处理
+        // TODO 自定义菜单事件推送处理
+        // TODO 微信小店订单付款通知处理
+        // TODO 微信卡卷(卡券通过审核、卡券被用户领取、卡券被用户删除)通知处理
+        // TODO 智能设备接口
+        // TODO 多客服转发处理
         $request = Yii::$app->getRequest();
-        $wechat = $this->findWechat($hash);
+        $wechat = $this->findWechat($id);
         if (!$wechat->getSdk()->checkSignature()) {
             return 'Sign check fail!';
         }
@@ -78,14 +86,14 @@ class ApiController extends BaseController
     }
 
     /**
-     * 根据微信唯一hash值查找微信公众号
-     * @param $hash
+     * 根据ID查找公众号
+     * @param $id
      * @return Object
      * @throws NotFoundHttpException
      */
-    protected function findWechat($hash)
+    protected function findWechat($id)
     {
-        if (($model = Wechat::findOne(['hash' => $hash])) !== null) {
+        if (($model = Wechat::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
@@ -95,6 +103,7 @@ class ApiController extends BaseController
     /**
      * 解析微信请求内容
      * @param $rawMessage
+     * @return array
      * @throws NotFoundHttpException
      */
     public function parseRequest($rawMessage)
@@ -108,8 +117,31 @@ class ApiController extends BaseController
         foreach ($xml as $attribute => $value) {
             $message[$attribute] = is_array($value) ? $value : (string) $value;
         }
+
         Yii::info($message, __METHOD__);
         return $message;
+    }
+
+    /**
+     * 生成响应内容Response
+     * @param array $data
+     * @return object
+     */
+    public function createResponse(array $data)
+    {
+        Yii::info($data, __METHOD__);
+
+        $response = Yii::createObject([
+            'class' => Response::className(),
+            'format' => Response::FORMAT_XML,
+            'data' => $data
+        ]);
+        $response->formatters[Response::FORMAT_XML] = [
+            'class' => $response->formatters[Response::FORMAT_XML],
+            'rootTag' => 'xml',
+            'contentType' => 'text/html' // 输出html为兼容性考虑
+        ];
+        return $response;
     }
 
     /**
@@ -144,28 +176,6 @@ class ApiController extends BaseController
             }
         }
         return $result;
-    }
-
-    /**
-     * 生成响应内容Response
-     * @param array $data
-     * @return object
-     */
-    public function createResponse(array $data)
-    {
-        Yii::info($data, __METHOD__);
-
-        $response = Yii::createObject([
-            'class' => Response::className(),
-            'format' => Response::FORMAT_XML,
-            'data' => $data
-        ]);
-        $response->formatters[Response::FORMAT_XML] = [
-            'class' => $response->formatters[Response::FORMAT_XML],
-            'rootTag' => 'xml',
-            'contentType' => 'text/html' // 输出html为兼容性考虑
-        ];
-        return $response;
     }
 
     /**

@@ -7,7 +7,7 @@ use yii\helpers\Url;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use callmez\wechat\behaviors\EventBehavior;
-use callmez\wechat\components\Wechat as WechatSDK;
+use callmez\wechat\components\MpWechat;
 
 /**
  * 公众号数据
@@ -66,7 +66,6 @@ class Wechat extends ActiveRecord
                 'class' => EventBehavior::className(),
                 'events' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => function ($event) {
-                        $this->hash = $this->generateUniqueHashValue(); // 生成唯一Hash
                         $this->access_token = serialize($this->access_token);
                     },
                     ActiveRecord::EVENT_BEFORE_UPDATE => function ($event) {
@@ -94,13 +93,13 @@ class Wechat extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'account', 'original', 'type', 'token', 'app_id', 'app_secret', 'avatar', 'qrcode'], 'required', 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['name', 'account', 'original', 'type', 'token', 'key', 'secret', 'avatar', 'qrcode'], 'required', 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['type', 'status'], 'integer', 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['name', 'original', 'username'], 'string', 'max' => 40, 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['token', 'password'], 'string', 'max' => 32, 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['address', 'description', 'avatar', 'qrcode'], 'string', 'max' => 255, 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['account'], 'string', 'max' => 30, 'except' => ['avatarUpload', 'qrcodeUpload']],
-            [['app_id', 'app_secret'], 'string', 'max' => 50, 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['key', 'secret'], 'string', 'max' => 50, 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['encoding_aes_key'], 'string', 'max' => 43, 'except' => ['avatarUpload', 'qrcodeUpload']],
 
             [['avatar'], 'file', 'extensions' => 'gif, jpg', 'on' => 'avatarUpload'],
@@ -117,14 +116,13 @@ class Wechat extends ActiveRecord
         return [
             'id' => '公众号ID',
             'name' => '公众号名称',
-            'hash' => '公众号唯一HASH值',
             'token' => '微信服务Token(令牌)',
-            'access_token' => '微信服务访问Token',
+            'access_token' => 'AccessToken(访问令牌)',
             'account' => '微信号',
             'original' => '原始ID',
             'type' => '公众号类型',
-            'app_id' => 'AppID(应用ID)',
-            'app_secret' => 'AppSecret(应用密钥)',
+            'key' => 'AppID(应用ID)',
+            'secret' => 'AppSecret(应用密钥)',
             'encoding_aes_key' => '消息加密秘钥EncodingAesKey',
             'avatar' => '头像地址',
             'qrcode' => '二维码地址',
@@ -136,14 +134,14 @@ class Wechat extends ActiveRecord
             'created_at' => '创建时间',
             'updated_at' => '修改时间',
 
-            'apiUrl' => '微信接口链接'
+            'apiUrl' => 'API地址'
         ];
     }
 
     public function attributeHints()
     {
         return [
-            'apiUrl' => '请复制该内容填写到微信后台->开发者中心->服务器配置, 并确定Token和EncodingAesKey和微信后台的设置保持一致.'
+            'apiUrl' => '请复制该内容填写到微信后台->开发者中心->服务器配置并确定Token和EncodingAesKey和微信后台的设置保持一致.'
         ];
     }
 
@@ -164,7 +162,7 @@ class Wechat extends ActiveRecord
     {
         return Url::toRoute([
             '/wechat/' . Yii::$app->getModule('wechat')->apiRoute,
-            'hash' => $this->hash
+            'id' => $this->id
         ], $scheme);
     }
 
@@ -180,24 +178,8 @@ class Wechat extends ActiveRecord
     public function getSdk()
     {
         if ($this->_sdk === null) {
-            $this->_sdk = Yii::createObject([
-                'class' => WechatSDK::className(),
-                'model' => $this
-            ]);
+            $this->_sdk = Yii::createObject(MpWechat::className(), [$this]);
         }
         return $this->_sdk;
-    }
-
-    /**
-     * 生成唯一的hash值
-     * @return string
-     */
-    protected function generateUniqueHashValue()
-    {
-        $hash = Yii::$app->security->generateRandomString(5);
-        if (static::find()->where(['hash' => $hash])->exists()) { // 生成最终唯一的hash
-            $hash = $this->generateUniqueHashValue();
-        }
-        return $hash;
     }
 }

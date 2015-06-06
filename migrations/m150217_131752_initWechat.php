@@ -40,14 +40,13 @@ class m150217_131752_initWechat extends Migration
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'name' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '公众号名称'",
-            'hash' => Schema::TYPE_STRING . "(5) NOT NULL DEFAULT '' COMMENT '公众号名称'",
             'token' => Schema::TYPE_STRING . "(32) NOT NULL DEFAULT '' COMMENT '微信服务访问验证token'",
             'access_token' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '访问微信服务验证token'",
             'account' => Schema::TYPE_STRING . "(30) NOT NULL DEFAULT '' COMMENT '微信号'",
             'original' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '原始ID'",
             'type' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '公众号类型'",
-            'app_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppID'",
-            'app_secret' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT 'AppSecret'",
+            'key' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '公众号的AppID'",
+            'secret' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '公众号的AppSecret'",
             'encoding_aes_key' => Schema::TYPE_STRING . "(43) NOT NULL DEFAULT '' COMMENT '消息加密秘钥EncodingAesKey'",
             'avatar' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '头像地址'",
             'qrcode' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '二维码地址'",
@@ -59,8 +58,7 @@ class m150217_131752_initWechat extends Migration
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);
-        $this->createIndex('hash', $tableName, 'hash', true);
-        $this->createIndex('app_id', $tableName, 'app_id');
+        $this->createIndex('key', $tableName, 'key');
     }
 
     /**

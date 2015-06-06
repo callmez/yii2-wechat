@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+use callmez\wechat\widgets\ActiveForm;
 
 $wechat = Yii::$app->getModule('wechat');
 ?>

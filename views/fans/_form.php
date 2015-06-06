@@ -1,8 +1,8 @@
 <?php
 
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
 use callmez\wechat\models\Fans;
+use callmez\wechat\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model callmez\wechat\models\Fans */

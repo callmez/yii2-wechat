@@ -2,8 +2,8 @@
 
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap\ActiveForm;
 use callmez\wechat\models\ReplyRule;
+use callmez\wechat\widgets\ActiveForm;
 ?>
 
 <div class="reply-rule-form">

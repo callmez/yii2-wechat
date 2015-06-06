@@ -19,8 +19,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name') ?>
 
-    <?php // echo $form->field($model, 'hash') ?>
-
     <?php // echo $form->field($model, 'token') ?>
 
     <?php // echo $form->field($model, 'access_token') ?>
@@ -31,9 +29,9 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'type') ?>
 
-    <?php // echo $form->field($model, 'app_id') ?>
+    <?php // echo $form->field($model, 'key') ?>
 
-    <?php // echo $form->field($model, 'app_secret') ?>
+    <?php // echo $form->field($model, 'secret') ?>
 
     <?php // echo $form->field($model, 'encoding_aes_key') ?>
 

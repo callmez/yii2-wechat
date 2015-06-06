@@ -93,7 +93,7 @@ class Wechat extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'account', 'original', 'type', 'token', 'key', 'secret', 'avatar', 'qrcode'], 'required', 'except' => ['avatarUpload', 'qrcodeUpload']],
+            [['name', 'account', 'original', 'type', 'token', 'key', 'secret', 'encoding_aes_key', 'avatar', 'qrcode'], 'required', 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['type', 'status'], 'integer', 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['name', 'original', 'username'], 'string', 'max' => 40, 'except' => ['avatarUpload', 'qrcodeUpload']],
             [['token', 'password'], 'string', 'max' => 32, 'except' => ['avatarUpload', 'qrcodeUpload']],

@@ -25,7 +25,8 @@ class MpWechat extends \callmez\wechat\sdk\MpWechat
         $config = array_merge([
             'appId' => $this->model->key,
             'appSecret' => $this->model->secret,
-            'token' => $this->model->token
+            'token' => $this->model->token,
+            'encodingAesKey' => $this->model->encoding_aes_key
         ], $config);
 
         parent::__construct($config);

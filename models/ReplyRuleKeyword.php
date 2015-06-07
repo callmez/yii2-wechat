@@ -109,7 +109,8 @@ class ReplyRuleKeyword extends ActiveRecord
             [['keyword'], 'string', 'max' => 255],
             [['priority'], 'default', 'value' => 0],
 
-            [['type'], 'in', 'range' => array_keys(static::$types)]
+            [['type'], 'in', 'range' => array_keys(static::$types)],
+            [['start_at', 'end_at'], 'default', 'value' => 0]
         ];
     }
 

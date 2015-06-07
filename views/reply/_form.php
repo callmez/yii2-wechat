@@ -14,11 +14,11 @@ use callmez\wechat\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'processor')->textInput(['maxlength' => true, 'placeholder' => ReplyRule::PROCESSOR_DEFAULT]) ?>
-
     <?= $form->field($model, 'status')->dropDownList(ReplyRule::$statuses) ?>
 
-    <?= $form->field($model, 'priority')->textInput() ?>
+    <?= $form->field($model, 'processor')->textInput(['maxlength' => true, 'placeholder' => ReplyRule::PROCESSOR_DEFAULT]) ?>
+
+    <?= $form->field($model, 'priority')->textInput(['maxlength' => true, 'placeholder' => 0]) ?>
 
     <div class="form-group">
         <label class="control-label col-sm-3">触发关键字</label>

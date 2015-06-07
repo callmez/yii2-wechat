@@ -4,6 +4,7 @@ namespace callmez\wechat\controllers;
 use Yii;
 use yii\web\Response;
 use yii\helpers\ArrayHelper;
+use yii\web\XmlResponseFormatter;
 use yii\web\NotFoundHttpException;
 use yii\base\InvalidCallException;
 use callmez\wechat\models\Wechat;
@@ -130,19 +131,14 @@ class ApiController extends BaseController
      */
     public function createResponse(array $data)
     {
+        $data = array_merge([
+            'FromUserName' => $this->message['ToUserName'],
+            'ToUserName' => $this->message['FromUserName'],
+            'CreateTime' => time()
+        ], $data);
         Yii::info($data, __METHOD__);
 
-        $response = Yii::createObject([
-            'class' => Response::className(),
-            'format' => Response::FORMAT_XML,
-            'data' => $data
-        ]);
-        $response->formatters[Response::FORMAT_XML] = [
-            'class' => $response->formatters[Response::FORMAT_XML],
-            'rootTag' => 'xml',
-            'contentType' => 'text/html' // 输出html为兼容性考虑
-        ];
-        return $response;
+        return $this->getWechat()->getSdk()->xml($data);
     }
 
     /**

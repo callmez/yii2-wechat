@@ -20,9 +20,9 @@ class ReplyRuleKeywordQuery extends ActiveQuery
         ])
         ->addParams([
             ':keyword' => $keyword,
-            ':typeMatch' => ReplyRuleKeyword::TYPE_TEXT_MATCH,
-            ':typeInclude' => ReplyRuleKeyword::TYPE_TEXT_INCLUDE,
-            ':typeRegular' => ReplyRuleKeyword::TYPE_TEXT_REGULAR
+            ':typeMatch' => ReplyRuleKeyword::TYPE_MATCH,
+            ':typeInclude' => ReplyRuleKeyword::TYPE_INCLUDE,
+            ':typeRegular' => ReplyRuleKeyword::TYPE_REGULAR
         ]);
         return $this;
     }

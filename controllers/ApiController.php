@@ -5,9 +5,11 @@ use Yii;
 use yii\web\Response;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
+use yii\base\InvalidCallException;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\ReplyRuleKeyword;
 use callmez\wechat\components\BaseController;
+use callmez\wechat\components\ProcessController;
 
 class ApiController extends BaseController
 {
@@ -51,7 +53,7 @@ class ApiController extends BaseController
                 return $request->getQueryParam('echostr');
             case 'POST':
                 $this->setWechat($wechat);
-                $this->message = $this->parseRequest($request->getRawBody());
+                $this->message = $this->parseRequest();
                 $result = $this->resolveProcess(); // 处理请求
                 return is_array($result) ? $this->createResponse($result) : $result;
             default:
@@ -102,15 +104,14 @@ class ApiController extends BaseController
 
     /**
      * 解析微信请求内容
-     * @param $rawMessage
      * @return array
      * @throws NotFoundHttpException
      */
-    public function parseRequest($rawMessage)
+    public function parseRequest()
     {
-        $xml = $this->getWechat()->getSdk()->parseRequestData($rawMessage);
+        $xml = $this->getWechat()->getSdk()->parseRequestXml();
         if (empty($xml)) {
-            Yii::$app->response->content = 'Request Failed!';
+            Yii::$app->response->content = 'Request data parse failed!';
             Yii::$app->end();
         }
         $message = [];
@@ -161,10 +162,19 @@ class ApiController extends BaseController
                 continue;
             }
 
-            // 转发路由请求 @see Yii::$app->runAction()
+            // 转发路由请求 参考: Yii::$app->runAction()
             $parts = Yii::$app->createController($route);
             if (is_array($parts)) {
                 list($controller, $actionID) = $parts;
+
+                // 微信请求的处理器必须继承callmez\wechat\components\ProcessController
+                if (!($controller instanceof ProcessController)) {
+                    throw new InvalidCallException("Wechat process controller must instance of '" . ProcessController::className() . "'");
+                }
+                // 传入当前公众号和微信请求内容
+                $controller->message = $this->message;
+                $controller->setWechat($this->getWechat());
+
                 $oldController = Yii::$app->controller;
                 $result = $controller->runAction($actionID);
                 Yii::$app->controller = $oldController;
@@ -194,7 +204,7 @@ class ApiController extends BaseController
             $matchs = call_user_func([$this, $method]);
         }
         return array_merge([
-            ['route' => ['/wechat/process/subscribe']] // 默认所有请求都做一次关注请求处理
+            ['route' => '/wechat/process/subscribe'] // 默认所有请求都做一次关注请求处理
         ], $matchs);
     }
 

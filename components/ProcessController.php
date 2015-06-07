@@ -2,6 +2,7 @@
 namespace callmez\wechat\components;
 
 use yii\base\InvalidConfigException;
+use callmez\wechat\models\Fans;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\components\Wechat as WechatSDK;
 
@@ -13,6 +14,11 @@ use callmez\wechat\components\Wechat as WechatSDK;
  */
 class ProcessController extends BaseController
 {
+    /**
+     * 微信请求的消息内容
+     * @var array
+     */
+    public $message;
     /**
      * 微信请求关闭CSRF验证
      * @var bool

@@ -12,12 +12,12 @@ class MenuController extends AdminController
         // 创建菜单
         if ($menus = Yii::$app->getRequest()->getBodyParam('menus')) {
             if (!$sdk->createMenu($menus)) {
-                return $this->message($sdk->getLastErrorInfo('自定义菜单更新失败'));
+                return $this->message('自定义菜单更新失败! ' . $sdk->getLastErrorMessage());
             }
             return $this->message('自定义菜单更新成功', 'success');
         }
-        if (!($menus = $sdk->getMenuList())) {
-            return $this->message($sdk->getLastErrorInfo('获取菜单列表失败!'));
+        if (!($menus = $sdk->getMenu())) {
+            return $this->message('获取菜单列表失败! ' . $sdk->getLastErrorMessage());
         }
         return $this->render('index', [
             'wechat' => $this->getWechat(),

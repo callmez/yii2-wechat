@@ -9,6 +9,7 @@ use callmez\wechat\models\Wechat;
  */
 class MpWechat extends \callmez\wechat\sdk\MpWechat
 {
+    use WechatTrait;
     /**
      * 绑定的公众号存储类
      * @var Wechat

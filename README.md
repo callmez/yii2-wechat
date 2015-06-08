@@ -85,7 +85,8 @@ Yii-wechat
   'modules' => [
     ...
     'wechat' => [ // 指定微信模块
-        'class' => 'callmez\wechat\Module'
+        'class' => 'callmez\wechat\Module',
+        'adminId' => 1 // 填写管理员ID, 该设置的用户将会拥有wechat最高权限
     ]
     ...
   ],

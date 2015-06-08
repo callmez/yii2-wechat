@@ -41,7 +41,7 @@ class ApiController extends BaseController
         // TODO 微信卡卷(卡券通过审核、卡券被用户领取、卡券被用户删除)通知处理
         // TODO 智能设备接口
         // TODO 多客服转发处理
-        $request = Yii::$app->getRequest();
+        $request = Yii::$app->request;
         $wechat = $this->findWechat($id);
         if (!$wechat->getSdk()->checkSignature()) {
             return 'Sign check fail!';
@@ -131,14 +131,21 @@ class ApiController extends BaseController
      */
     public function createResponse(array $data)
     {
+        $timestamp = time();
         $data = array_merge([
             'FromUserName' => $this->message['ToUserName'],
             'ToUserName' => $this->message['FromUserName'],
-            'CreateTime' => time()
+            'CreateTime' => $timestamp
         ], $data);
+
         Yii::info($data, __METHOD__);
 
-        return $this->getWechat()->getSdk()->xml($data);
+        $sdk = $this->getWechat()->getSdk();
+        $xml = $sdk->xml($data);
+        if ($xml && Yii::$app->request->getQueryParam('encrypt_type') == 'aes') { // aes加密
+            $xml = $sdk->encryptXml($xml, $timestamp, Yii::$app->security->generateRandomString(6));
+        }
+        return $xml;
     }
 
     /**

@@ -37,6 +37,12 @@ class Module extends \yii\base\Module
      */
     public $controllerNamespace = 'callmez\wechat\controllers';
     /**
+     * 消息的基本视图
+     * @see callmez\wechat\components\BaseController::message()
+     * @var string
+     */
+    public $messageLayout = '@callmez/wechat/views/common/message';
+    /**
      * 站点后台视图
      * 如果想让微信模块和站点的后台视图一致, 则修改此视图为站点的后台视图路径即可
      * @var string
@@ -58,7 +64,20 @@ class Module extends \yii\base\Module
      * @var string
      */
     public $wechatUrlParam = 'wid';
-
+    /**
+     * 微信后台最高管理员账号ID
+     * 在该设置中的账号ID将会拥有所以操作权限(不受任何权限影响) 可设置多个
+     * 不设置将会按照Yii::$app->user->authManager权限体系来限制, 请确定Yii::$app->user->authManager组件已设置
+     * @var string|array
+     */
+    public $adminId;
+    /**
+     * 微信后台服务自定义访问验证规则
+     * 你可以通过该设置,来自定义控制后台访问权限
+     * 参考: yii\filter\AccessRule的配置
+     * @var array
+     */
+    public $adminAccessRule;
 
     /**
      * @inheritdoc

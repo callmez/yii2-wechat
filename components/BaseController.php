@@ -16,11 +16,6 @@ use callmez\wechat\models\Wechat;
 abstract class BaseController extends Controller
 {
     /**
-     * 消息的基本视图
-     * @var string
-     */
-    public $messageLayout = '@callmez/wechat/views/common/message';
-    /**
      * 发送消息
      * @param $message
      * @param string $type
@@ -43,7 +38,7 @@ abstract class BaseController extends Controller
         ];
         switch ($resultType) {
             case 'html':
-                return $this->render($this->messageLayout, $data);
+                return $this->render(Yii::$app->getModule('wechat')->messageLayout, $data);
             case 'json':
                 Yii::$app->getResponse()->format = Response::FORMAT_JSON;
                 return $data;

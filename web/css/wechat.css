@@ -15,6 +15,8 @@ div.required > label:after {
 .panel-body .table {
     margin-bottom: 0;
 }
+
+/* 错误显示 */
 .error-summary {
     color: #a94442;
     background: #fdf7f7;
@@ -22,11 +24,34 @@ div.required > label:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
+/* 上传控件 */
+.file-input {
+    position: relative;
+    overflow: hidden;
+}
+.file-input input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    opacity: 0;
+    -ms-filter: 'alpha(opacity=0)';
+    font-size: 200px;
+    direction: ltr;
+    cursor: pointer;
+}
+/* Fixes for IE < 8 */
+@media screen\9 {
+    .file-input input[type=file] {
+        filter: alpha(opacity=0);
+        font-size: 100%;
+        height: 100%;
+    }
+}
 /* 分类菜单 */
 .list-group-item.active a {
     color: #fff;
 }
-
 /* 微信模拟界面 */
 .wechat-message-list {
     padding: 15px;
@@ -147,29 +172,4 @@ div.required > label:after {
 .wechat-message-list .message .news li .single .desc {
     color: #8c8c8c;
     margin: 10px 0 20px
-}
-
-/* 上传控件 */
-.file-input {
-    position: relative;
-    overflow: hidden;
-}
-.file-input input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    opacity: 0;
-    -ms-filter: 'alpha(opacity=0)';
-    font-size: 200px;
-    direction: ltr;
-    cursor: pointer;
-}
-/* Fixes for IE < 8 */
-@media screen\9 {
-    .file-input input[type=file] {
-        filter: alpha(opacity=0);
-        font-size: 100%;
-        height: 100%;
-    }
 }

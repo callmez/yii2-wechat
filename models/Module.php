@@ -2,6 +2,7 @@
 
 namespace callmez\wechat\models;
 
+use callmez\wechat\assets\WechatAsset;
 use Yii;
 use yii\caching\Cache;
 use yii\db\ActiveRecord;
@@ -176,13 +177,13 @@ class Module extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => '模块ID',
-            'name' => '模块名称',
-            'type' => '模块类型',
-            'version' => '模块版本',
+            'id' => 'ID',
+            'name' => '名称',
+            'type' => '类型',
+            'version' => '版本',
             'ability' => '功能简述',
             'description' => '详细描述',
-            'author' => '模块作者',
+            'author' => '作者',
             'site' => '模块详情地址',
             'admin' => '是否有后台界面',
             'migration' => '是否有迁移数据',

@@ -3,6 +3,7 @@ namespace callmez\wechat\components;
 
 use Yii;
 use yii\filters\AccessControl;
+use callmez\wechat\helpers\User;
 use callmez\wechat\models\Wechat;
 
 /**
@@ -22,7 +23,11 @@ class AdminController extends BaseController
      * @var string
      */
     public $layout = '@callmez/wechat/views/layouts/main';
-
+    /**
+     * 开启设置公众号验证
+     * @var bool
+     */
+    public $enableCheckWechat = true;
     /**
      * @inheritdoc
      */
@@ -31,20 +36,20 @@ class AdminController extends BaseController
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'rules' => [
+                'rules' => array_merge([
                     [
                         'allow' => true,
                         'roles' => ['@'], // 登录才能操作后台
-                        'matchCallback' => function() { // 是否设置应用公众号
-                            $controller = Yii::$app->controller;
-                            if ($this->getWechat() || implode('/', [$controller->module->id, $controller->id]) == 'wechat/wechat') {
-                                return true;
+                        'matchCallback' => function() {
+                            // 是否设置应用公众号
+                            if ($this->enableCheckWechat && !$this->getWechat()) {
+                                $this->flash('未设置管理公众号, 请先选则需要管理的公众号', 'error', ['/wechat/wechat']);
+                                return false;
                             }
-                            $this->flash('未设置管理公众号, 请先选则需要管理的公众号', 'error', ['/wechat/wechat']);
-                            return false;
+                            return User::can('manage-wechat');
                         }
                     ]
-                ]
+                ], Yii::$app->getModule('wechat')->adminAccessRule ?: []) // 自定义验证
             ]
         ];
     }

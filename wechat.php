@@ -8,7 +8,7 @@
  */
 
 // 定义毫秒时间戳
-defined('TIMESTAMP') or define('TIMESTAMP', (int) YII_BEGIN_TIME);
+defined('TIMESTAMP') or define('TIMESTAMP', $_SERVER['REQUEST_TIME']);
 // 自动注册存储目录(可以在config中配置)
 isset(Yii::$aliases['@storage']) or Yii::setAlias('@storage', Yii::getAlias('@web/storage'));
 isset(Yii::$aliases['@storageRoot']) or Yii::setAlias('@storageRoot', Yii::getAlias('@webroot/storage'));

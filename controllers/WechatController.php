@@ -20,6 +20,11 @@ use callmez\wechat\components\AdminController;
 class WechatController extends AdminController
 {
     /**
+     * 关闭公众号设置检查
+     * @var bool
+     */
+    public $enableCheckWechat = false;
+    /**
      * 显示所有公众号
      * @return mixed
      */

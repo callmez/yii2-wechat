@@ -102,7 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
     angular.module('menuApp', ['dndLists']).controller('MenusController', function ($scope, $http) {
         $scope._menus = <?= json_encode($menus, JSON_UNESCAPED_UNICODE) ?>;
         $scope.menus = angular.copy($scope._menus);
-        $scope.menuTypes = <?= json_encode(Wechat::$menuTypes, JSON_UNESCAPED_UNICODE) ?>;
+        $scope.menuTypes = <?= json_encode($this->context->menuTypes, JSON_UNESCAPED_UNICODE) ?>;
         $scope.resetMenus = function() {
             if (confirm('确定要重置所做的修改么?')) {
                 $scope.menus = angular.copy($scope._menus);

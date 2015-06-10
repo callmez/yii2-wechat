@@ -11,7 +11,7 @@ class MenuController extends AdminController
      * 注: 有value属性的在提交菜单是该类型的值必须设置为此值, 没有的则不限制
      * @var array
      */
-    public static $menuTypes = [
+    public $menuTypes = [
         'click' => [
             'name' => '关键字',
             'meta' => 'key',

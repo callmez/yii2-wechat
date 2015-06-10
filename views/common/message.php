@@ -23,7 +23,7 @@ $statusSettings = [
         </div>
         <div class="text-center">
             <p class="alert <?= $statusSettings[$type]['alertClass'] ?>">
-                    <?= is_array($message) ? implode('<br>', ArrayHelper::getColumn($message, 0)) : $message ?>
+                <?= is_array($message) ? json_encode($message) : $message?>
             </p>
             <?php if ($redirect): ?>
                 <p>

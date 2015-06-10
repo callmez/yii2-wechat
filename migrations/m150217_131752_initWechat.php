@@ -3,7 +3,7 @@
 use yii\db\Schema;
 use yii\db\Migration;
 use callmez\wechat\models\Fans;
-use callmez\wechat\models\Menu;
+use callmez\wechat\models\MpUser;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\Module;
 use callmez\wechat\models\ReplyRule;
@@ -16,9 +16,9 @@ class m150217_131752_initWechat extends Migration
     {
         $this->initWechatTable();
         $this->initModuleTable();
-//        $this->initMenuTable();
         $this->initReplyRuleTable();
         $this->initFansTable();
+        $this->initUserTable();
 //        $this->initMessageHistoryTable();
     }
 
@@ -28,7 +28,8 @@ class m150217_131752_initWechat extends Migration
         $this->dropTable(ReplyRule::tableName());
         $this->dropTable(ReplyRuleKeyword::tableName());
         $this->dropTable(Fans::tableName());
-        $this->dropTable(MessageHistory::tableName());
+        $this->dropTable(MpUser::tableName());
+//        $this->dropTable(MessageHistory::tableName());
     }
 
     /**
@@ -87,24 +88,6 @@ class m150217_131752_initWechat extends Migration
     }
 
     /**
-     * 后台菜单
-     */
-    public function initMenuTable()
-    {
-        $tableName = Menu::tableName();
-        $this->createTable($tableName, [
-            'id' => Schema::TYPE_PK,
-            'mid' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '所属模块ID'",
-            'parent' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '父菜单ID'",
-            'title' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '菜单名'",
-            'route' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '访问路由'",
-            'type' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '菜单类型'",
-            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
-            'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
-        ]);
-    }
-
-    /**
      * 回复规则表
      */
     public function initReplyRuleTable()
@@ -160,6 +143,31 @@ class m150217_131752_initWechat extends Migration
         ]);
         $this->createIndex('wid', $tableName, 'wid');
         $this->createIndex('open_id', $tableName, 'open_id');
+    }
+
+    /**
+     * 粉丝用户表
+     */
+    public function initUserTable()
+    {
+        // 公众号粉丝详情表
+        $tableName = MpUser::tableName();
+        $this->createTable($tableName, [
+            'id' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '粉丝ID'",
+            'nickname' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '昵称'",
+            'sex' => Schema::TYPE_BOOLEAN . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '性别'",
+            'city' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '所在城市'",
+            'country' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '所在省'",
+            'province' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '微信ID'",
+            'language' => Schema::TYPE_STRING . "(40) NOT NULL DEFAULT '' COMMENT '用户语言'",
+            'avatar' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '用户头像'",
+            'subscribe_time' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注时间'",
+            'union_id' => Schema::TYPE_STRING . "(30) NOT NULL DEFAULT '' COMMENT '用户头像'",
+            'remark' => Schema::TYPE_STRING . " NOT NULL DEFAULT '' COMMENT '备注'",
+            'group_id' =>  Schema::TYPE_SMALLINT . " NOT NULL DEFAULT '0' COMMENT '分组ID'",
+            'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
+        ]);
+        $this->createIndex('id', $tableName, 'id', true);
     }
 
     /**

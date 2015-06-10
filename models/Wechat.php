@@ -66,13 +66,13 @@ class Wechat extends ActiveRecord
                 'class' => EventBehavior::className(),
                 'events' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => function ($event) {
-                        $this->access_token = serialize($this->access_token);
+                        $this->access_token && $this->access_token = serialize($this->access_token);
                     },
                     ActiveRecord::EVENT_BEFORE_UPDATE => function ($event) {
-                        $this->access_token = serialize($this->access_token);
+                        $this->access_token && $this->access_token = serialize($this->access_token);
                     },
                     ActiveRecord::EVENT_AFTER_FIND => function ($event) {
-                        $this->access_token = unserialize($this->access_token);
+                        $this->access_token && $this->access_token = unserialize($this->access_token);
                     }
                 ]
             ]

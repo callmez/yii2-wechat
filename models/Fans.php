@@ -40,6 +40,14 @@ class Fans extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
+    public static function find()
+    {
+        return Yii::createObject(FansQuery::className(), [get_called_class()]);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public static function tableName()
     {
         return '{{%wechat_fans}}';
@@ -82,11 +90,12 @@ class Fans extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
+     * 关联的用户信息
+     * @return \yii\db\ActiveQuery
      */
-    public static function find()
+    public function getUser()
     {
-        return Yii::createObject(FansQuery::className(), [get_called_class()]);
+        return $this->hasOne(MpUser::className(), ['id' => 'id']);
     }
 
     /**
@@ -115,5 +124,42 @@ class Fans extends \yii\db\ActiveRecord
     public function unsubscribe()
     {
         return $this->updateAttributes(['status' => self::STATUS_UNSUBSCRIBED]) > 0;
+    }
+
+    /**
+     * 更新用户微信数据
+     * 更新失败将会在$this->user->getErrors()中记录错误
+     * @param bool $force
+     * @return bool
+     */
+    public function updateUser($force = false)
+    {
+        $user = $this->user;
+        if (!$user || $force) {
+            $wechat = $this->wechat;
+            $user = new MpUser();
+            $this->populateRelation('user',$user);
+            $data = $wechat->getSdk()->getUserInfo($this->open_id);
+            if ($data) {
+                $user->setAttributes([
+                    'id' => $this->id,
+                    'nickname' => $data['nickname'],
+                    'sex' => $data['sex'],
+                    'city' => $data['city'],
+                    'country' => $data['country'],
+                    'province' => $data['province'],
+                    'language' => $data['language'],
+                    'avatar' => $data['headimgurl'],
+                    'subscribe_time' => $data['subscribe_time'],
+                    'remark' => $data['remark'],
+                    'union_id' => isset($data['unionid']) ? $data['unionid'] : null, // 测试号无此项
+                    'group_id' => $data['groupid'],
+                ]);
+                return $user->save();
+            }
+            $user->addError('id', '用户资料更新失败!');
+            return false;
+        }
+        return true;
     }
 }

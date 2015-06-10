@@ -8,7 +8,7 @@ class MenuController extends AdminController
 {
     public function actionIndex()
     {
-            $sdk = $this->getWechat()->getSdk();
+        $sdk = $this->getWechat()->getSdk();
         // 创建菜单
         if ($menus = Yii::$app->getRequest()->getBodyParam('menus')) {
             if (!$sdk->createMenu($menus)) {
@@ -16,9 +16,7 @@ class MenuController extends AdminController
             }
             return $this->message('自定义菜单更新成功', 'success');
         }
-        if (!($menus = $sdk->getMenu())) {
-            return $this->message(['获取菜单列表失败! '] + $sdk->lastError);
-        }
+        $menus = $sdk->getMenu() ?: [];
         return $this->render('index', [
             'wechat' => $this->getWechat(),
             'menus' => $menus

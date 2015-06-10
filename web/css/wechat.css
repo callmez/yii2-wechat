@@ -71,14 +71,15 @@ div.required > label:after {
     border-radius: 3px;
     display: inline-block;
     padding: 6px 12px;
+    margin-left: 44px;
+    margin-right: 44px;
 }
 .wechat-message-list .message.send .content {
     border: 1px solid #4cae4c;
-    margin-right: 44px;
+
 }
 .wechat-message-list .message.receive .content {
     border: 1px solid #dcdcdc;
-    margin-left: 44px;
 }
 .wechat-message-list .message.send .content.text {
     background-color: #5cb85c;

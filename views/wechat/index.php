@@ -5,7 +5,7 @@ use yii\grid\GridView;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\widgets\PagePanel;
 
-$this->title = '公众号管理';
+$this->title = '公众号列表';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php PagePanel::begin(['options' => ['class' => 'wechat-index']]) ?>

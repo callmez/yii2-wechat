@@ -33,6 +33,10 @@ class ApiController extends BaseController
      */
     public function actionIndex($id)
     {
+//        Yii::$app->request->setRawBody('<xml>
+//    <ToUserName><![CDATA[gh_9aa843ec54a4]]></ToUserName>
+//    <Encrypt><![CDATA[+LgLYHUMyZDmZUtoL73gagPPSB7rC09nAofGrfH4N8mb5csjTIcjks7PWdvAcaQT+yLtojmH6vauuo5f7cY08XXPCdgs2x8EqvkOlCMTvJIwQ+K48jHCrYV5yPN3IpGuTijYqYblZx9Feas5D1OkNk0Ia327olAx926sjHSNQ65iu6Dv9dE/+TIyKnKd99FB3R8Fking9uCDNyj5PgKiduozQ+Oud1rzIg8oyDc5Spu4KX81P0Qm5/6W2m3GBf5ACLZ3fo8ix5UYz3NGPfqd/CSmI4Do2XQB2OH5pw5sX8WYjwmJDyxE2ncyHojXiZdevkz7mbCAgVGCbuLoQeQ3H28jtJGwJfJUln6SQ90TKIJ95AXBxmBm0UY5+Dm+M21H7uikVGMJ2jjzqPIl3H+81oEjGubsAA5ZvvHdqr+bff4=]]></Encrypt>
+//</xml>');
         // TODO 群发事件推送群发处理
         // TODO 模板消息事件推送处理
         // TODO 用户上报地理位置事件推送处理
@@ -207,7 +211,7 @@ class ApiController extends BaseController
             $matchs = call_user_func([$this, $method]);
         }
         return array_merge([
-            ['route' => '/wechat/process/subscribe'] // 默认所有请求都做一次关注请求处理
+            ['route' => '/wechat/process/fans/subscribe'] // 默认所有请求都做一次关注请求处理
         ], $matchs);
     }
 
@@ -320,7 +324,7 @@ class ApiController extends BaseController
             ->limitTime(TIMESTAMP)
             ->all();
         return array_merge([ // 取消关注默认处理
-            ['route' => '/wechat/process/unsubscribe']
+            ['route' => '/wechat/process/fans/unsubscribe']
         ], $match);
     }
 

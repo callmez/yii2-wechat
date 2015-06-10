@@ -220,7 +220,7 @@ class Module extends \yii\base\Module
      */
     public $defaultCateMenus = [
         'system' => [
-            ['label' => '公众号管理', 'url' => ['/wechat/wechat/index']]
+            ['label' => '公众号列表', 'url' => ['/wechat/wechat/index']]
         ],
         'fans' => [
             ['label' => '粉丝列表', 'url' => ['/wechat/fans/index']]

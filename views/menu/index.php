@@ -4,14 +4,14 @@ use yii\helpers\Html;
 use yii\bootstrap\Tabs;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\assets\AngularDragAndDropListsAsset;
-use callmez\wechat\modules\admin\widgets\AdminPanel;
+use callmez\wechat\widgets\PagePanel;
 
 AngularDragAndDropListsAsset::register($this);
 
 $this->title = '自定义菜单';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<?php AdminPanel::begin(['options' => ['class' => 'menu-index']]) ?>
+<?php PagePanel::begin(['options' => ['class' => 'menu-index']]) ?>
 <div ng-app="menuApp">
     <div ng-controller="MenusController">
         <p><button ng-if="menus.length < 3" ng-click="showModal('new')" id="menuButton" type="button" class="btn btn-block btn-success">添加一级菜单</button></p>
@@ -97,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 </div>
-<?php AdminPanel::end() ?>
+<?php PagePanel::end() ?>
 <script type="text/javascript">
     angular.module('menuApp', ['dndLists']).controller('MenusController', function ($scope, $http) {
         $scope._menus = <?= json_encode($menus, JSON_UNESCAPED_UNICODE) ?>;

@@ -52,6 +52,12 @@ div.required > label:after {
 .list-group-item.active a {
     color: #fff;
 }
+/* 自定义菜单 */
+.wechat-menus .sub-menus {
+    padding: 0 10px;
+    width: 100%;
+}
+
 /* 微信模拟界面 */
 .wechat-message-list {
     padding: 15px;

@@ -12,35 +12,37 @@ $this->title = '自定义菜单';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <?php PagePanel::begin(['options' => ['class' => 'menu-index']]) ?>
-<div ng-app="menuApp">
+<div ng-app="menuApp" class="wechat-menus">
     <div ng-controller="MenusController">
-        <p><button ng-if="menus.length < 3" ng-click="showModal('new')" id="menuButton" type="button" class="btn btn-block btn-success">添加一级菜单</button></p>
-        <p ng-if="menus.length > 3" class="text-danger text-center">一级菜单最多不能超过3个</p>
-        <ul dnd-list="menus" class="menus btn-group btn-group-justified list-unstyled mb20">
-            <li ng-repeat="menu in menus" dnd-draggable="menu" dnd-effect-allowed="move" dnd-moved="menus.splice($index, 1)" class="menu btn-group">
-                <div ng-click="showModal($index)" class="btn btn-default">
-                    <button ng-click="menus.splice($index, 1)" type="button" class="close">
-                        <span aria-hidden="true">&times;</span>
-                        <span class="sr-only">删除</span>
-                    </button>
-                    {{menu.name}}
-                </div>
-            </li>
-        </ul>
-        <div class="mb20 btn-group btn-group-justified">
+        <div ng-if="menus.length" class="mb10 btn-group btn-group-justified">
             <div ng-repeat="(index, menu) in menus" class="btn-group">
                 <p ng-if="menu.sub_button.length > 5" class="text-danger text-center">二级菜单最多不能超过5个</p>
                 <ul dnd-list="menu.sub_button" class="sub-menus btn-group-vertical list-unstyled">
-                    <button ng-if="menu.sub_button.length < 5 && !menu.type" ng-click="showModal(index, 'new')" id="subMenuButton" type="button" class="btn btn-block btn-success">添加二级菜单</button>
-                    <li ng-click="showModal(index, $index)" ng-repeat="subMenu in menu.sub_button" dnd-draggable="subMenu" dnd-effect-allowed="move" dnd-moved="menus[index].sub_button.splice($index, 1)" class="sub-menu btn btn-default">
+                    <li ng-click="showModal(index, $index)" ng-repeat="subMenu in menu.sub_button" dnd-draggable="subMenu" dnd-effect-allowed="move" dnd-moved="menus[index].sub_button.splice($index, 1)" class="sub-menu btn btn-lg btn-default">
                         <button ng-click="menus[index].sub_button.splice($index, 1)" type="button" class="close">
                             <span aria-hidden="true">&times;</span>
                             <span class="sr-only">删除</span>
                         </button>
                         {{subMenu.name}}
                     </li>
+                    <button ng-if="menu.sub_button.length < 5 && !menu.type" ng-click="showModal(index, 'new')" id="subMenuButton" type="button" class="btn btn-block btn-success">添加二级菜单</button>
                 </ul>
             </div>
+        </div>
+        <div class="mb20">
+            <ul dnd-list="menus" class="menus btn-group btn-group-justified list-unstyled mb10">
+                <li ng-repeat="menu in menus" dnd-draggable="menu" dnd-effect-allowed="move" dnd-moved="menus.splice($index, 1)" class="menu btn-group">
+                    <div ng-click="showModal($index)" class="btn btn-default btn-lg">
+                        <button ng-click="menus.splice($index, 1)" type="button" class="close">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">删除</span>
+                        </button>
+                        {{menu.name}}
+                    </div>
+                </li>
+            </ul>
+            <p ng-if="menus.length < 3"><button ng-click="showModal('new')" id="menuButton" type="button" class="btn btn-block btn-success">添加一级菜单</button></p>
+            <p ng-if="menus.length > 3" class="text-danger text-center">一级菜单最多不能超过3个</p>
         </div>
         <p>
             <button ng-click="resetMenus()" type="button" class="btn btn-info"><span class="glyphicon glyphicon-step-backward"></span> 重置修改 </button>

@@ -28,13 +28,16 @@ class ReplyRuleKeywordQuery extends ActiveQuery
     }
 
     /**
-     * 过滤公众号
+     * 查询公众号规则
      * @return $this
      */
-    public function wechat($wid)
+    public function wechatRule($wid, $status = ReplyRule::STATUS_ACTIVE)
     {
         $this->joinWith([
-            'rule' => function($query) use ($wid) {
+            'rule' => function($query) use ($wid, $status) {
+                if ($status !== null) {
+                    $query->active($status);
+                }
                 $query->andWhere(['wid' => $wid]);
             }
         ]);

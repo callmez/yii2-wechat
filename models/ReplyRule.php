@@ -21,6 +21,14 @@ class ReplyRule extends \yii\db\ActiveRecord
         self::STATUS_DISABLED => '禁用'
     ];
 
+    /**
+     * @inheritdoct
+     */
+    public static function find()
+    {
+        return Yii::createObject(ReplyRuleQuery::className(), [get_called_class()]);
+    }
+
     public function behaviors()
     {
         return [

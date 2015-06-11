@@ -202,13 +202,13 @@ class ApiController extends BaseController
         } else {
             $method = 'match' . $this->message['MsgType'];
         }
-        $matchs = [];
+        $matches = [];
         if (method_exists($this, $method)) {
-            $matchs = call_user_func([$this, $method]);
+            $matches = call_user_func([$this, $method]);
         }
         return array_merge([
             ['route' => '/wechat/process/fans/subscribe'] // 默认所有请求都做一次关注请求处理
-        ], $matchs);
+        ], $matches);
     }
 
     /**
@@ -219,7 +219,7 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->keyword($this->message['Content'])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
     }
@@ -232,7 +232,7 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => ReplyRuleKeyword::TYPE_IMAGE])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
     }
@@ -245,7 +245,7 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => ReplyRuleKeyword::TYPE_VOICE])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
     }
@@ -258,7 +258,7 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_VIDEO, ReplyRuleKeyword::TYPE_SHORT_VIDEO]])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
     }
@@ -271,7 +271,7 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_LOCATION]])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
     }
@@ -284,7 +284,7 @@ class ApiController extends BaseController
     {
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_LINK]])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
     }
@@ -303,7 +303,7 @@ class ApiController extends BaseController
         // 订阅请求回复规则触发
         return ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_SUBSCRIBE]])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
     }
@@ -316,7 +316,7 @@ class ApiController extends BaseController
     {
         $match = ReplyRuleKeyword::find()
             ->andFilterWhere(['type' => [ReplyRuleKeyword::TYPE_UNSUBSCRIBE]])
-            ->wechat($this->getWechat()->id)
+            ->wechatRule($this->getWechat()->id)
             ->limitTime(TIMESTAMP)
             ->all();
         return array_merge([ // 取消关注默认处理

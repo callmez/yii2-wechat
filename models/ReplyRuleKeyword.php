@@ -83,6 +83,14 @@ class ReplyRuleKeyword extends ActiveRecord
         self::TYPE_UNSUBSCRIBE => '取消关注请求'
     ];
 
+    /**
+     * @inheritdoct
+     */
+    public static function find()
+    {
+        return Yii::createObject(ReplyRuleKeywordQuery::className(), [get_called_class()]);
+    }
+
     public function behaviors()
     {
         return [
@@ -139,13 +147,5 @@ class ReplyRuleKeyword extends ActiveRecord
     public function getRule()
     {
         return $this->hasOne(ReplyRule::className(), ['id' => 'rid']);
-    }
-
-    /**
-     * @inheritdoct
-     */
-    public static function find()
-    {
-        return Yii::createObject(ReplyRuleKeywordQuery::className(), [get_called_class()]);
     }
 }

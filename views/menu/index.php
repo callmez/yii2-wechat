@@ -86,7 +86,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <label for="menuName" class="col-sm-2 control-label">{{_menu.type == 'click' ? '关键字' : _menu.type == 'view' ? '链接地址' : '类型值'}}</label>
 
                                 <div class="col-sm-10">
-                                    <input ng-model="_menu[menuTypes[_menu.type].meta]" ng-value="{{menuTypes[_menu.type].value}}" type="text" class="form-control" id="menuName" placeholder="请输入菜单名">
+                                    <input ng-model="_menu[menuTypes[_menu.type].meta]" ng-value="{{menuTypes[_menu.type].value}}" type="text" class="form-control" id="menuName">
                                 </div>
                             </div>
                         </form>
@@ -111,6 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         }
         $scope.submitMenus = function() {
+            // TODO 提交时子菜单类型的一级菜单的二级菜单不能为空.否则提交失败, 需加验证提示
             $scope.submit = {
                 disabled: true,
                 text: '提交中...'
@@ -121,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
             data[yii.getCsrfParam()] = yii.getCsrfToken();
             $http({
                 url: '',
-                method: 'post',
+                method: 'POST',
                 data: data,
                 headers: {'X-Requested-With': 'XMLHttpRequest'}
             }).success(function(response) {
@@ -135,7 +136,7 @@ $this->params['breadcrumbs'][] = $this->title;
             if (index == 'new') {
                 index = $scope.menus.length;
                 $scope.menus[index] = {
-                    'sub_button': [] // 子菜单需要该属性显示添加菜单按钮
+                    sub_button: [] // 子菜单需要该属性显示添加菜单按钮
                 };
             } else if (subMenuIndex == 'new') {
                 subMenuIndex = $scope.menus[index].sub_button.length;

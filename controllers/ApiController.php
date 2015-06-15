@@ -254,7 +254,6 @@ class ApiController extends BaseController
             'message' => $this->message,
             'type' => MessageHistory::TYPE_REQUEST
         ]);
-
         // 记录响应内容
         if ($result !== null) {
             // 记录响应内容

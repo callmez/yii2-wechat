@@ -8,10 +8,17 @@ use yii\web\XmlResponseFormatter;
 use yii\web\NotFoundHttpException;
 use yii\base\InvalidCallException;
 use callmez\wechat\models\Wechat;
+use callmez\wechat\components\ProcessEvent;
+use callmez\wechat\models\MessageHistory;
 use callmez\wechat\models\ReplyRuleKeyword;
 use callmez\wechat\components\BaseController;
 use callmez\wechat\components\ProcessController;
 
+/**
+ * 微信请求处理控制器
+ * 该控制器为微信对接接口, 所有微信请求都会通过此控制器来处理请求
+ * @package callmez\wechat\controllers
+ */
 class ApiController extends BaseController
 {
     /**
@@ -24,43 +31,6 @@ class ApiController extends BaseController
      * @var array
      */
     public $message;
-    /**
-     * 微信请求响应Action
-     * 分析请求后分发给指定的处理流程
-     * @param $id
-     * @return mixed|null
-     * @throws NotFoundHttpException
-     */
-    public function actionIndex($id)
-    {
-        // TODO 群发事件推送群发处理
-        // TODO 模板消息事件推送处理
-        // TODO 用户上报地理位置事件推送处理
-        // TODO 自定义菜单事件推送处理
-        // TODO 微信小店订单付款通知处理
-        // TODO 微信卡卷(卡券通过审核、卡券被用户领取、卡券被用户删除)通知处理
-        // TODO 智能设备接口
-        // TODO 多客服转发处理
-        $request = Yii::$app->request;
-        $wechat = $this->findWechat($id);
-        if (!$wechat->getSdk()->checkSignature()) {
-            return 'Sign check fail!';
-        }
-        switch ($request->getMethod()) {
-            case 'GET':
-                if ($wechat->status == Wechat::STATUS_INACTIVE) { // 激活公众号
-                    $wechat->updateAttributes(['status' => Wechat::STATUS_ACTIVE]);
-                }
-                return $request->getQueryParam('echostr');
-            case 'POST':
-                $this->setWechat($wechat);
-                $this->message = $this->parseRequest();
-                $result = $this->resolveProcess(); // 处理请求
-                return is_array($result) ? $this->createResponse($result) : $result;
-            default:
-                throw new NotFoundHttpException('The requested page does not exist.');
-        }
-    }
 
     /**
      * @var Wechat
@@ -100,6 +70,82 @@ class ApiController extends BaseController
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    /**
+     * 消息处理前事件
+     */
+    const EVENT_BEFORE_PROCESS = 'beforeProcess';
+    /**
+     * 消息处理前事件
+     * @return mixed
+     */
+    public function beforeProcess()
+    {
+        $event = new ProcessEvent($this->message, $this->getWechat());
+        $this->trigger(self::EVENT_BEFORE_PROCESS, $event);
+        return $event->isValid;
+    }
+
+    /**
+     * 消息处理后事件
+     */
+    const EVENT_AFTER_PROCESS = 'afterProcess';
+    /**
+     * 消息处理后事件
+     * @param $result
+     * @throws NotFoundHttpException
+     */
+    public function afterProcess(&$result)
+    {
+        if ($this->hasEventHandlers(self::EVENT_AFTER_PROCESS)) {
+            $event = new ProcessEvent($this->message, $this->getWechat());
+            $event->result = $result;
+            $this->trigger(self::EVENT_AFTER_PROCESS, $event);
+            $result = $event->result;
+        }
+    }
+
+    /**
+     * 微信请求响应Action
+     * 分析请求后分发给指定的处理流程
+     * @param $id
+     * @return mixed|null
+     * @throws NotFoundHttpException
+     */
+    public function actionIndex($id)
+    {
+        // TODO 群发事件推送群发处理
+        // TODO 模板消息事件推送处理
+        // TODO 用户上报地理位置事件推送处理
+        // TODO 自定义菜单事件推送处理
+        // TODO 微信小店订单付款通知处理
+        // TODO 微信卡卷(卡券通过审核、卡券被用户领取、卡券被用户删除)通知处理
+        // TODO 智能设备接口
+        // TODO 多客服转发处理
+        $request = Yii::$app->request;
+        $wechat = $this->findWechat($id);
+        if (!$wechat->getSdk()->checkSignature()) {
+            return 'Sign check fail!';
+        }
+        switch ($request->getMethod()) {
+            case 'GET':
+                if ($wechat->status == Wechat::STATUS_INACTIVE) { // 激活公众号
+                    $wechat->updateAttributes(['status' => Wechat::STATUS_ACTIVE]);
+                }
+                return $request->getQueryParam('echostr');
+            case 'POST':
+                $this->setWechat($wechat);
+                $this->message = $this->parseRequest();
+                $result = null;
+                if($this->beforeProcess()) {
+                    $result = $this->resolveProcess(); // 处理请求
+                    $this->afterProcess($result);
+                }
+                return is_array($result) ? $this->createResponse($result) : $result;
+            default:
+                throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
 
@@ -188,6 +234,42 @@ class ApiController extends BaseController
                 break;
             }
         }
+
+
+        $module = isset($controller) ? $controller->module->id : 'wechat'; // 处理的模块
+        if ($model instanceof ReplyRuleKeyword) {
+            $kid = $model->id;
+            $rid = $model->rid;
+        } else {
+            $kid = $rid = 0;
+        }
+        // 记录请求内容
+        MessageHistory::add([
+            'wid' => $this->getWechat()->id,
+            'rid' => $rid,
+            'kid' => $kid,
+            'from' => $this->message['FromUserName'],
+            'to' => $this->message['ToUserName'],
+            'module' => $module,
+            'message' => $this->message,
+            'type' => MessageHistory::TYPE_REQUEST
+        ]);
+
+        // 记录响应内容
+        if ($result !== null) {
+            // 记录响应内容
+            MessageHistory::add([
+                'wid' => $this->getWechat()->id,
+                'rid' => $rid,
+                'kid' => $kid,
+                'from' => $this->message['ToUserName'],
+                'to' => $this->message['FromUserName'],
+                'module' => $module,
+                'message' => $result,
+                'type' => MessageHistory::TYPE_RESPONSE
+            ]);
+        }
+
         return $result;
     }
 
@@ -206,9 +288,12 @@ class ApiController extends BaseController
         if (method_exists($this, $method)) {
             $matches = call_user_func([$this, $method]);
         }
-        return array_merge([
-            ['route' => '/wechat/process/fans/subscribe'] // 默认所有请求都做一次关注请求处理
+        $matches = array_merge([
+            ['route' => '/wechat/process/fans/record'] // 记录常用数据
         ], $matches);
+
+        Yii::info($matches, __METHOD__);
+        return $matches;
     }
 
     /**

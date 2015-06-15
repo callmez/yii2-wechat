@@ -19,7 +19,7 @@ class m150217_131752_initWechat extends Migration
         $this->initReplyRuleTable();
         $this->initFansTable();
         $this->initUserTable();
-//        $this->initMessageHistoryTable();
+        $this->initMessageHistoryTable();
     }
 
     public function safeDown()
@@ -29,7 +29,7 @@ class m150217_131752_initWechat extends Migration
         $this->dropTable(ReplyRuleKeyword::tableName());
         $this->dropTable(Fans::tableName());
         $this->dropTable(MpUser::tableName());
-//        $this->dropTable(MessageHistory::tableName());
+        $this->dropTable(MessageHistory::tableName());
     }
 
     /**
@@ -179,16 +179,16 @@ class m150217_131752_initWechat extends Migration
         $this->createTable($tableName, [
             'id' => Schema::TYPE_PK,
             'wid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属微信公众号ID'",
-            'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属规则ID'",
+            'rid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '相应规则ID'",
             'kid' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '所属关键字ID'",
-            'open_id' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '请求用户微信ID'",
+            'from' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '请求用户ID'",
+            'to' => Schema::TYPE_STRING . "(50) NOT NULL DEFAULT '' COMMENT '相应用户ID'",
             'module' => Schema::TYPE_STRING . "(20) NOT NULL DEFAULT '' COMMENT '处理模块'",
             'message' => Schema::TYPE_TEXT . " NOT NULL COMMENT '消息体内容'",
             'type' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '发送类型'",
-            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '关注时间'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'"
         ]);
         $this->createIndex('wid', $tableName, 'wid');
-        $this->createIndex('open_id', $tableName, 'open_id');
         $this->createIndex('module', $tableName, 'module');
     }
 }

@@ -2,10 +2,12 @@
 
 namespace callmez\wechat\controllers;
 
+use callmez\wechat\models\Message;
 use Yii;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Fans;
 use callmez\wechat\models\FansSearch;
+use callmez\wechat\models\MessageHistorySearch;
 use callmez\wechat\components\AdminController;
 
 /**
@@ -20,10 +22,37 @@ class FansController extends AdminController
     public function actionIndex()
     {
         $searchModel = new FansSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, true);
         $dataProvider->query->andWhere(['wid' => $this->getWechat()->id]);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionMessage($id)
+    {
+        $model = $this->findModel($id);
+        $message = new Message();
+
+        if ($message->load(Yii::$app->request->post()) && $message->send()) {
+            $this->flash('消息发送成功!', 'success');
+            $message = new Message();
+        }
+
+        $searchModel = new MessageHistorySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = [
+            'defaultOrder' => ['created_at' => SORT_DESC]
+        ];
+        $dataProvider->query
+            ->wechat($this->getWechat()->id)
+            ->wechatFans($model->open_id, $this->getWechat()->original);
+
+        return $this->render('message', [
+            'model' => $model,
+            'message' => $message,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);

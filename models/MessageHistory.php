@@ -64,6 +64,14 @@ class MessageHistory extends ActiveRecord
     /**
      * @inheritdoc
      */
+    public static function find()
+    {
+        return Yii::createObject(MessageHistoryQuery::className(), [get_called_class()]);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function rules()
     {
         return [

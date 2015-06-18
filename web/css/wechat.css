@@ -1,4 +1,8 @@
-/* Common */
+/* UI 自定义 */
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+/* 通用 */
 .mb10 {
     margin-bottom: 10px;
 }

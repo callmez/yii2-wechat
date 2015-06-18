@@ -3,6 +3,7 @@
 namespace callmez\wechat\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 
 /**
@@ -15,7 +16,7 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $created_at
  * @property integer $updated_at
  */
-class Fans extends \yii\db\ActiveRecord
+class Fans extends ActiveRecord
 {
     /**
      * 取消关注

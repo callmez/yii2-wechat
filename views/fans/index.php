@@ -4,10 +4,9 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 use callmez\wechat\models\Fans;
 use callmez\wechat\widgets\PagePanel;
+use callmez\wechat\assets\WechatAsset;
 
-/* @var $this yii\web\View */
-/* @var $searchModel callmez\wechat\modules\admin\models\FansSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+$wechatAsset = WechatAsset::register($this);
 
 $this->title = '粉丝列表';
 $this->params['breadcrumbs'][] = $this->title;
@@ -28,6 +27,9 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'open_id',
+                'options' => [
+                    'width' => 200
+                ]
             ],
             [
                 'attribute' => 'status',
@@ -41,6 +43,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 'options' => [
                     'width' => 120
                 ]
+            ],
+            [
+                'attribute' => 'user.avatar',
+                'format' => 'html',
+                'value' => function ($model) use ($wechatAsset) {
+                    return Html::img($model->user ? $model->user->avatar : $wechatAsset->baseUrl . '/images/anonymous_avatar.jpg', [
+                        'width' => 40,
+                        'class' => 'img-rounded'
+                    ]);
+                }
+            ],
+            [
+                'attribute' => 'user.nickname',
+                'value' => function ($model) {
+                    return $model->user ? $model->user->nickname : '';
+                }
             ],
             [
                 'attribute' => 'created_at',

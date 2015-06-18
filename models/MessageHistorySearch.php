@@ -5,12 +5,12 @@ namespace callmez\wechat\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use callmez\wechat\models\Fans;
+use callmez\wechat\models\MessageHistory;
 
 /**
- * FansSearch represents the model behind the search form about `callmez\wechat\models\Fans`.
+ * MessageHistorySearch represents the model behind the search form about `callmez\wechat\models\MessageHistory`.
  */
-class FansSearch extends Fans
+class MessageHistorySearch extends MessageHistory
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class FansSearch extends Fans
     public function rules()
     {
         return [
-            [['id', 'wid', 'status'], 'integer'],
-            [['open_id'], 'safe'],
+            [['id', 'wid', 'rid', 'kid', 'created_at'], 'integer'],
+            [['from', 'to', 'module', 'message', 'type'], 'safe'],
         ];
     }
 
@@ -39,21 +39,18 @@ class FansSearch extends Fans
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $user = false)
+    public function search($params)
     {
-        $query = Fans::find();
+        $query = MessageHistory::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-        if ($user) {
-            $query->with('user');
-        }
 
         $this->load($params);
 
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to any records when validation fails
+            // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
         }
@@ -61,12 +58,16 @@ class FansSearch extends Fans
         $query->andFilterWhere([
             'id' => $this->id,
             'wid' => $this->wid,
-            'status' => $this->status,
+            'rid' => $this->rid,
+            'kid' => $this->kid,
             'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
 
-        $query->andFilterWhere(['like', 'open_id', $this->open_id]);
+        $query->andFilterWhere(['like', 'from', $this->from])
+            ->andFilterWhere(['like', 'to', $this->to])
+            ->andFilterWhere(['like', 'module', $this->module])
+            ->andFilterWhere(['like', 'message', $this->message])
+            ->andFilterWhere(['like', 'type', $this->type]);
 
         return $dataProvider;
     }

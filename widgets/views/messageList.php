@@ -2,10 +2,28 @@
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 use callmez\wechat\assets\WechatAsset;
+use callmez\wechat\widgets\MessageList;
+use callmez\wechat\models\MessageHistory;
 $wechaatAsset = WechatAsset::register($this);
+if (
+    $widget->interaction == MessageList::INTERACTION_SERVER && $model->type == MessageHistory::TYPE_REQUEST ||
+    $widget->interaction == MessageList::INTERACTION_USER && $model->type == MessageHistory::TYPE_RESPONSE
+) {
+    $type = 'receive';
+} else {
+    $type = 'send';
+}
+if (
+    $widget->interaction == MessageList::INTERACTION_SERVER && $model->type == MessageHistory::TYPE_REQUEST ||
+    $widget->interaction == MessageList::INTERACTION_USER && $model->type == MessageHistory::TYPE_RESPONSE
+) {
+    $avatar = '/images/avatar.jpg';
+} else {
+    $avatar = '/images/wechat.jpg';
+}
 ?>
-<div class="message <?= $model->type == 'response' ? 'receive' : 'send'?>" data-toggle="tooltip" title="<?= date('Y-m-d H:i:s', $model->created_at) ?>">
-    <img class="avatar" src="<?= $wechaatAsset->baseUrl . ($model->type != 'response' ? '/images/wechat.gif' : '/images/avatar.jpg') ?>" />
+<div class="message <?= $type ?>" data-toggle="tooltip" title="<?= date('Y-m-d H:i:s', $model->created_at) ?>">
+    <img class="avatar" src="<?= $wechaatAsset->baseUrl . $avatar ?>" />
     <div class="content <?= $model->message['MsgType'] ?>">
         <?php switch ($model->message['MsgType']) { // TODO 完成所有类型信息显示
             case 'text':

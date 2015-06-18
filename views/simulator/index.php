@@ -132,7 +132,7 @@ foreach (Wechat::find()->all() as $k => $wechat) {
             </div>
             <div class="wechat-message-list">
                 <div ng-repeat="_history in history" class="message {{_history.type}} clearfix">
-                    <img ng-if="!isString(_history.data) && _history.data.MsgType != 'news'" class="avatar" ng-src="{{baseAssetUrl + (_history.type == 'send' ? '/images/avatar.jpg' : '/images/wechat.gif')}}" />
+                    <img ng-if="!isString(_history.data) && _history.data.MsgType != 'news'" class="avatar" ng-src="{{baseAssetUrl + (_history.type == 'send' ? '/images/avatar.jpg' : '/images/wechat.jpg')}}" />
                     <div ng-if="_history.data.Event" class="content event">{{events[_history.data.Event]}}</div>
                     <div ng-if="_history.data.MsgType == 'text'" class="content text">{{_history.data.Content}}</div>
                     <ul ng-if="_history.data.MsgType == 'news'" class="content news">

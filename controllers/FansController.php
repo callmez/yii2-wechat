@@ -43,9 +43,9 @@ class FansController extends AdminController
 
         $searchModel = new MessageHistorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->sort = [
-            'defaultOrder' => ['created_at' => SORT_DESC]
-        ];
+//        $dataProvider->sort = [
+//            'defaultOrder' => ['created_at' => SORT_DESC]
+//        ];
         $dataProvider->query
             ->wechat($this->getWechat()->id)
             ->wechatFans($model->open_id, $this->getWechat()->original);

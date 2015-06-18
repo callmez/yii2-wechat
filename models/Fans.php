@@ -153,7 +153,7 @@ class Fans extends ActiveRecord
                     'avatar' => $data['headimgurl'],
                     'subscribe_time' => $data['subscribe_time'],
                     'remark' => $data['remark'],
-                    'union_id' => isset($data['unionid']) ? $data['unionid'] : null, // 测试号无此项
+                    'union_id' => isset($data['unionid']) ? $data['unionid'] : '', // 测试号无此项
                     'group_id' => $data['groupid'],
                 ]);
                 return $user->save();

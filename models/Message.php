@@ -86,14 +86,25 @@ class Message extends Model
      * @var string
      */
     public $hqMusicUrl;
+    /**
+     * 微信公众号
+     * @var Wechat
+     */
+    protected $wechat;
 
+    public function __construct(Wechat $wechat, $config = [])
+    {
+        $this->wechat = $wechat; // 需设置微信公众号交互主体
+        parent::__construct($config);
+    }
     /**
      * @inhertdoc
      */
     public function rules()
     {
         return [
-            [['toUser', 'content'], 'required', 'when' => function ($model, $attribute) {
+            [['toUser'], 'required'],
+            [['content'], 'required', 'when' => function ($model, $attribute) {
                 return $model->msgType = Message::TYPE_TEXT;
             }, 'whenClient' => "function (attribute, value) {
                 return $('#message-msgtype input[type=radio]:checked').val() == '" . Message::TYPE_TEXT . "';
@@ -135,7 +146,29 @@ class Message extends Model
         if ($runValidation && !$this->validate()) {
             return false;
         }
+        $method = 'send' . $this->msgType;
+        if (!method_exists($this, $method)) {
+            $this->addError('msgType', '未找到指定发送方法');
+            return false;
+        }
+        $result = call_user_func([$this, $method]);
+        if (!$result) {
+            $this->addError('msgType', json_encode($this->wechat->getSdk()->lastError));
+        }
+        return $result;
+    }
 
-        return true;
+    /**
+     * @return mixed
+     */
+    protected function sendText()
+    {
+        return $this->wechat->getSdk()->sendMessage([
+            'touser' => $this->toUser,
+            'msgtype' => $this->msgType,
+            $this->msgType => [
+                'content' => $this->content
+            ]
+        ]);
     }
 }

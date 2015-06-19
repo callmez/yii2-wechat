@@ -31,7 +31,7 @@ class ActiveField extends \yii\bootstrap\ActiveField
                 'offset' => 'col-sm-offset-3',
                 'label' => 'col-sm-3',
                 'wrapper' => 'col-sm-6',
-                'error' => 'col-sm-3',
+                'error' => '',
                 'hint' => '',
             ];
             if (isset($instanceConfig['horizontalCssClasses'])) {

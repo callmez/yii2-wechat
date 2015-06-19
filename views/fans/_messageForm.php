@@ -11,6 +11,7 @@ MessageAsset::register($this);
     'id' => 'messageForm',
     'layout' => 'horizontal'
 ]); ?>
+    <?= Html::activeHiddenInput($model, 'toUser') ?>
 
     <?= $form->field($model, 'msgType')->inline()->radioList(Message::$types) ?>
 

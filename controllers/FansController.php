@@ -31,15 +31,25 @@ class FansController extends AdminController
         ]);
     }
 
+    /**
+     * 用户查看
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
     public function actionMessage($id)
     {
         $model = $this->findModel($id);
-        $message = new Message();
+        $message = new Message($this->getWechat());
 
-        if ($message->load(Yii::$app->request->post()) && $message->send()) {
-            $this->flash('消息发送成功!', 'success');
-            $message = new Message();
+        if ($message->load(Yii::$app->request->post())) {
+            $message->toUser = $model->open_id;
+            if ($message->send()) {
+                $this->flash('消息发送成功!', 'success');
+                $message = new Message($this->getWechat());
+            }
         }
+        $message->toUser = $model->open_id;
 
         $searchModel = new MessageHistorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -75,19 +85,6 @@ class FansController extends AdminController
                 'model' => $model,
             ]);
         }
-    }
-
-    /**
-     * Deletes an existing Fans model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**

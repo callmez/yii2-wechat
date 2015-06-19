@@ -9,7 +9,6 @@ use callmez\wechat\models\Wechat;
  */
 class MpWechat extends \callmez\wechat\sdk\MpWechat
 {
-    use WechatTrait;
     /**
      * 绑定的公众号存储类
      * @var Wechat
@@ -31,5 +30,21 @@ class MpWechat extends \callmez\wechat\sdk\MpWechat
         ], $config);
 
         parent::__construct($config);
+    }
+
+    /**
+     * 跳转微信网页获取用户授权信息
+     * @param string $state
+     * @return mixed
+     */
+    public function getAuthorizeUserInfo($state = 'authorize', $scope = 'snsapi_base')
+    {
+        $request = Yii::$app->request;
+        if (($code = $request->getQueryParam('code')) && $request->getQueryParam('state') == $state) {
+            return $this->getOauth2AccessToken($code);
+        } else {
+            Yii::$app->getResponse()->redirect($this->getOauth2AuthorizeUrl($request->getAbsoluteUrl(), $state, $scope));
+            Yii::$app->end();
+        }
     }
 }

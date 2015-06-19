@@ -50,7 +50,5 @@ class MessageList extends ListView
             $totalCount = $this->dataProvider->getTotalCount();
             $pagination->setPage((int) (($totalCount + $pageSize - 1) / $pageSize) - 1);
         }
-
-
     }
 }

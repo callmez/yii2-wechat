@@ -26,6 +26,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ],
             [
+                'attribute' => 'user.avatar',
+                'format' => 'html',
+                'value' => function ($model) use ($wechatAsset) {
+                    return Html::img($model->user ? $model->user->avatar : $wechatAsset->baseUrl . '/images/anonymous_avatar.jpg', [
+                        'width' => 40,
+                        'class' => 'img-rounded'
+                    ]);
+                },
+                'options' => [
+                    'width' => 70
+                ]
+            ],
+            [
+                'attribute' => 'user.nickname',
+                'value' => function ($model) {
+                    return $model->user ? $model->user->nickname : '';
+                }
+            ],
+            [
                 'attribute' => 'open_id',
                 'options' => [
                     'width' => 200
@@ -45,46 +64,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]
             ],
             [
-                'attribute' => 'user.avatar',
-                'format' => 'html',
-                'value' => function ($model) use ($wechatAsset) {
-                    return Html::img($model->user ? $model->user->avatar : $wechatAsset->baseUrl . '/images/anonymous_avatar.jpg', [
-                        'width' => 40,
-                        'class' => 'img-rounded'
-                    ]);
-                }
-            ],
-            [
-                'attribute' => 'user.nickname',
-                'value' => function ($model) {
-                    return $model->user ? $model->user->nickname : '';
-                }
-            ],
-            [
                 'attribute' => 'created_at',
                 'format' => 'datetime',
-                'options' => [
-                    'width' => 160
-                ]
             ],
             [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{history}',
+                'class' => 'callmez\wechat\widgets\ActionColumn',
+                'template' => '{history} {update}',
                 'buttons' => [
                     'history' => function ($url, $model, $key) {
-                         return Html::a('发送消息', ['message', 'id' => $key]);
+                        return Html::a('发送消息', ['message', 'id' => $key]);
                     }
                 ],
-                'options' => [
-                    'width' => 80
-                ]
-            ],
-            [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{update} {delete}',
-                'options' => [
-                    'width' => 55
-                ]
             ],
         ],
     ]); ?>

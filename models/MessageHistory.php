@@ -75,11 +75,15 @@ class MessageHistory extends ActiveRecord
     public function rules()
     {
         return [
-            [['wid', 'from', 'to', 'module', 'message', 'type'], 'required'],
+            [['wid', 'from', 'to', 'message', 'type'], 'required'],
             [['wid', 'rid', 'kid'], 'integer'],
             [['from', 'to'], 'string', 'max' => 50],
             [['module'], 'string', 'max' => 20],
-            [['type'], 'string', 'max' => 10]
+            [['type'], 'string', 'max' => 10],
+
+            [['module'], 'default', 'value' => function() {
+                return Yii::$app->controller->module->id;
+            }]
         ];
     }
 

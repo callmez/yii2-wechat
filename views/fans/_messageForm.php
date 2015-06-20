@@ -25,13 +25,14 @@ MessageAsset::register($this);
 
     <?= $form->field($model, 'description')->textarea() ?>
 
-    <?= $form->field($model, 'thumbMediaId')->widget(FileApi::className(), [
+    <?= $form->field($model, 'mediaId')->widget(FileApi::className(), [
+        'fields' => Html::hiddenInput('mediaType', ''),
         'jsOptions' => [
             'url' => $uploadUrl
         ]
     ]) ?>
 
-    <?= $form->field($model, 'mediaId')->widget(FileApi::className(), [
+    <?= $form->field($model, 'thumbMediaId')->widget(FileApi::className(), [
         'jsOptions' => [
             'url' => $uploadUrl
         ]

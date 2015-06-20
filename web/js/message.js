@@ -17,11 +17,25 @@
                 express = '.field-message-content';
                 break;
             case 'image':
+                express = '.field-message-mediaid';
+                $formGroup
+                    .filter(express)
+                    .find('input[name=mediaType]')
+                    .val('image');
+                break;
             case 'voice':
                 express = '.field-message-mediaid';
+                $formGroup
+                    .filter(express)
+                    .find('input[name=mediaType]')
+                    .val('voice');
                 break;
             case 'video':
                 express = '.field-message-mediaid, .field-message-thumbmediaid, .field-message-title, .field-message-description';
+                $formGroup
+                    .filter(express)
+                    .find('input[name=mediaType]')
+                    .val('video');
                 break;
             case 'music':
                 express = '.field-message-title, .field-message-description, .field-message-musicurl, .field-message-hqmusicurl, .field-message-thumbmediaid';

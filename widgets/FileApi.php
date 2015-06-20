@@ -20,7 +20,7 @@ class FileApi extends InputWidget
      * 模板
      * @var string
      */
-    public $template = "\n<div id=\"{id}\" class=\"input-group\">\n<div class=\"input-group-btn\">\n{button}\n</div>\n{input}\n</div>\n";
+    public $template = "\n<div id=\"{id}\" class=\"input-group\">\n<div class=\"input-group-btn\">\n{button}{fields}\n</div>\n{input}\n</div>\n";
     /**
      * @inheritdoc
      */
@@ -40,6 +40,11 @@ class FileApi extends InputWidget
      * @var array
      */
     public $jsOptions = [];
+    /**
+     * 扩展参数, 可以传入hide input字符串
+     * @var string
+     */
+    public $fields;
 
     /**
      * 输出模板内容
@@ -60,7 +65,8 @@ class FileApi extends InputWidget
         return strtr($this->template, [
             '{id}' => $this->getId(),
             '{input}' => $input,
-            '{button}' => $button
+            '{button}' => $button,
+            '{fields}' => $this->fields
         ]);
     }
 

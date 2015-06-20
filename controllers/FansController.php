@@ -2,10 +2,11 @@
 
 namespace callmez\wechat\controllers;
 
-use callmez\wechat\models\Message;
 use Yii;
+use yii\web\UploadedFile;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Fans;
+use callmez\wechat\models\Message;
 use callmez\wechat\models\FansSearch;
 use callmez\wechat\models\MessageHistorySearch;
 use callmez\wechat\components\AdminController;
@@ -66,6 +67,27 @@ class FansController extends AdminController
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    /**
+     * 上传素材
+     * @param $id
+     * @throws NotFoundHttpException
+     */
+    public function actionUpload($id)
+    {
+        $model = $this->findModel($id);
+        if (isset($_FILES[$model->formName()]['name'])) {
+            foreach ($_POST[$model->formName()] as $attribute => $value) {
+                $uploadedFile = UploadedFile::getInstance($model, $attribute);
+                if ($uploadedFile === null) {
+                    continue;
+                } elseif ($uploadedFile->error == UPLOAD_ERR_OK) {
+//                    $this->getWechat()->getSdk()->uploadMedia($this->tempName, );
+                }
+            }
+        }
+        return $this->message('上传失败', 'error');
     }
 
     /**

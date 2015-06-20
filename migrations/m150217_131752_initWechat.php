@@ -3,6 +3,7 @@
 use yii\db\Schema;
 use yii\db\Migration;
 use callmez\wechat\models\Fans;
+use callmez\wechat\models\Media;
 use callmez\wechat\models\MpUser;
 use callmez\wechat\models\Wechat;
 use callmez\wechat\models\Module;
@@ -20,6 +21,7 @@ class m150217_131752_initWechat extends Migration
         $this->initFansTable();
         $this->initUserTable();
         $this->initMessageHistoryTable();
+        $this->initMediaTable();
     }
 
     public function safeDown()
@@ -30,6 +32,7 @@ class m150217_131752_initWechat extends Migration
         $this->dropTable(Fans::tableName());
         $this->dropTable(MpUser::tableName());
         $this->dropTable(MessageHistory::tableName());
+        $this->dropTable(Media::tableName());
     }
 
     /**
@@ -190,5 +193,23 @@ class m150217_131752_initWechat extends Migration
         ]);
         $this->createIndex('wid', $tableName, 'wid');
         $this->createIndex('module', $tableName, 'module');
+    }
+
+    /**
+     * 素材表
+     */
+    public function initMediaTable()
+    {
+        $tableName = Media::tableName();
+        $this->createTable($tableName, [
+            'id' => Schema::TYPE_PK,
+            'mediaId' => Schema::TYPE_STRING . "(100) NOT NULL DEFAULT '' COMMENT '素材ID'",
+            'post' => Schema::TYPE_TEXT . " NOT NULL COMMENT '提交的完整数据'",
+            'result' => Schema::TYPE_TEXT . " NOT NULL COMMENT '微信返回数据'",
+            'type' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '素材类型'",
+            'expire_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '过期时间(0为永久素材)'",
+            'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
+            'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
+        ]);
     }
 }

@@ -2,6 +2,7 @@
 namespace callmez\wechat\components;
 
 use callmez\wechat\models\Wechat;
+use callmez\wechat\models\MessageHistory;
 
 /**
  * 微信公众号SDK, 增加微信公众号数据库操作
@@ -46,5 +47,23 @@ class MpWechat extends \callmez\wechat\sdk\MpWechat
             Yii::$app->getResponse()->redirect($this->getOauth2AuthorizeUrl($request->getAbsoluteUrl(), $state, $scope));
             Yii::$app->end();
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function sendMessage(array $data)
+    {
+        $result = parent::sendMessage($data);
+        if ($result && isset($data['touser'])) { // 记录发送日志
+            MessageHistory::add([
+                'wid' => $this->model->id,
+                'from' => $this->model->original,
+                'to' => $data['touser'],
+                'message' => $data,
+                'type' => MessageHistory::TYPE_CUSTOM
+            ]);
+        }
+        return $result;
     }
 }

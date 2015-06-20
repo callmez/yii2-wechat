@@ -16,7 +16,6 @@ class WechatAsset extends AssetBundle
     ];
     public $depends = [
         'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapPluginAsset',
-        'callmez\wechat\assets\FontAwesomeAsset',
+        'yii\bootstrap\BootstrapPluginAsset'
     ];
 }

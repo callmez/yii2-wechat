@@ -26,7 +26,7 @@ $name = $model->user ? $model->user->nickname : $model->open_id;
         <div class="col-sm-12">
             <?= $this->render('_messageForm', [
                 'model' => $message,
-                'uploadUrl' => ['upload', 'id' => $model->id]
+                'uploadUrl' => ['/wechat/media/upload', 'id' => $model->id]
             ]) ?>
         </div>
     </div>

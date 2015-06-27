@@ -2,6 +2,11 @@
 Yii-wechat
 ==========
 
+> 脑子总是有一些新想法, 因为并不是专业前端, 很多交互功能并不能达到理想的效果. 所以需要一位大牛来共同完善此项目. 我们都是有强迫症的猿们. 一切都为了帮助路上的伙伴少走弯路而努力.
+
+> 如果你是那位. 请联系我!
+
+
 感谢选择 Yii-wechat，基于 [Yii2](https://github.com/yiisoft/yii2) 框架基础实现的模块。
 
 [![Total Downloads](https://poser.pugx.org/overtrue/wechat/downloads)](https://packagist.org/packages/overtrue/wechat)

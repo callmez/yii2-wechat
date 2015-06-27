@@ -1,6 +1,8 @@
 <?php
 namespace callmez\wechat\widgets;
 
+use yii\helpers\ArrayHelper;
+
 class ActiveField extends \yii\bootstrap\ActiveField
 {
     /**
@@ -31,7 +33,7 @@ class ActiveField extends \yii\bootstrap\ActiveField
                 'offset' => 'col-sm-offset-3',
                 'label' => 'col-sm-3',
                 'wrapper' => 'col-sm-6',
-                'error' => '',
+                'error' => 'col-sm-3',
                 'hint' => '',
             ];
             if (isset($instanceConfig['horizontalCssClasses'])) {

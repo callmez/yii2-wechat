@@ -131,7 +131,7 @@ class Message extends Model
             'musicUrl' => '音乐链接',
             'hqMusicUrl' => '高品质链接',
             'description' => '描述',
-            'mediaId' => '媒体',
+            'mediaId' => '媒体ID',
             'content' => '消息内容',
         ];
     }

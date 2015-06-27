@@ -14,6 +14,9 @@ class WechatAsset extends AssetBundle
     public $css = [
         'css/wechat.css'
     ];
+    public $js = [
+        'js/wechat.js'
+    ];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapPluginAsset'

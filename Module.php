@@ -233,6 +233,7 @@ class Module extends \yii\base\Module
         ],
         'advanced' => [
             ['label' => '自定义菜单', 'url' => ['/wechat/menu/index']],
+            ['label' => '素材管理', 'url' => ['/wechat/media/index']],
         ]
     ];
 

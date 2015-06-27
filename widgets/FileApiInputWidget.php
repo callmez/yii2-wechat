@@ -14,7 +14,7 @@ use callmez\wechat\assets\FileApiAsset;
  *
  * @package callmez\wechat\widgets
  */
-class FileApi extends InputWidget
+class FileApiInputWidget extends InputWidget
 {
     /**
      * 模板
@@ -25,6 +25,11 @@ class FileApi extends InputWidget
      * @inheritdoc
      */
     public $options = ['class' => 'form-control'];
+    /**
+     * 上传input的选项属性
+     * @var array
+     */
+    public $fileInputOptions = [];
     /**
      * 上传按钮文本
      * @var string
@@ -45,6 +50,22 @@ class FileApi extends InputWidget
      * @var string
      */
     public $fields;
+    /**
+     * 上传目标范围, 如果不设置,则以当前的控件为上传范围
+     * @var string
+     */
+    public $targetId;
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        if ($this->targetId === null) {
+            $this->targetId = $this->getId();
+        }
+    }
 
     /**
      * 输出模板内容
@@ -55,10 +76,10 @@ class FileApi extends InputWidget
         $this->registerClientScript();
         if ($this->hasModel()) {
             $input = Html::activeTextInput($this->model, $this->attribute, $this->options);
-            $fileInput = Html::fileInput(Html::getInputName($this->model, $this->attribute));
+            $fileInput = Html::fileInput(Html::getInputName($this->model, $this->attribute), null, $this->fileInputOptions);
         } else {
             $input = Html::textInput($this->name, $this->value, $this->options);
-            $fileInput = Html::fileInput($this->name, $this->value);
+            $fileInput = Html::fileInput($this->name, $this->value, $this->fileInputOptions);
         }
 
         $button = Html::tag('div', $fileInput . '<span>' . $this->buttonText . '</span>', $this->buttonOptions);
@@ -78,7 +99,7 @@ class FileApi extends InputWidget
         $options = Json::htmlEncode($this->getClientOptions());
         $view = $this->getView();
         FileApiAsset::register($view);
-        $view->registerJs("$('#{$this->getId()}').fileapi({$options});");
+        $view->registerJs("$('#{$this->targetId}').fileapi({$options});");
     }
 
     /**

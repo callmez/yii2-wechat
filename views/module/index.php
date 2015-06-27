@@ -1,8 +1,8 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
 use callmez\wechat\models\Module;
+use callmez\wechat\widgets\GridView;
 use callmez\wechat\widgets\PagePanel;
 
 $this->title = '模块管理';
@@ -19,7 +19,6 @@ if ($wechat->canCreateModule()) {
     'options' => ['class' => 'addon-module-index'
 ]]) ?>
     <?= GridView::widget([
-        'tableOptions' => ['class' => 'table table-hover'],
         'dataProvider' => $dataProvider,
         'columns' => [
             'name',

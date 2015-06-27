@@ -207,7 +207,7 @@ class m150217_131752_initWechat extends Migration
             'post' => Schema::TYPE_TEXT . " NOT NULL COMMENT '提交的完整数据'",
             'result' => Schema::TYPE_TEXT . " NOT NULL COMMENT '微信返回数据'",
             'type' => Schema::TYPE_STRING . "(10) NOT NULL DEFAULT '' COMMENT '素材类型'",
-            'expire_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '过期时间(0为永久素材)'",
+            'material' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '素材类别'",
             'created_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建时间'",
             'updated_at' => Schema::TYPE_INTEGER . " UNSIGNED NOT NULL DEFAULT '0' COMMENT '修改时间'"
         ]);

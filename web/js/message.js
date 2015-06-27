@@ -35,7 +35,7 @@
                 $formGroup
                     .filter(express)
                     .find('input[name=mediaType]')
-                    .val('video');
+                    .val('voice');
                 break;
             case 'music':
                 express = '.field-message-title, .field-message-description, .field-message-musicurl, .field-message-hqmusicurl, .field-message-thumbmediaid';

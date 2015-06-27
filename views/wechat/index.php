@@ -1,8 +1,8 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
 use callmez\wechat\models\Wechat;
+use callmez\wechat\widgets\GridView;
 use callmez\wechat\widgets\PagePanel;
 
 $this->title = '公众号列表';
@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('添加公众号', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
-        'tableOptions' => ['class' => 'table table-hover'],
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [

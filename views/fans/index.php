@@ -1,8 +1,8 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
 use callmez\wechat\models\Fans;
+use callmez\wechat\widgets\GridView;
 use callmez\wechat\widgets\PagePanel;
 use callmez\wechat\assets\WechatAsset;
 
@@ -15,7 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
-        'tableOptions' => ['class' => 'table table-hover'],
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [

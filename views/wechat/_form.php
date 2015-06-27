@@ -2,8 +2,8 @@
 
 use yii\helpers\Html;
 use callmez\wechat\models\Wechat;
-use callmez\wechat\widgets\FileApi;
 use callmez\wechat\widgets\ActiveForm;
+use callmez\wechat\widgets\FileApiInputWidget;
 ?>
 
 <div class="wechat-form">
@@ -45,13 +45,13 @@ use callmez\wechat\widgets\ActiveForm;
 
         <?= $form->field($model, 'access_token')->textInput(['disabled' => true]) ?>
 
-        <?= $form->field($model, 'avatar')->widget(FileApi::className(), [
+        <?= $form->field($model, 'avatar')->widget(FileApiInputWidget::className(), [
             'jsOptions' => [
                 'url' => ['upload', 'id' => $model->id]
             ]
         ]) ?>
 
-        <?= $form->field($model, 'qrcode')->widget(FileApi::className(), [
+        <?= $form->field($model, 'qrcode')->widget(FileApiInputWidget::className(), [
             'jsOptions' => [
                 'url' => ['upload', 'id' => $model->id]
             ]

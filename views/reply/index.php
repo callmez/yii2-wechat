@@ -1,8 +1,8 @@
 <?php
-use \Yii;
+use Yii;
 use yii\helpers\Html;
-use yii\grid\GridView;
 use callmez\wechat\models\ReplyRule;
+use callmez\wechat\widgets\GridView;
 use callmez\wechat\widgets\PagePanel;
 
 $this->title = '回复规则';

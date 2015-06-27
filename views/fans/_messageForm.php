@@ -1,9 +1,9 @@
 <?php
 use yii\helpers\Html;
 use callmez\wechat\models\Message;
-use callmez\wechat\widgets\FileApi;
 use callmez\wechat\widgets\ActiveForm;
 use callmez\wechat\assets\MessageAsset;
+use callmez\wechat\widgets\FileApiInputWidget;
 
 MessageAsset::register($this);
 ?>
@@ -25,20 +25,46 @@ MessageAsset::register($this);
 
     <?= $form->field($model, 'description')->textarea() ?>
 
-    <?= $form->field($model, 'mediaId')->widget(FileApi::className(), [
-        'fields' => Html::hiddenInput('mediaType', ''),
+    <?php $a = Html::a('选择文件', ['media/pick'], [
+        'class' => 'btn btn-default',
+        'data' => [
+            'toggle' => 'modal',
+            'target' => '#mediaModal'
+        ]
+    ]) ?>
+    <?php $a = Html::a('浏览素材', ['media/pick'], [
+        'class' => 'btn btn-default',
+        'data' => [
+            'toggle' => 'modal',
+            'target' => '#mediaModal'
+        ]
+    ]) ?>
+
+    <?= $form->field($model, 'mediaId', [
+        'inputTemplate' => '<div class="input-group"><span class="input-group-btn">' . $a . '</span>{input}</div>',
+    ])->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'mediaId')->widget(FileApiInputWidget::className(), [
+        'template' => "\n<div id=\"{id}\" class=\"input-group\">\n<div class=\"input-group-btn\">\n{button}{fields}\n</div>\n{input}\n<div class=\"input-group-btn\">\n{$a}\n</div></div>\n",
+        'fields' => Html::hiddenInput('mediaType'),
+        'jsOptions' => [
+            'url' => $uploadUrl
+        ]
+    ]) ?>
+    <?= $form->field($model, 'mediaId')->widget(FileApiInputWidget::className(), [
+        'fields' => Html::hiddenInput('mediaType'),
         'jsOptions' => [
             'url' => $uploadUrl
         ]
     ]) ?>
 
-    <?= $form->field($model, 'thumbMediaId')->widget(FileApi::className(), [
+    <?= $form->field($model, 'thumbMediaId')->widget(FileApiInputWidget::className(), [
         'jsOptions' => [
             'url' => $uploadUrl
         ]
     ]) ?>
 
-    <?= $form->field($model, 'musicUrl')->widget(FileApi::className(), [
+    <?= $form->field($model, 'musicUrl')->widget(FileApiInputWidget::className(), [
         'jsOptions' => [
             'url' => $uploadUrl
         ]

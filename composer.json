@@ -23,6 +23,7 @@
 
         "callmez/yii2-wechat-sdk" : "*",
 
+        "bower-asset/react": "*",
         "bower-asset/amazeui-react": "*",
 
         "bower-asset/font-awesome": "4.*",

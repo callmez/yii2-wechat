@@ -1,62 +1,64 @@
 <?php
 
 use yii\helpers\Html;
+use yii\bootstrap\ButtonGroup;
 use callmez\wechat\models\Media;
 use callmez\wechat\widgets\ActiveForm;
-use yii\bootstrap\ButtonGroup;
+use callmez\wechat\widgets\FileApiInputWidget;
 ?>
 
-<div class="media-form">
-
-    <?php $form = ActiveForm::begin([
-        'layout' => 'horizontal',
-        'fieldConfig' => [
-            'horizontalCssClasses' => [
-                'wrapper' => 'col-sm-7',
-                'error' => 'col-sm-2',
-            ],
-        ]
-    ]); ?>
-
-
-    <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
-            <ul id="mediaTabs" class="list-unstyled btn-group btn-group-justified">
-                <?php $mediaType = Yii::$app->request->getQueryParam('mediaType', Media::TYPE_MEDIA) ?>
-                <?php array_walk(Media::$mediaTypes, function($type, $key) use ($mediaType) {
-                    echo '<li class="btn btn-default' . ($mediaType == $key ? ' active' : '') . '"><div data-toggle="tab" data-target="#' . $key . '">' . $type . '</div></li>';
-                }) ?>
-            </ul>
-        </div>
+<?php $form = ActiveForm::begin([
+    'id' => 'mediaForm',
+    'layout' => 'horizontal',
+    'fieldConfig' => [
+        'horizontalCssClasses' => [
+            'wrapper' => 'col-sm-7',
+            'hint' => 'col-sm-2',
+        ],
+    ],
+    'options' => [
+        'enctype' => "multipart/form-data"
+    ]
+]); ?>
+    <div class="modal-header">
+        <ul class="nav nav-tabs">
+            <?php $mediaType = Yii::$app->request->getQueryParam('mediaType', Media::TYPE_MEDIA) ?>
+            <?php array_walk(Media::$mediaTypes, function($type, $key) use ($mediaType) {
+                echo '<li class="' . ($mediaType == $key ? ' active' : '') . '"><a href="#' . $key . '" data-toggle="tab" data-value="' . $key . '">' . $type . '</a></li>';
+            }) ?>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </ul>
     </div>
+    <div class="modal-body">
+        <?= Html::hiddenInput('mediaType', $mediaType) ?>
 
-    <div class="tab-content">
-        <div id="media" class="tab-pane <?= ($mediaType == Media::TYPE_MEDIA ? ' active' : '') ?>">
-            <?= $form->field($media, 'type')->inline()->radioList(Media::$types) ?>
+        <div class="tab-content">
+            <div id="media" class="tab-pane <?= $mediaType == Media::TYPE_MEDIA ? 'active' : '' ?>">
+                <?= $form->field($media, 'type')->inline()->radioList(Media::$types) ?>
 
-            <?= $form->field($media, 'material')->inline()->radioList(Media::$materialTypes) ?>
+                <?= $form->field($media, 'material')->inline()->radioList(Media::$materialTypes) ?>
 
-            <?= $form->field($media, 'file')->fileInput() ?>
-        </div>
+                <?= $form->field($media, 'file')->fileInput() ?>
+            </div>
 
-        <div id="news" class="tab-pane <?= ($mediaType == Media::TYPE_NEWS ? ' active' : '') ?>">
-            <?= $this->render('_newsForm', [
-                'model' => $news
-            ]) ?>
-        </div>
-    </div>
-    <?php if (!Yii::$app->request->isAjax): ?>
-        <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-6">
-                <?= Html::submitButton('提交', ['class' => 'btn btn-block btn-primary']) ?>
+            <div id="news" class="tab-pane <?= $mediaType == Media::TYPE_NEWS ? 'active' : '' ?>">
+                <?= $this->render('_newsForm', [
+                    'model' => $news
+                ]) ?>
             </div>
         </div>
-    <?php endif ?>
-
-    <?php ActiveForm::end(); ?>
-
-</div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="submit" class="js-send btn btn-primary">提交</button>
+    </div>
+<?php ActiveForm::end(); ?>
 <?php
 $this->registerJs(<<<EOF
+    $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+        var _target = $(e.target);
+        var form = _target.closest('form');
+        form.find('[name=mediaType]').val(_target.data('value'));
+    })
 EOF
 );

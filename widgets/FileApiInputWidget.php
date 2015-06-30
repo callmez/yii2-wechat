@@ -51,10 +51,10 @@ class FileApiInputWidget extends InputWidget
      */
     public $fields;
     /**
-     * 上传目标范围, 如果不设置,则以当前的控件为上传范围
+     * 上传目标范围DOM选择器, 如果不设置,则以当前的控件为上传范围默认为 '#' . $this->getId()
      * @var string
      */
-    public $targetId;
+    public $target;
 
     /**
      * @inheritdoc
@@ -62,8 +62,8 @@ class FileApiInputWidget extends InputWidget
     public function init()
     {
         parent::init();
-        if ($this->targetId === null) {
-            $this->targetId = $this->getId();
+        if ($this->target === null) {
+            $this->target = '#' . $this->getId();
         }
     }
 
@@ -99,7 +99,7 @@ class FileApiInputWidget extends InputWidget
         $options = Json::htmlEncode($this->getClientOptions());
         $view = $this->getView();
         FileApiAsset::register($view);
-        $view->registerJs("$('#{$this->targetId}').fileapi({$options});");
+        $view->registerJs("$('{$this->target}').fileapi({$options});");
     }
 
     /**

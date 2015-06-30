@@ -25,7 +25,7 @@ class MessageList extends ListView
     /**
      * @inheritdoc
      */
-    public $layout = "{summary}\n{items}\n<div class=\"text-center\">\n{pager}\n</div>";
+    public $layout = "\n{summary}\n{items}\n<div class=\"text-center\">\n{pager}\n</div>\n";
     /**
      * @inheritdoc
      */

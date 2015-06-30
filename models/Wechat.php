@@ -6,8 +6,8 @@ use Yii;
 use yii\helpers\Url;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use callmez\wechat\behaviors\EventBehavior;
 use callmez\wechat\components\MpWechat;
+use callmez\wechat\behaviors\ArrayBehavior;
 
 /**
  * 公众号数据
@@ -62,18 +62,10 @@ class Wechat extends ActiveRecord
     {
         return [
             'timestamp' => TimestampBehavior::className(),
-            'event' => [
-                'class' => EventBehavior::className(),
-                'events' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => function ($event) {
-                        $this->access_token && $this->access_token = serialize($this->access_token);
-                    },
-                    ActiveRecord::EVENT_BEFORE_UPDATE => function ($event) {
-                        $this->access_token && $this->access_token = serialize($this->access_token);
-                    },
-                    ActiveRecord::EVENT_AFTER_FIND => function ($event) {
-                        $this->access_token && $this->access_token = unserialize($this->access_token);
-                    }
+            'array' => [
+                'class' => ArrayBehavior::className(),
+                'attributes' => [
+                    ArrayBehavior::TYPE_SERIALIZE => ['access_token']
                 ]
             ]
         ];

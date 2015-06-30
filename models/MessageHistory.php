@@ -4,7 +4,7 @@ namespace callmez\wechat\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use callmez\wechat\behaviors\EventBehavior;
+use callmez\wechat\behaviors\ArrayBehavior;
 
 /**
  * 微信请求消息历史记录
@@ -44,18 +44,10 @@ class MessageHistory extends ActiveRecord
                     ActiveRecord::EVENT_BEFORE_INSERT => ['created_at']
                 ]
             ],
-            'event' => [
-                'class' => EventBehavior::className(),
-                'events' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => function ($event) {
-                        $this->message = serialize($this->message);
-                    },
-                    ActiveRecord::EVENT_BEFORE_UPDATE => function ($event) {
-                        $this->message = serialize($this->message);
-                    },
-                    ActiveRecord::EVENT_AFTER_FIND => function ($event) {
-                        $this->message = unserialize($this->message);
-                    }
+            'array' => [
+                'class' => ArrayBehavior::className(),
+                'attributes' => [
+                    ArrayBehavior::TYPE_SERIALIZE => ['message']
                 ]
             ]
         ];

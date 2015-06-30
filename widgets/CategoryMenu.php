@@ -24,7 +24,7 @@ class CategoryMenu extends Menu
     /**
      * @inheritdoc
      */
-    public $labelTemplate = '<div class="panel-heading" {accordionData}><h4 class="panel-title cursor-pointer"><span class="glyphicon glyphicon-chevron-down pull-right"></span>{label}</h4></div>';
+    public $labelTemplate = "\n<div class=\"panel-heading\" {accordionData}>\n<h4 class=\"panel-title cursor-pointer\">\n<span class=\"glyphicon glyphicon-chevron-down pull-right\"></span>\n{label}\n</h4>\n</div>\n";
     /**
      * @inheritdoc
      */

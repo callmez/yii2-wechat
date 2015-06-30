@@ -2,6 +2,8 @@
 namespace callmez\wechat\models;
 
 use yii\db\ActiveRecord;
+use yii\behaviors\TimestampBehavior;
+use callmez\wechat\behaviors\ArrayBehavior;
 
 /**
  * 素材存储表
@@ -67,22 +69,58 @@ class Media extends ActiveRecord
         self::MATERIAL_TEMPORARY => '临时素材',
         self::MATERIAL_PERMANENT => '永久素材'
     ];
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'timestamp' => TimestampBehavior::className(),
+            'array' => [
+                'class' => ArrayBehavior::className(),
+                'attributes' => [
+                    ArrayBehavior::TYPE_SERIALIZE => ['result']
+                ]
+            ]
+        ];
+    }
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return '{{%_wechat_media}}';
+        return '{{%wechat_media}}';
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['filename', 'result'], 'required'],
+            [['mediaId', 'filename'], 'string', 'max' => 100],
+            [['type'], 'string', 'max' => 10],
+            [['material'], 'string', 'max' => 20]
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
             'id' => 'ID',
             'mediaId' => '媒体ID',
-            'post' => '发送内容',
+            'filename' => '文件名',
             'result' => '响应内容',
-            'type' => '媒体类型'
+            'type' => '媒体类型',
+            'material' => '素材类别',
+            'created_at' => '创建时间',
+            'updated_at' => '修改时间',
         ];
     }
 }

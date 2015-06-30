@@ -95,16 +95,28 @@ class MediaController extends AdminController
      */
     public function actionCreate()
     {
-        $media = new MediaForm();
+        $media = new MediaForm($this->getWechat());
         $news = new MediaNewsForm();
 
-        if (Yii::$app->request->getIsPost()) {
-            if ($media->load(Yii::$app->request->post()) && $media->save()){
+        $request = Yii::$app->request;
+        if ($request->getIsPost()) {
+            $post = $request->post();
+            switch ($request->post('mediaType')) {
+                case Media::TYPE_MEDIA:
+                    $media->load($post);
+                    $media->file = UploadedFile::getInstance($media, 'file');
+                    if ($media->save()) {
 
-            } elseif ($news->load(Yii::$app->request->post()) && $news->save()) {
+                    }
+                    break;
+                case Media::TYPE_NEWS:
+                    $news->load($post);
+                    if ($news->save()) {
 
-            } else {
-                throw new NotFoundHttpException('The requested page does not exist.');
+                    }
+                    break;
+                default:
+                    throw new NotFoundHttpException('The requested page does not exist.');
             }
         }
         return $this->render('create', [

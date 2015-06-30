@@ -37,7 +37,7 @@ class MobileController extends BaseController
     public function getWechat()
     {
         if ($this->_wechat === null) {
-            $wid = Yii::$app->request->getQueryParam(Yii::$app->getModule('wechat')->wechatUrlParam);
+            $wid = Yii::$app->request->get(Yii::$app->getModule('wechat')->wechatUrlParam);
             if (!$wid || ($wechat = Wechat::find()->active()->one()) === null) {
                 throw new NotFoundHttpException('The requested page does not exist.');
             }

@@ -41,7 +41,7 @@ class MpWechat extends \callmez\wechat\sdk\MpWechat
     public function getAuthorizeUserInfo($state = 'authorize', $scope = 'snsapi_base')
     {
         $request = Yii::$app->request;
-        if (($code = $request->getQueryParam('code')) && $request->getQueryParam('state') == $state) {
+        if (($code = $request->get('code')) && $request->get('state') == $state) {
             return $this->getOauth2AccessToken($code);
         } else {
             Yii::$app->getResponse()->redirect($this->getOauth2AuthorizeUrl($request->getAbsoluteUrl(), $state, $scope));

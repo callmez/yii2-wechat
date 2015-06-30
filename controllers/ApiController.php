@@ -134,7 +134,7 @@ class ApiController extends BaseController
                 if ($wechat->status == Wechat::STATUS_INACTIVE) { // 激活公众号
                     $wechat->updateAttributes(['status' => Wechat::STATUS_ACTIVE]);
                 }
-                return $request->getQueryParam('echostr');
+                return $request->get('echostr');
             case 'POST':
                 $this->setWechat($wechat);
                 $this->message = $this->parseRequest();
@@ -188,7 +188,7 @@ class ApiController extends BaseController
 
         $sdk = $this->getWechat()->getSdk();
         $xml = $sdk->xml($data);
-        if ($xml && Yii::$app->request->getQueryParam('encrypt_type') == 'aes') { // aes加密
+        if ($xml && Yii::$app->request->get('encrypt_type') == 'aes') { // aes加密
             $xml = $sdk->encryptXml($xml, $timestamp, Yii::$app->security->generateRandomString(6));
         }
         return $xml;

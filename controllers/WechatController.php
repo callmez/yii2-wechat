@@ -9,6 +9,7 @@ use yii\filters\VerbFilter;
 use yii\widgets\ActiveForm;
 use yii\web\NotFoundHttpException;
 use callmez\wechat\models\Wechat;
+use callmez\wechat\helpers\Request;
 use callmez\wechat\models\WechatForm;
 use callmez\wechat\models\WechatSearch;
 use callmez\wechat\components\AdminController;
@@ -61,7 +62,7 @@ class WechatController extends AdminController
     {
         $model = new WechatForm();
         if ($model->load(Yii::$app->request->post())) {
-            if (isset($_POST['ajax'])) {
+            if (Request::isAjax()) {
                 Yii::$app->getResponse()->format = Response::FORMAT_JSON;
                 return ActiveForm::validate($model);
             } elseif ($model->save()) {
@@ -108,7 +109,7 @@ class WechatController extends AdminController
     {
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
-            if (isset($_POST['ajax'])) {
+            if (Request::isAjax()) {
                 Yii::$app->getResponse()->format = Response::FORMAT_JSON;
                 return ActiveForm::validate($model);
             } elseif ($model->save()) {

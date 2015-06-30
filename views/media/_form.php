@@ -22,7 +22,7 @@ use callmez\wechat\widgets\FileApiInputWidget;
 ]); ?>
     <div class="modal-header">
         <ul class="nav nav-tabs">
-            <?php $mediaType = Yii::$app->request->getQueryParam('mediaType', Media::TYPE_MEDIA) ?>
+            <?php $mediaType = Yii::$app->request->get('mediaType', Media::TYPE_MEDIA) ?>
             <?php array_walk(Media::$mediaTypes, function($type, $key) use ($mediaType) {
                 echo '<li class="' . ($mediaType == $key ? ' active' : '') . '"><a href="#' . $key . '" data-toggle="tab" data-value="' . $key . '">' . $type . '</a></li>';
             }) ?>

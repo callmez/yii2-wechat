@@ -9,7 +9,7 @@ Yii-wechat
 
 感谢选择 Yii-wechat，基于 [Yii2](https://github.com/yiisoft/yii2) 框架基础实现的模块。
 
-[![Total Downloads](https://poser.pugx.org/overtrue/wechat/downloads)](https://packagist.org/packages/overtrue/wechat)
+[![Total Downloads](https://poser.pugx.org/callmez/yii2-wechat/downloads)](https://packagist.org/packages/callmez/yii2-wechat)
 
 注意
 ----

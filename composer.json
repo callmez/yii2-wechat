@@ -19,7 +19,6 @@
         "yiisoft/yii2": ">=2.0.x-dev",
         "yiisoft/yii2-bootstrap": "*",
 
-        "kartik-v/yii2-grid": "~3.0",
         "symfony/yaml": "*",
 
         "callmez/yii2-wechat-sdk" : "*",

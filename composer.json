@@ -23,6 +23,7 @@
         "symfony/yaml": "*",
 
         "callmez/yii2-wechat-sdk" : "*",
+        "callmez/yii2-ajaxcrud": "~1.0",
 
         "bower-asset/jquery.fileapi": "~0.4",
         "bower-asset/angular": "1.2.*@stable | 1.3.*@stable",
@@ -30,5 +31,8 @@
     },
     "autoload": {
         "psr-4": {"callmez\\wechat\\": ""}
+    },
+    "extra": {
+        "bootstrap": "callmez\\wechat\\Bootstrap"
     }
 }

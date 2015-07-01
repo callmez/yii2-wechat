@@ -106,7 +106,7 @@ class MediaController extends AdminController
                     $media->load($post);
                     $media->file = UploadedFile::getInstance($media, 'file');
                     if ($media->save()) {
-
+                        return $this->message('操作成功!', 'success');
                     }
                     break;
                 case Media::TYPE_NEWS:

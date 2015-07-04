@@ -25,6 +25,7 @@
 
         "kartik-v/yii2-grid": "~3.0",
         "kartik-v/yii2-mpdf": "~1.0",
+        "kartik-v/yii2-widgets": "~3.0",
         "kartik-v/yii2-datecontrol": "~1.0",
 
         "bower-asset/jquery.fileapi": "~0.4",

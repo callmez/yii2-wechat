@@ -27,6 +27,7 @@
         "kartik-v/yii2-mpdf": "~1.0",
         "kartik-v/yii2-widgets": "~3.0",
 
+        "bower-asset/react": "~0.13",
         "bower-asset/jquery.fileapi": "~0.4",
         "bower-asset/angular": "1.3.*@stable",
         "bower-asset/angular-drag-and-drop-lists": "1.*"

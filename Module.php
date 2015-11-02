@@ -11,7 +11,7 @@ use callmez\wechat\components\BaseModule;
 use callmez\wechat\models\Module as ModuleModel;
 
 // 加载默认设置文件
-require_once Yii::getAlias('@callmez/wechat/wechat.php');
+//require_once Yii::getAlias('@callmez/wechat/wechat.php');
 
 class Module extends \yii\base\Module
 {

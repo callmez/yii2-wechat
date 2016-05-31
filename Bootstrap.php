@@ -20,8 +20,8 @@ class Bootstrap implements BootstrapInterface
         // 定义毫秒时间戳
         defined('TIMESTAMP') or define('TIMESTAMP', $_SERVER['REQUEST_TIME']);
         // 自动注册存储目录(可以在config中配置)
-        !isset(Yii::$aliases['@storage']) or Yii::setAlias('@storage', Yii::getAlias('@web/storage'));
-        !isset(Yii::$aliases['@storageRoot']) or Yii::setAlias('@storageRoot', Yii::getAlias('@webroot/storage'));
+        isset(Yii::$aliases['@storage']) or Yii::setAlias('@storage', Yii::getAlias('@web/storage'));
+        isset(Yii::$aliases['@storageRoot']) or Yii::setAlias('@storageRoot', Yii::getAlias('@webroot/storage'));
 
         if ($app->hasModule('gii')) { // 增加gii生成器
             $gii = $app->getModule('gii');
